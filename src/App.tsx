@@ -8,7 +8,7 @@ function App() {
   return (
     <ThemeProvider>
       <I18nextProvider i18n={i18n}>
-        <BrowserRouter basename={__BASE_PATH__}>
+        <BrowserRouter> 
           <AppRoutes />
         </BrowserRouter>
       </I18nextProvider>
