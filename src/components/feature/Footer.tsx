@@ -12,7 +12,7 @@ const socials = [
 const kontakInfo = {
   address: 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210',
   phone: '+62 21 5738001',
-  email: 'info@waringinmegamandiri.co.id',
+  email: 'info@waringinmegamandiri.com',
 };
 
 const certifications = [
