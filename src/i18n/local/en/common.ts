@@ -79,7 +79,7 @@ const translations = {
   'cta.title2': 'Together With Us?',
   'cta.subtitle': 'Consult your construction needs with our professional team. Get a free cost estimate and the best solution for your project.',
   'cta.konsultasi': 'Free Consultation',
-  'cta.telepon': '+62 21 5270 1234',
+  'cta.telepon': '+62 21 5738001',
 
   // About Page
   'about.title': 'About Us',

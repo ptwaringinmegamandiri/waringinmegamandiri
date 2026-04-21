@@ -67,7 +67,7 @@ const translations = {
   'cta.title2': 'Bersama Kami?',
   'cta.subtitle': 'Konsultasikan kebutuhan konstruksi Anda bersama tim profesional kami. Dapatkan estimasi biaya gratis dan solusi terbaik untuk proyek Anda.',
   'cta.konsultasi': 'Konsultasi Gratis',
-  'cta.telepon': '+62 21 5270 1234',
+  'cta.telepon': '+62 21 5738001',
 
   // About Page
   'about.title': 'Tentang Kami',

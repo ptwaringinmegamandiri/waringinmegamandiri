@@ -493,10 +493,15 @@ export default function KontakPage() {
       {/* Google Maps */}
       <section className="pb-16">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <div className="mb-6 flex items-center gap-3">
+          <a
+            href="https://maps.app.goo.gl/pB95n6dDYvbNg5RP7"
+            target="_blank"
+            rel="nofollow noreferrer"
+            className="mb-6 flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity duration-300"
+          >
             <div className={`w-1 h-6 rounded-full ${mapAccentBar}`} />
             <h2 className={`font-syne font-bold text-xl ${mapTitleColor}`}>{t('kontak.mapTitle')}</h2>
-          </div>
+          </a>
           <div className={`rounded-2xl overflow-hidden border-2 ${mapBorderColor}`} style={{ height: '380px' }}>
             <iframe
               src={settings.maps_embed_url}

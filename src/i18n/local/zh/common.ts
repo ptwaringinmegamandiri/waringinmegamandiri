@@ -79,7 +79,7 @@ const translations = {
   'cta.title2': '共同建造了吗？',
   'cta.subtitle': '与我们的专业团队咨询您的建设需求，获取免费成本估算和项目最佳方案。',
   'cta.konsultasi': '免费咨询',
-  'cta.telepon': '+62 21 5270 1234',
+  'cta.telepon': '+62 21 5738001',
 
   // About Page
   'about.title': '关于我们',
@@ -193,7 +193,7 @@ const translations = {
   'news.newsletterSubtitle': '直接将WMM最新项目资讯和动态送达您的收件箱。无垃圾邮件，只有优质内容。',
   'news.placeholder': '您的邮箱地址',
   'news.subscribe': '订阅',
-  'news.subscribed': '订阅成功！感谢您的关注。',
+  'news.subscribed': '订阅成功！感谢您的���注。',
 
   // Footer
   'footer.desc': '以科技构建未来。自2008年起致力于质量与创新的现代建筑承包商。',
@@ -344,7 +344,7 @@ const translations = {
   'clients.terkemuka': '知名企业',
   'clients.desc': '我们已获得印度尼西亚众多知名企业和机构的信赖，承接大型建设项目，坚守国际质量标准。',
   'clients.proyekBersama': '个合作项目',
-  'clients.korporat': '50+家信赖企业客户',
+  'clients.korporat': '50+��信赖企业客户',
   'clients.sektorDesc': '覆盖印度尼西亚各行业领域',
   'clients.proyekSelesai': '已完工项目',
   'clients.kepuasan': '客户满意度',
