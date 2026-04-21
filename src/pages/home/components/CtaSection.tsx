@@ -57,7 +57,7 @@ export default function CtaSection() {
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a
-            href="mailto:info@waringinmegamandiri.co.id"
+            href="mailto:info@waringinmegamandiri.com"
             className="btn-neon-solid px-10 py-4 rounded-lg text-base cursor-pointer whitespace-nowrap inline-flex items-center gap-2"
           >
             <i className="ri-mail-send-line" />{t('cta.konsultasi')}
