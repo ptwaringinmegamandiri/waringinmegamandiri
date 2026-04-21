@@ -113,10 +113,13 @@ body {
   font-size: 0.68rem;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #3B82F6;
+  color: #ffa800;
   font-weight: 600;
   opacity: 0.9;
 }
+
+/* Merriweather font import */
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap');
 
 /* ===================== ACCENT LINES ===================== */
 .neon-line {
