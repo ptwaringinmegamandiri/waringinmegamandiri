@@ -213,22 +213,6 @@ export default function PortfolioPage() {
           <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
 
           <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
-            {/* Stats Summary */}
-            <div className="grid grid-cols-3 gap-4 mb-12">
-              <div className={`rounded-xl p-5 text-center ${statCardBase}`}>
-                <span className={`font-syne font-black text-3xl block mb-1 ${isDark ? 'text-sky-300' : 'text-blue-700'}`}>{projects.length}</span>
-                <span className={`font-body text-xs tracking-wide ${statLabelColor}`}>Total Proyek</span>
-              </div>
-              <div className={`rounded-xl p-5 text-center ${statCardBase}`}>
-                <span className={`font-syne font-black text-3xl block mb-1 ${isDark ? 'text-green-400' : 'text-emerald-600'}`}>{selesaiCount}</span>
-                <span className={`font-body text-xs tracking-wide ${statLabelColor}`}>Proyek Selesai</span>
-              </div>
-              <div className={`rounded-xl p-5 text-center ${statCardBase}`}>
-                <span className={`font-syne font-black text-3xl block mb-1 animate-pulse ${isDark ? 'text-sky-400' : 'text-blue-600'}`}>{ongoingCount}</span>
-                <span className={`font-body text-xs tracking-wide ${statLabelColor}`}>Proyek Ongoing</span>
-              </div>
-            </div>
-
             {/* FILTER BAR */}
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8">
 
