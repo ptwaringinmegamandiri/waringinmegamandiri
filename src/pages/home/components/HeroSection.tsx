@@ -138,34 +138,16 @@ export default function HeroSection() {
           }}
         >
           <div className="max-w-7xl mx-auto px-6 lg:px-10">
-            <div className="grid grid-cols-2 lg:grid-cols-4">
-              {[
-                { value: '15+', labelKey: 'hero.stat.tahunPengalaman' },
-                { value: '200+', labelKey: 'hero.stat.proyekSelesai' },
-                { value: '98%', labelKey: 'hero.stat.kepuasanKlien' },
-                { value: '50+', labelKey: 'hero.stat.klienKorporat' },
-              ].map((stat, idx) => (
-                <div
-                  key={idx}
-                  className={`py-5 px-6 flex flex-col items-center text-center ${
-                    idx < 3 ? 'border-r' : ''
-                  }`}
-                  style={{ borderColor: isDark ? 'rgba(56,189,248,0.10)' : 'rgba(37,99,235,0.12)' }}
-                >
-                  <span
-                    className="font-syne font-black text-2xl md:text-3xl"
-                    style={{ color: isDark ? '#7DD3FC' : '#1D4ED8' }}
-                  >
-                    {stat.value}
-                  </span>
-                  <span
-                    className="font-body text-xs tracking-wide mt-1"
-                    style={{ color: isDark ? '#64748B' : '#6B7280' }}
-                  >
-                    {t(stat.labelKey)}
-                  </span>
-                </div>
-              ))}
+            <div className="py-5 px-6 flex items-center justify-center text-center">
+              <span
+                className="font-black text-2xl md:text-3xl"
+                style={{
+                  fontFamily: '"Merriweather", serif',
+                  color: isDark ? '#7DD3FC' : '#1D4ED8'
+                }}
+              >
+                35+ tahun pengalaman di bidang konstruksi
+              </span>
             </div>
           </div>
         </div>

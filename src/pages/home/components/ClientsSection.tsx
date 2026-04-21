@@ -208,7 +208,7 @@ export default function ClientsSection() {
 
         {/* Bottom trust bar */}
         <div
-          className="reveal-client rounded-2xl px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+          className="reveal-client rounded-2xl px-8 py-6 flex flex-col sm:flex-row items-center justify-start gap-4"
           style={{
             opacity: 0,
             transform: 'translateY(20px)',
@@ -226,17 +226,6 @@ export default function ClientsSection() {
               <p className={`font-syne font-bold text-sm ${bottomTitleColor}`}>{t('clients.korporat')}</p>
               <p className={`font-body text-xs ${bottomSubColor}`}>{t('clients.sektorDesc')}</p>
             </div>
-          </div>
-          <div className="flex items-center gap-6">
-            {[
-              { val: '200+', label: t('clients.proyekSelesai') },
-              { val: '98%', label: t('clients.kepuasan') },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <div className={`font-syne font-black text-lg ${bottomStatColor}`}>{s.val}</div>
-                <div className={`font-body text-xs ${bottomSubColor}`}>{s.label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </div>
