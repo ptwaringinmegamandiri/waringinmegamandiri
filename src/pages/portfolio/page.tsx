@@ -300,23 +300,6 @@ export default function PortfolioPage() {
               )}
             </div>
 
-            {/* Results Count */}
-            <div className="flex items-center gap-3 mb-6">
-              <span className="font-body text-sm">
-                <strong className={resultCountColor}>{filtered.length}</strong>
-                <span className={resultTotalColor}> / {projects.length} proyek</span>
-                {activeStatus !== 'Semua' && (
-                  <span> · <span className={activeStatus === 'Selesai' ? (isDark ? 'text-green-400' : 'text-emerald-600') : (isDark ? 'text-sky-400' : 'text-blue-600')}>{activeStatus}</span></span>
-                )}
-                {activeBuildingType !== 'Semua' && (
-                  <span> · <span className={isDark ? 'text-amber-400' : 'text-amber-600'}>{BUILDING_TYPE_LABELS[activeBuildingType] || activeBuildingType}</span></span>
-                )}
-                {activeYear !== 'Semua' && (
-                  <span> · <span className={isDark ? 'text-rose-400' : 'text-rose-600'}>{activeYear}</span></span>
-                )}
-              </span>
-            </div>
-
             {/* Projects Grid - first 9 */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {gridProjects.map((project) => (
