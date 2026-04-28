@@ -24,8 +24,8 @@ interface ProjectFormProps {
   project?: ProjectRow | null;
   onSaved: () => void;
   onCancel: () => void;
-  **onAiGenerate: (title: string, callback: (desc: string) => void) => void;**
-  **isAiLoading: boolean;**
+  onAiGenerate: (title: string, callback: (desc: string) => void) => void;
+  isAiLoading: boolean;**
 }
 
 type FormData = Omit<ProjectRow, 'id' | 'created_at' | 'updated_at' | 'project_images'>;

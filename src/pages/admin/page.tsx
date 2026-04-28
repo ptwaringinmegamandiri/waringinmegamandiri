@@ -527,8 +527,8 @@ export default function AdminPage() {
             <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
               <ProjectForm 
   project={editProject} 
-  **onAiGenerate={handleAiGenerate}**
-  **isAiLoading={isAiLoading}**
+  onAiGenerate={handleAiGenerate}
+  isAiLoading={isAiLoading}
   onSaved={() => { 
     fetchProjects(); 
     setView('list'); 
