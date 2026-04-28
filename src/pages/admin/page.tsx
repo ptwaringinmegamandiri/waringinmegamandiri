@@ -525,7 +525,7 @@ export default function AdminPage() {
               <p className="text-slate-500 text-sm mt-1">{view === 'edit' ? `Mengedit: ${editProject?.name}` : 'Isi detail proyek dan upload foto'}</p>
             </div>
             <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
-              <<ProjectForm 
+              <ProjectForm 
   project={editProject} 
   **onAiGenerate={handleAiGenerate}**
   **isAiLoading={isAiLoading}**
