@@ -800,7 +800,7 @@ export default function AdminPage() {
                 {chatMessages.length === 0 && (
                   <p className="text-gray-500 text-center text-sm mt-10">Halo Bos! Saya asisten developer kamu. Mau edit apa hari ini?</p>
                 )}
-                {chatMessages.map((msg, i) => (
+                                {chatMessages.map((msg, i) => (
                   <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     <div className={`max-w-[85%] p-3 rounded-lg text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200 border border-gray-700'}`}>
                       {msg.text}
@@ -827,7 +827,6 @@ export default function AdminPage() {
                 </button>
               </div>
             </div>
-          )}
         </main>
     </div>
   );
