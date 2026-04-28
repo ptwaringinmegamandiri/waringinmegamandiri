@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -117,9 +118,6 @@ body {
   font-weight: 600;
   opacity: 0.9;
 }
-
-/* Merriweather font import */
-@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap');
 
 /* ===================== ACCENT LINES ===================== */
 .neon-line {
