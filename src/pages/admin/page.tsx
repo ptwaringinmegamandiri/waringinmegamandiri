@@ -9,7 +9,7 @@ import ApplicationsPanel from './components/ApplicationsPanel';
 import { projects as mockProjects } from '@/mocks/projects';
 import { newsArticles as mockNews } from '@/mocks/news';
 import { jobListings as mockCareers } from '@/mocks/careers';
-import { generateDescription } from '@/lib/gemini';
+import { generateDescription, startAiChat } from '@/lib/gemini';
 
 type ActiveTab = 'projects' | 'news' | 'careers' | 'highlight' | 'settings' | 'applications';
 type ViewMode = 'list' | 'add' | 'edit';
