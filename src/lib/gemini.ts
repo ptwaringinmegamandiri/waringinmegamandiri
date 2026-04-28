@@ -1,18 +1,22 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Ini untuk mengambil kunci AI yang sudah kamu pasang di Vercel tadi
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY || "");
 
-export const generateDescription = async (projectName: string) => {
-  try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = `Buatkan deskripsi profesional dan elegan dalam Bahasa Indonesia untuk proyek konstruksi bernama: ${projectName}. Jelaskan tentang kualitas, ketepatan waktu, dan profesionalisme PT Waringin Mega Mandiri. Buat dalam 2 paragraf singkat.`;
-    
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text();
-  } catch (error) {
-    console.error("Gagal generate deskripsi:", error);
-    return "Gagal membuat deskripsi secara otomatis.";
-  }
+export const startAiChat = () => {
+  const model = genAI.getGenerativeModel({
+    model: "gemini-1.5-flash", // Kita pakai versi flash biar kencang seperti v0
+  });
+
+  return model.startChat({
+    history: [
+      {
+        role: "user",
+        parts: [{ text: "Kamu adalah Senior Web Developer PT Waringin Mega Mandiri. Kamu ahli dalam React, Tailwind CSS, dan Lucide React. Tugasmu adalah membantu saya mengedit tampilan dan fitur website ini. Jika saya minta ubah desain, berikan potongan kode yang lengkap dan siap pakai." }],
+      },
+      {
+        role: "model",
+        parts: [{ text: "Siap Bos! Saya asisten developer pribadi kamu. Saya sudah paham struktur website Waringin Mega Mandiri. Silakan kasih tau bagian mana yang mau diubah desainnya atau fitur apa yang mau ditambahin. Saya akan buatkan kodingannya!" }],
+      }
+    ],
+  });
 };

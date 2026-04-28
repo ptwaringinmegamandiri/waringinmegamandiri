@@ -57,6 +57,10 @@ export default function AdminPage() {
   const [importingCareers, setImportingCareers] = useState(false);
   const [importCareersProgress, setImportCareersProgress] = useState(0);
   const [isAiLoading, setIsAiLoading] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{role: string, text: string}[]>([]);
+  const [userInput, setUserInput] = useState('');
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const [aiChatSession, setAiChatSession] = useState<any>(null);
 
 
   const showToast = (msg: string) => {
@@ -80,6 +84,25 @@ export default function AdminPage() {
       setIsAiLoading(false);
     }
   };
+  const handleSendChatMessage = async () => {
+    if (!userInput.trim() || !aiChatSession) return;
+
+    const userMessage = userInput;
+    setUserInput('');
+    setChatMessages(prev => [...prev, { role: 'user', text: userMessage }]);
+    setIsChatLoading(true);
+
+    try {
+      const result = await aiChatSession.sendMessage(userMessage);
+      const response = await result.response;
+      setChatMessages(prev => [...prev, { role: 'model', text: response.text() }]);
+    } catch (error) {
+      setChatMessages(prev => [...prev, { role: 'model', text: "Waduh, koneksi ke otak AI terputus. Coba refresh halaman ya, Bos." }]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
 
 
   // ─── Fetch functions ───────────────────────────────────────────────────────
@@ -117,6 +140,12 @@ export default function AdminPage() {
   useEffect(() => { fetchProjects(); }, [fetchProjects]);
   useEffect(() => { fetchNews(); }, [fetchNews]);
   useEffect(() => { fetchCareers(); }, [fetchCareers]);
+  useEffect(() => {
+    // Memulai sesi chat AI saat halaman admin dibuka
+    const session = startAiChat();
+    setAiChatSession(session);
+  }, []);
+
 
   // ─── Tab change ────────────────────────────────────────────────────────────
   const handleTabChange = (tab: ActiveTab) => {
@@ -758,8 +787,50 @@ export default function AdminPage() {
         {activeTab === 'settings' && view === 'list' && (
           <SiteSettings />
         )}
+          {/* Taruh kodenya di sini */}
+          {chatMessages.length > -1 && (
+            <div className="mt-12 bg-[#0D1628] border border-blue-500/20 rounded-xl overflow-hidden shadow-2xl">
+              <div className="bg-blue-600/10 p-4 border-b border-blue-500/20">
+                <h3 className="text-white font-bold flex items-center gap-2">
+                  <span className="text-xl">🤖</span> AI Site Manager (v0 Alternative)
+                </h3>
+              </div>
+              
+              <div className="h-80 overflow-y-auto p-4 space-y-4 bg-black/20">
+                {chatMessages.length === 0 && (
+                  <p className="text-gray-500 text-center text-sm mt-10">Halo Bos! Saya asisten developer kamu. Mau edit apa hari ini?</p>
+                )}
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    <div className={`max-w-[85%] p-3 rounded-lg text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200 border border-gray-700'}`}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                {isChatLoading && <div className="text-blue-400 text-xs animate-pulse p-2">AI sedang berpikir...</div>}
+              </div>
 
-      </main>
+              <div className="p-4 border-t border-blue-500/20 flex gap-2 bg-black/40">
+                <input 
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendChatMessage()}
+                  placeholder="Suruh AI edit web atau buat konten..."
+                  className="flex-1 bg-[#070C17] border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none focus:border-blue-500"
+                />
+                <button 
+                  onClick={handleSendChatMessage}
+                  disabled={isChatLoading}
+                  className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm disabled:opacity-50"
+                >
+                  Kirim
+                </button>
+              </div>
+            </div>
+          )}
+        </main>
     </div>
   );
 }
+
+   
