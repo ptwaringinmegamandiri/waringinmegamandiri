@@ -24,6 +24,8 @@ interface ProjectFormProps {
   project?: ProjectRow | null;
   onSaved: () => void;
   onCancel: () => void;
+  **onAiGenerate: (title: string, callback: (desc: string) => void) => void;**
+  **isAiLoading: boolean;**
 }
 
 type FormData = Omit<ProjectRow, 'id' | 'created_at' | 'updated_at' | 'project_images'>;
@@ -35,7 +37,7 @@ const emptyForm: FormData = {
   image_position: 'center',
 };
 
-export default function ProjectForm({ project, onSaved, onCancel }: ProjectFormProps) {
+export default function ProjectForm({ project, onSaved, onCancel, onAiGenerate, isAiLoading }: ProjectFormProps) {
   const [form, setForm] = useState<FormData>(emptyForm);
   const [images, setImages] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
@@ -243,7 +245,17 @@ export default function ProjectForm({ project, onSaved, onCancel }: ProjectFormP
 
       {/* Deskripsi */}
       <div>
-        <label className={labelCls}>Deskripsi <span className="text-red-400">*</span></label>
+        <div className="flex justify-between items-center mb-1">
+  <label className={labelCls}>Deskripsi <span className="text-red-400">*</span></label>
+  <button
+    type="button"
+    onClick={() => onAiGenerate(form.title, (aiDesc) => set('description', aiDesc))}
+    disabled={isAiLoading}
+    className="text-[10px] bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-600/30 px-2 py-1 rounded transition-all disabled:opacity-50"
+  >
+    {isAiLoading ? '⌛ Sedang Menulis...' : '🪄 Bantu Tulis (AI)'}
+  </button>
+</div>
         <textarea
           className={`${inputCls} resize-none`}
           rows={4}

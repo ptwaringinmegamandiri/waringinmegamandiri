@@ -9,6 +9,7 @@ import ApplicationsPanel from './components/ApplicationsPanel';
 import { projects as mockProjects } from '@/mocks/projects';
 import { newsArticles as mockNews } from '@/mocks/news';
 import { jobListings as mockCareers } from '@/mocks/careers';
+import { generateDescription } from '@/lib/gemini';
 
 type ActiveTab = 'projects' | 'news' | 'careers' | 'highlight' | 'settings' | 'applications';
 type ViewMode = 'list' | 'add' | 'edit';
@@ -55,11 +56,31 @@ export default function AdminPage() {
   const [deletingCareer, setDeletingCareer] = useState(false);
   const [importingCareers, setImportingCareers] = useState(false);
   const [importCareersProgress, setImportCareersProgress] = useState(0);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+
 
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(''), 4000);
   };
+  const handleAiGenerate = async (title: string, callback: (desc: string) => void) => {
+    if (!title) {
+      showToast("Isi judul proyek dulu agar AI bisa menulis deskripsi.");
+      return;
+    }
+    
+    setIsAiLoading(true);
+    try {
+      const aiResult = await generateDescription(title);
+      callback(aiResult);
+      showToast("Deskripsi berhasil dibuat oleh AI!");
+    } catch (error) {
+      showToast("Gagal memanggil AI. Cek koneksi atau API Key.");
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
 
   // ─── Fetch functions ───────────────────────────────────────────────────────
   const fetchProjects = useCallback(async () => {
@@ -504,7 +525,17 @@ export default function AdminPage() {
               <p className="text-slate-500 text-sm mt-1">{view === 'edit' ? `Mengedit: ${editProject?.name}` : 'Isi detail proyek dan upload foto'}</p>
             </div>
             <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
-              <ProjectForm project={editProject} onSaved={() => { fetchProjects(); setView('list'); showToast(view === 'edit' ? 'Proyek berhasil diperbarui!' : 'Proyek berhasil ditambahkan!'); }} onCancel={handleCancel} />
+              <<ProjectForm 
+  project={editProject} 
+  **onAiGenerate={handleAiGenerate}**
+  **isAiLoading={isAiLoading}**
+  onSaved={() => { 
+    fetchProjects(); 
+    setView('list'); 
+    showToast(view === 'edit' ? 'Proyek berhasil diperbarui!' : 'Proyek berhasil ditambahkan!'); 
+  }} 
+  onCancel={handleCancel} 
+/>
             </div>
           </div>
         )}
