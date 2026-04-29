@@ -1,11 +1,12 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY || "");
+// Pastikan kuncinya bersih tanpa karakter aneh
+const apiKey = import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY || "";
+const genAI = new GoogleGenerativeAI(apiKey);
 
 // --- FUNCTION 1: Tombol Bantu Tulis Deskripsi ---
 export const generateDescription = async (projectName: string) => {
   try {
-    // Di sini diganti jadi gemini-1.5-flash biar Google kenal
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = `Buatkan deskripsi profesional dan elegan dalam Bahasa Indonesia untuk proyek konstruksi bernama: ${projectName}. Jelaskan tentang kualitas dan profesionalisme PT Waringin Mega Mandiri. Buat dalam 2 paragraf.`;
     
