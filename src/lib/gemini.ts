@@ -6,10 +6,9 @@ const genAI = new GoogleGenerativeAI(apiKey);
 // --- 1. Fungsi Bantu Tulis Deskripsi ---
 export const generateDescription = async (projectName: string) => {
   try {
-    // Kita pakai nama standar 'gemini-1.5-flash'
-    // SDK ini otomatis akan mencari jalur v1 jika v1beta gagal
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(`Buatkan deskripsi profesional proyek: ${projectName}`);
+    // Ganti ke model 2.0 yang lebih baru agar tidak 404
+    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    const result = await model.generateContent(`Buatkan deskripsi profesional proyek konstruksi: ${projectName}`);
     const response = await result.response;
     return response.text();
   } catch (error) {
@@ -20,8 +19,8 @@ export const generateDescription = async (projectName: string) => {
 
 // --- 2. Fungsi Chat Assistant (v0 Alternative) ---
 export const startAiChat = () => {
-  // Kita pakai model yang sama di sini
-  const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+  // Samakan modelnya di sini juga
+  const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
   return model.startChat({
     history: [],
   });
