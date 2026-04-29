@@ -84,7 +84,7 @@ export default function AdminPage() {
       setIsAiLoading(false);
     }
   };
-  const handleSendChatMessage = async () => {
+    const handleSendChatMessage = async () => {
     if (!userInput.trim() || !aiChatSession) return;
 
     const userMessage = userInput;
@@ -95,9 +95,11 @@ export default function AdminPage() {
     try {
       const result = await aiChatSession.sendMessage(userMessage);
       const response = await result.response;
-      setChatMessages(prev => [...prev, { role: 'model', text: response.text() }]);
+      const text = response.text(); // Kita simpan dulu ke variabel biar aman
+      setChatMessages(prev => [...prev, { role: 'model', text: text }]);
     } catch (error) {
-      setChatMessages(prev => [...prev, { role: 'model', text: "Waduh, koneksi ke otak AI terputus. Coba refresh halaman ya, Bos." }]);
+      console.error("Chat Error:", error);
+      setChatMessages(prev => [...prev, { role: 'model', text: "Koneksi terputus. Coba cek API Key di Vercel, Bos." }]);
     } finally {
       setIsChatLoading(false);
     }

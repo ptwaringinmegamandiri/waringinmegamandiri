@@ -1,35 +1,43 @@
-const API_KEY = import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY;
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-export const generateDescription = async (prompt: string) => {
-  // Kita pakai v1beta dan gemini-1.5-flash-latest (Sesuai saran Console kamu)
-  const url = `https://googleapis.com{API_KEY}`;
-  
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-      contents: [{ 
-        parts: [{ text: `Buatkan deskripsi singkat untuk proyek: ${prompt}` }] 
-      }] 
-    })
-  });
+// Ensure the API Key is read from the Vercel environment variable
+const apiKey = import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY || "";
+const genAI = new GoogleGenerativeAI(apiKey);
 
-  const res = await response.json();
-  
-  // Jika masih 404, kita akan tahu alasannya di sini
-  if (res.error) {
-    console.error("Detail Error:", res.error);
-    throw new Error(res.error.message);
+// --- 1. Function to Help Write Descriptions (For Buttons) ---
+export const generateDescription = async (projectName: string) => {
+  try {
+    // Use the most stable model at the moment
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    
+    const prompt = `Create a professional and elegant description in Indonesian for a construction project named: ${projectName}. Explain the quality and professionalism of PT Waringin Mega Mandiri. Make it in 2 paragraphs.`;
+    
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    return response.text();
+  } catch (error) {
+    console.error("Error AI Description:", error);
+    return "Failed to automatically create a description. Check connection or API Key.";
   }
-  
-  return res.candidates[0].content.parts[0].text;
 };
 
+// --- 2. Chat Assistant Function (v0 Alternative) ---
 export const startAiChat = () => {
-  return {
-    sendMessage: async (msg: string) => {
-      const text = await generateDescription(msg);
-      return { response: { text: () => text } };
-    }
-  };
+  // We initialize the model here
+  const model = genAI.getGenerativeModel({ 
+    model: "gemini-1.5-flash" 
+  });
+
+  return model.startChat({
+    history: [
+      {
+        role: "user",
+        parts: [{ text: "Hello, you are the Senior Web Developer of PT Waringin Mega Mandiri. Help me manage this website." }],
+      },
+      {
+        role: "model",
+        parts: [{ text: "Ready Boss! I am your personal developer assistant. Any part of the website you want to change or content you want to create?" }],
+      }
+    ],
+  });
 };
