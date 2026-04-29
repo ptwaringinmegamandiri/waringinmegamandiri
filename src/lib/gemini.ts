@@ -2,11 +2,12 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY || "");
 
-// --- FUNCTION 1: For the Write Helper Button ---
+// --- FUNCTION 1: Tombol Bantu Tulis Deskripsi ---
 export const generateDescription = async (projectName: string) => {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const prompt = `Buatkan deskripsi profesional dan elegan dalam Bahasa Indonesia untuk proyek konstruksi bernama: ${projectName}. Jelaskan tentang kualitas dan profesionalisme PT Waringin Mega Mandiri.`;
+    // Di sini diganti jadi gemini-1.5-flash biar Google kenal
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const prompt = `Buatkan deskripsi profesional dan elegan dalam Bahasa Indonesia untuk proyek konstruksi bernama: ${projectName}. Jelaskan tentang kualitas dan profesionalisme PT Waringin Mega Mandiri. Buat dalam 2 paragraf.`;
     
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -17,7 +18,7 @@ export const generateDescription = async (projectName: string) => {
   }
 };
 
-// --- FUNCTION 2: For Chat Assistant (v0 Alternative) ---
+// --- FUNCTION 2: Chat Assistant (v0 Alternative) ---
 export const startAiChat = () => {
   const model = genAI.getGenerativeModel({
     model: "gemini-1.5-flash",
