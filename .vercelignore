@@ -1,0 +1,25 @@
+# Supabase files — these are NOT Vercel edge functions
+supabase/
+api/
+
+# Build artifacts
+dist/
+out/
+build/
+
+# Dependencies
+node_modules/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Test
+coverage/
