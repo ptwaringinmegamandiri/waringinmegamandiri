@@ -1,12 +1,20 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 import { useThemeContext } from '@/context/ThemeContext';
 
+const DEFAULT_HERO_BG = 'https://readdy.ai/api/search-image?query=modern%20high-rise%20building%20under%20construction%20at%20golden%20hour%20sunset%2C%20dramatic%20orange%20and%20amber%20sky%2C%20construction%20cranes%20silhouettes%2C%20steel%20framework%20structure%2C%20scaffolding%20visible%2C%20warm%20industrial%20lighting%2C%20cinematic%20wide%20angle%20architectural%20photography%2C%20Jakarta%20Indonesia%20construction%20site%2C%20professional%20real%20estate%20development%20photography&width=1920&height=1080&seq=wmm-hero-vercel-sync&orientation=landscape';
+
 export default function HeroSection() {
-  const { t } = useTranslation();
-  const { isDark } = useThemeContext();
   const titleRef = useRef<HTMLDivElement>(null);
+  const { theme } = useSiteTheme();
+
+  const heroImage = theme.hero_image_url || DEFAULT_HERO_BG;
+  const { isDark } = useThemeContext();
+  const tagline = theme.hero_tagline || 'PT WARINGIN MEGA MANDIRI — BERDIRI SEJAK 2022';
+  const title = theme.hero_title || 'Kontraktor Gedung\nTerpercaya\nSkala Nasional';
+  const subtitle = theme.hero_subtitle || 'PT Waringin Mega Mandiri adalah anak perusahaan yang tergabung dalam Waringin Group dan telah membangun ruko, pabrik, gudang, hotel, apartemen, restoran, sekolah, kantor, bangunan bertingkat, rumah tinggal hingga kawasan industri.';
+  const accentColor = isDark ? (theme.secondary_color || '#93C5FD') : '#1D4ED8';
 
   useEffect(() => {
     const el = titleRef.current;
@@ -20,134 +28,88 @@ export default function HeroSection() {
     }, 200);
   }, []);
 
-  return (
-    <section className="dark-overlay relative w-full min-h-screen flex flex-col justify-center overflow-hidden">
-      <div className="absolute inset-0 w-full h-full">
-        {isDark ? (
-          <img
-            src="https://readdy.ai/api/search-image?query=dark%20moody%20construction%20site%20at%20twilight%20with%20tall%20concrete%20building%20skeleton%20under%20construction%2C%20massive%20tower%20crane%20silhouette%20against%20stormy%20dark%20charcoal%20sky%2C%20warm%20orange%20industrial%20floodlights%20illuminating%20steel%20beams%20and%20scaffolding%20structure%2C%20construction%20workers%20wearing%20safety%20helmets%2C%20dust%20and%20fog%20in%20the%20air%2C%20cinematic%20wide%20angle%20shot%2C%20ultra%20realistic%20photography%2C%20gritty%20industrial%20atmosphere%2C%20deep%20shadows%2C%20no%20blue%20color%20tones&width=1920&height=1080&seq=wmm-hero-dark-v4&orientation=landscape"
-            alt="PT Waringin Mega Mandiri construction site"
-            className="w-full h-full object-cover object-top"
-          />
-        ) : (
-          <img
-            src="https://readdy.ai/api/search-image?query=bright%20daylight%20modern%20construction%20site%20with%20tall%20glass%20skyscraper%20under%20construction%2C%20blue%20clear%20sky%20with%20white%20clouds%2C%20workers%20in%20yellow%20hard%20hats%20and%20orange%20vests%20on%20scaffolding%2C%20sunlit%20steel%20structure%20and%20concrete%20pillars%2C%20professional%20architectural%20photography%2C%20vibrant%20colors%2C%20sharp%20details%2C%20clean%20industrial%20environment%2C%20golden%20hour%20sunlight%2C%20optimistic%20and%20energetic%20atmosphere&width=1920&height=1080&seq=wmm-hero-light-v1&orientation=landscape"
-            alt="PT Waringin Mega Mandiri construction site"
-            className="w-full h-full object-cover object-top"
-          />
-        )}
-        {isDark ? (
-          <>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#070C17]/70 via-[#070C17]/35 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#070C17]/50 via-transparent to-transparent" />
-          </>
-        ) : (
-          <>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#F0F6FF]/80 via-[#F0F6FF]/45 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#F0F6FF]/50 via-transparent to-transparent" />
-          </>
-        )}
-      </div>
+  const titleLines = title.split('\n');
 
-      <div className="absolute inset-0 grid-pattern opacity-30 pointer-events-none" />
+  return (
+    <section className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden"
+      data-preview-id="hero-section"
+      data-preview-label="Hero Section"
+      data-editable-fields="tagline,title,subtitle,cta_primary_text,cta_secondary_text"
+      data-edit-field="hero"
+    >
+      {/* Background Image */}
+      <div className="absolute inset-0 w-full h-full">
+        <img
+          src={heroImage}
+          alt="PT Waringin Mega Mandiri construction site"
+          className="w-full h-full object-cover object-top"
+        />
+        <div className={`absolute inset-0 bg-gradient-to-b ${isDark ? 'from-black/30 via-black/20 to-black/50' : 'from-slate-900/55 via-slate-900/40 to-slate-900/65'}`} />
+        <div className={`absolute inset-0 bg-gradient-to-r ${isDark ? 'from-black/60 via-black/30 to-transparent' : 'from-slate-900/60 via-slate-900/30 to-transparent'}`} />
+      </div>
 
       <div className="relative z-10 w-full flex flex-col min-h-screen">
         <div className="flex-1 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-28 pb-10 flex flex-col justify-center">
           <div ref={titleRef} className="max-w-3xl">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-6 h-px bg-sky-400 opacity-70" />
-              <span className="section-label">{t('hero.label')}</span>
+            {/* Small label */}
+            <div className="flex items-center gap-2 mb-4">
+              <span
+                className={`text-xs tracking-[0.2em] uppercase font-body font-semibold ${isDark ? '' : 'text-sky-300'}`}
+                style={{ color: isDark ? accentColor : undefined }}
+              >
+                {tagline}
+              </span>
             </div>
 
+            {/* Brand line */}
             <div className="mb-5">
-              <span
-                className="font-syne font-black text-xs md:text-sm tracking-[0.35em] uppercase"
-                style={{
-                  background: isDark
-                    ? 'linear-gradient(90deg, #60A5FA, #BAD9FF)'
-                    : 'linear-gradient(90deg, #1D4ED8, #2563EB)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                {t('hero.slogan')}
+              <span className={`text-xs tracking-[0.15em] uppercase font-body ${isDark ? 'text-white/80' : 'text-white/90'}`}>
+                BUILT TO PERFECTION
               </span>
             </div>
 
-            <h1 className="font-syne font-black mb-5 leading-[1.1]" style={{ color: isDark ? '#ffffff' : '#0F172A' }}>
-              <span className="block text-4xl md:text-6xl lg:text-7xl">{t('hero.title1')}</span>
-              <span className="block text-4xl md:text-6xl lg:text-7xl">{t('hero.title2')}</span>
-              <span
-                className="block text-4xl md:text-6xl lg:text-7xl"
-                style={{
-                  background: isDark
-                    ? 'linear-gradient(90deg, #60A5FA, #BAD9FF)'
-                    : 'linear-gradient(90deg, #1D4ED8, #2563EB)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                }}
-              >
-                {t('hero.title3')}
-              </span>
+            {/* Dynamic title lines */}
+            <h1 className={`font-syne font-black mb-5 leading-[1.05] ${isDark ? 'text-white' : 'text-white'}`}>
+              {titleLines.map((line, i) => (
+                <span key={i} className="block text-4xl md:text-6xl lg:text-7xl" style={{ color: i === titleLines.length - 1 ? (isDark ? accentColor : '#60A5FA') : undefined }}>
+                  {line}
+                </span>
+              ))}
             </h1>
 
-            <p
-              className="font-body text-lg md:text-xl leading-relaxed mb-10 max-w-xl"
-              style={{ color: isDark ? '#CBD5E1' : '#374151' }}
-            >
-              {t('hero.subtitle')}
+            {/* Description */}
+            <p className={`font-body text-base md:text-lg leading-relaxed mb-10 max-w-xl ${isDark ? 'text-white/80' : 'text-white/90'}`}>
+              {subtitle}
             </p>
 
+            {/* CTA Buttons — dynamic from theme */}
             <div className="flex flex-col sm:flex-row items-start gap-4 mb-12">
               <Link
-                to="/portofolio"
-                className="btn-neon-solid px-8 py-4 rounded-lg text-base cursor-pointer whitespace-nowrap"
+                to={theme.hero_cta_primary_url || '/portofolio'}
+                className="font-bold px-6 py-3 rounded-lg text-sm cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors text-white"
+                style={{ backgroundColor: theme.accent_color || '#0ea5e9' }}
               >
-                <i className="ri-briefcase-line mr-2" />
-                {t('hero.lihatPortofolio')}
+                <i className="ri-briefcase-line" />
+                {theme.hero_cta_primary_text || 'Lihat Portofolio'}
               </Link>
               <a
-                href="mailto:info@waringinmegamandiri.co.id"
-                className="btn-neon px-8 py-4 rounded-lg text-base cursor-pointer whitespace-nowrap"
+                href={theme.hero_cta_secondary_url || 'mailto:info@waringinmegamandiri.com'}
+                className="border border-white/30 hover:border-white/60 text-white font-bold px-6 py-3 rounded-lg text-sm cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors bg-white/5 hover:bg-white/10"
               >
-                <i className="ri-mail-line mr-2" />
-                {t('hero.hubungiKami')}
+                <i className="ri-mail-line" />
+                {theme.hero_cta_secondary_text || 'Hubungi Kami'}
               </a>
             </div>
 
-            <div className="flex items-center gap-3">
+            {/* Scroll indicator */}
+            <div className="flex items-center gap-2">
+              <span className={`text-xs tracking-widest uppercase font-body ${isDark ? 'text-white/50' : 'text-white/70'}`}>
+                SCROLL
+              </span>
               <div className="flex flex-col items-center gap-1">
-                <div className="w-px h-8 bg-gradient-to-b from-transparent to-sky-400/60" />
-                <div className="w-1.5 h-1.5 rounded-full bg-sky-400/80 animate-bounce" />
+                <div className={`w-px h-6 ${isDark ? 'bg-white/30' : 'bg-white/50'}`} />
+                <div className={`w-1.5 h-1.5 rounded-full animate-bounce ${isDark ? 'bg-white/50' : 'bg-white/70'}`} />
               </div>
-              <span
-                className="font-body text-xs tracking-widest uppercase"
-                style={{ color: isDark ? '#64748B' : '#6B7280' }}
-              >
-                {t('hero.scroll')}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div
-          className="w-full border-t backdrop-blur-sm"
-          style={{
-            borderColor: isDark ? 'rgba(56,189,248,0.10)' : 'rgba(37,99,235,0.12)',
-            backgroundColor: isDark ? 'rgba(7,12,23,0.80)' : 'rgba(240,246,255,0.85)',
-          }}
-        >
-          <div className="max-w-7xl mx-auto px-6 lg:px-10">
-            <div className="py-5 px-6 flex items-center justify-center text-center">
-              <span
-                className="font-black text-2xl md:text-3xl"
-                style={{
-                  fontFamily: '"Merriweather", serif',
-                  color: isDark ? '#7DD3FC' : '#1D4ED8'
-                }}
-              >
-                35+ tahun pengalaman di bidang konstruksi
-              </span>
             </div>
           </div>
         </div>

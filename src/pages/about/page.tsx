@@ -11,19 +11,33 @@ export default function AboutPage() {
   const { t } = useTranslation();
   return (
     <div className="bg-[var(--dark-bg)] min-h-screen">
-      <Navbar />
+      <div data-preview-id="navbar" data-preview-label="Navbar">
+        <Navbar />
+      </div>
       <main>
-        <HeroBanner
-          title={t('about.title')}
-          subtitle={t('about.subtitle')}
-          breadcrumb={t('about.breadcrumb')}
-        />
-        <CompanyProfile />
-        <VisionMission />
-        <CompanyValues />
-        <TeamSection />
+        <div data-preview-id="about-hero" data-preview-label="About Hero">
+          <HeroBanner
+            title={t('about.title')}
+            subtitle={t('about.subtitle')}
+            breadcrumb={t('about.breadcrumb')}
+          />
+        </div>
+        <div data-preview-id="about-profile" data-preview-label="Company Profile">
+          <CompanyProfile />
+        </div>
+        <div data-preview-id="about-vision" data-preview-label="Vision & Mission">
+          <VisionMission />
+        </div>
+        <div data-preview-id="about-values" data-preview-label="Company Values">
+          <CompanyValues />
+        </div>
+        <div data-preview-id="about-team" data-preview-label="Team Section">
+          <TeamSection />
+        </div>
       </main>
-      <Footer />
+      <div data-preview-id="footer" data-preview-label="Footer">
+        <Footer />
+      </div>
     </div>
   );
 }

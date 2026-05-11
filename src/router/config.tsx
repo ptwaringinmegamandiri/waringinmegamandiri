@@ -6,6 +6,7 @@ import KarirPage from '@/pages/karir/page';
 import NewsPage from '@/pages/news/page';
 import KontakPage from '@/pages/kontak/page';
 import AdminPage from '@/pages/admin/page';
+import PreviewPage from '@/pages/preview/page';
 import NotFound from '@/pages/NotFound';
 
 const routes: RouteObject[] = [
@@ -36,6 +37,10 @@ const routes: RouteObject[] = [
   {
     path: '/admin',
     element: <AdminPage />,
+  },
+  {
+    path: '/preview',
+    element: <PreviewPage />,
   },
   {
     path: '*',

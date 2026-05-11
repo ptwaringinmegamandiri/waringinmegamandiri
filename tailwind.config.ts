@@ -32,7 +32,7 @@ export default {
       fontFamily: {
         orbitron:   ['Playfair Display', 'serif'],
         rajdhani:   ['DM Sans', 'sans-serif'],
-        syne:       ['Playfair Display', 'serif'],
+        syne:       ['Merriweather', 'serif'],
         body:       ['DM Sans', 'sans-serif'],
         inter:      ['DM Sans', 'Inter', 'sans-serif'],
         playfair:   ['Playfair Display', 'serif'],

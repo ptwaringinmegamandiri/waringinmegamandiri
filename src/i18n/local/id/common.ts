@@ -67,7 +67,7 @@ const translations = {
   'cta.title2': 'Bersama Kami?',
   'cta.subtitle': 'Konsultasikan kebutuhan konstruksi Anda bersama tim profesional kami. Dapatkan estimasi biaya gratis dan solusi terbaik untuk proyek Anda.',
   'cta.konsultasi': 'Konsultasi Gratis',
-  'cta.telepon': '+62 21 5738001',
+  'cta.telepon': '+62 21 5270 1234',
 
   // About Page
   'about.title': 'Tentang Kami',
@@ -206,7 +206,7 @@ const translations = {
   'kontak.phoneVal': '+62 21 5738001',
   'kontak.phoneSub': 'Senin – Sabtu, 08.00–17.00 WIB',
   'kontak.email': 'Email',
-  'kontak.emailVal': 'info@waringinmegamandiri.co.id',
+  'kontak.emailVal': 'info@waringinmegamandiri.com',
   'kontak.emailSub': 'Respon dalam 1×24 jam kerja',
   'kontak.whatsapp': 'WhatsApp',
   'kontak.whatsappVal': '+62 812-3456-7890',

@@ -5,9 +5,12 @@ import Footer from '@/components/feature/Footer';
 import HeroBanner from '@/pages/about/components/HeroBanner';
 import ProjectCard from '@/pages/portfolio/components/ProjectCard';
 import ProjectModal from '@/pages/portfolio/components/ProjectModal';
+import LegacyTable from '@/pages/portfolio/components/LegacyTable';
 import { useThemeContext } from '@/context/ThemeContext';
 import { Project, BuildingType } from '@/mocks/projects';
 import { useProjects } from '@/hooks/useProjects';
+import { useLegacyProjects } from '@/hooks/useLegacyProjects';
+import type { LegacyProjectRow } from '@/lib/supabase';
 
 type StatusFilter = 'Semua' | 'Selesai' | 'Ongoing';
 
@@ -35,6 +38,7 @@ export default function PortfolioPage() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
   const { projects, featuredProjects, loading: projectsLoading } = useProjects();
+  const { projects: legacyProjects, loading: legacyLoading } = useLegacyProjects();
   const [activeStatus, setActiveStatus] = useState<StatusFilter>('Semua');
   const [activeBuildingType, setActiveBuildingType] = useState<BuildingType | 'Semua'>('Semua');
   const [activeYear, setActiveYear] = useState<number | 'Semua'>('Semua');
@@ -45,7 +49,7 @@ export default function PortfolioPage() {
   const [dragOffset, setDragOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  const GRID_COUNT = 9; // 3 rows × 3 cols
+  const GRID_COUNT = 9; // 3 rows x 3 cols
 
   const getCardsPerSlide = () => {
     if (typeof window === 'undefined') return 3;
@@ -64,16 +68,16 @@ export default function PortfolioPage() {
 
   const CARDS_PER_SLIDE = cardsPerSlide;
 
-  const selesaiCount = projects.filter((p) => p.status === 'Selesai').length;
-  const ongoingCount = projects.filter((p) => p.status === 'Ongoing').length;
+  const selesaiCount = projects.filter((p) => p.status === 'Selesai' && p.year >= 2010).length;
+  const ongoingCount = projects.filter((p) => p.status === 'Ongoing' && p.year >= 2010).length;
 
   const availableYears = useMemo(() => {
-    const years = [...new Set(projects.map((p) => p.year))].sort((a, b) => b - a);
+    const years = [...new Set(projects.filter((p) => p.year >= 2010).map((p) => p.year))].sort((a, b) => b - a);
     return years;
   }, [projects]);
 
   const availableBuildingTypes = useMemo(() => {
-    const types = [...new Set(projects.map((p) => p.buildingType))] as BuildingType[];
+    const types = [...new Set(projects.filter((p) => p.year >= 2010).map((p) => p.buildingType))] as BuildingType[];
     return types.sort();
   }, [projects]);
 
@@ -82,7 +86,8 @@ export default function PortfolioPage() {
       const statusOk = activeStatus === 'Semua' || p.status === activeStatus;
       const typeOk = activeBuildingType === 'Semua' || p.buildingType === activeBuildingType;
       const yearOk = activeYear === 'Semua' || p.year === activeYear;
-      return statusOk && typeOk && yearOk;
+      const isModern = p.year >= 2010;
+      return statusOk && typeOk && yearOk && isModern;
     });
   }, [projects, activeStatus, activeBuildingType, activeYear]);
 
@@ -94,13 +99,10 @@ export default function PortfolioPage() {
 
   const hasActiveFilter = activeStatus !== 'Semua' || activeBuildingType !== 'Semua' || activeYear !== 'Semua';
 
-  // If there are featured projects set, use them for the grid (up to GRID_COUNT)
-  // Otherwise fallback to top N from filtered
   const hasFeatured = featuredProjects.length > 0;
 
   const gridProjects = useMemo(() => {
     if (hasFeatured && !hasActiveFilter) {
-      // Show featured projects in grid, then fill remaining slots from filtered (non-featured)
       const featuredInFilter = featuredProjects.filter((fp) =>
         filtered.some((f) => f.id === fp.id)
       );
@@ -118,7 +120,6 @@ export default function PortfolioPage() {
   }, [filtered, gridProjects, hasFeatured, hasActiveFilter]);
   const totalSlides = Math.max(0, carouselProjects.length - CARDS_PER_SLIDE);
 
-  // Reset carousel when filter changes
   useEffect(() => {
     setCarouselIndex(0);
     setDragOffset(0);
@@ -158,13 +159,7 @@ export default function PortfolioPage() {
   };
   const translateX = -(carouselIndex * (getCardWidth() + (CARDS_PER_SLIDE === 1 ? 0 : 24))) + dragOffset;
 
-  // Theme styles
   const sectionBg = isDark ? 'bg-[var(--dark-bg)]' : 'bg-[#F0F6FF]';
-  const statCardBase = isDark
-    ? 'bg-gradient-to-b from-[#0D1628] to-[#0B1424]'
-    : 'bg-white border-2 border-blue-100 shadow-sm';
-  const statLabelColor = isDark ? 'text-slate-500' : 'text-slate-500';
-
   const filterBarBg = isDark
     ? 'bg-[#0D1117] border border-slate-800'
     : 'bg-white border-2 border-blue-100 shadow-sm';
@@ -181,33 +176,33 @@ export default function PortfolioPage() {
   const selectOptionBg = isDark ? '#0D1117' : '#ffffff';
   const selectOptionColor = isDark ? '#CBD5E1' : '#1e293b';
   const resetBtnColor = isDark ? 'text-slate-500 hover:text-white' : 'text-slate-400 hover:text-slate-800';
-  const resultCountColor = isDark ? 'text-white' : 'text-slate-900';
-  const resultTotalColor = isDark ? 'text-slate-600' : 'text-slate-400';
   const ctaBorderColor = isDark ? 'border-sky-400/10' : 'border-blue-200';
   const ctaTextColor = isDark ? 'text-slate-400' : 'text-slate-600';
   const emptyIconColor = isDark ? 'text-slate-700' : 'text-blue-200';
   const emptyTextColor = isDark ? 'text-slate-600' : 'text-slate-500';
   const emptyLinkColor = isDark ? 'text-sky-400' : 'text-blue-600';
-
   const carouselBtnActive = isDark
     ? 'bg-sky-400/20 border border-sky-400/40 text-sky-300 hover:bg-sky-400/30'
     : 'bg-blue-600 text-white hover:bg-blue-700';
   const carouselBtnDisabled = isDark
     ? 'bg-slate-800/50 border border-slate-700 text-slate-600 cursor-not-allowed'
     : 'bg-slate-100 border border-slate-200 text-slate-300 cursor-not-allowed';
-  const dotActive = isDark ? 'bg-sky-400 w-5' : 'bg-blue-600 w-5';
-  const dotInactive = isDark ? 'bg-slate-700 hover:bg-slate-500 w-2' : 'bg-slate-300 hover:bg-slate-400 w-2';
   const carouselDivider = isDark ? 'border-sky-400/10' : 'border-blue-100';
 
   return (
     <div className={`min-h-screen ${sectionBg}`}>
-      <Navbar />
+      <div data-preview-id="navbar" data-preview-label="Navbar">
+        <Navbar />
+      </div>
       <main>
-        <HeroBanner
-          title={t('portfolio.title')}
-          subtitle={t('portfolio.subtitle')}
-          breadcrumb={t('portfolio.breadcrumb')}
-        />
+        <div data-preview-id="portfolio-hero" data-preview-label="Portfolio Hero">
+          <HeroBanner
+            title={t('portfolio.title')}
+            subtitle={t('portfolio.subtitle')}
+            breadcrumb={t('portfolio.breadcrumb')}
+          />
+        </div>
+        <div data-preview-id="portfolio-content" data-preview-label="Projects Grid & Filters">
 
         <section className="py-16 relative overflow-hidden">
           <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
@@ -220,6 +215,9 @@ export default function PortfolioPage() {
               <div className={`flex items-center rounded-lg p-1 gap-0.5 ${filterBarBg}`}>
                 {(['Semua', 'Ongoing', 'Selesai'] as StatusFilter[]).map((s) => {
                   const isActive = activeStatus === s;
+                  const count = s === 'Semua'
+                    ? filtered.length
+                    : projects.filter((p) => p.status === s && p.year >= 2010).length;
                   return (
                     <button
                       key={s}
@@ -235,7 +233,7 @@ export default function PortfolioPage() {
                             : (isActive ? (isDark ? 'bg-green-400' : 'bg-white') : (isDark ? 'bg-green-400' : 'bg-emerald-500'))
                         }`} />
                       )}
-                      {s}
+                      {s} {s === 'Semua' ? '' : `(${count})`}
                     </button>
                   );
                 })}
@@ -312,9 +310,27 @@ export default function PortfolioPage() {
               <div className={`mt-10 pt-8 border-t ${carouselDivider}`}>
                 {/* Carousel header */}
                 <div className="flex items-center justify-between mb-5">
-                  <span className={`font-body text-xs ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                    +{carouselProjects.length} proyek lainnya
-                  </span>
+                  <div className="flex items-center gap-3">
+                    <span className={`font-syne font-bold text-base ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                      Proyek Lainnya
+                    </span>
+                    <div className="flex items-center gap-2">
+                      {[0, 1, 2].map((i) => {
+                        const activeIdx = totalSlides <= 0 ? 0 : carouselIndex <= 0 ? 0 : carouselIndex >= totalSlides ? 2 : 1;
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => goTo(i === 0 ? 0 : i === 2 ? totalSlides : Math.floor(totalSlides / 2))}
+                            className={`rounded-full transition-all duration-200 cursor-pointer ${
+                              i === activeIdx
+                                ? (isDark ? 'bg-sky-400 w-2.5 h-2.5' : 'bg-blue-600 w-2.5 h-2.5')
+                                : (isDark ? 'bg-slate-700 hover:bg-slate-500 w-2 h-2' : 'bg-slate-300 hover:bg-slate-400 w-2 h-2')
+                            }`}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={prevSlide}
@@ -375,21 +391,24 @@ export default function PortfolioPage() {
                     ))}
                   </div>
                 </div>
-
-                {/* Simple dot indicators */}
-                {totalSlides > 0 && (
-                  <div className="flex items-center justify-center gap-1.5 mt-4">
-                    {Array.from({ length: totalSlides + 1 }).map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => goTo(i)}
-                        className={`h-2 rounded-full transition-all duration-200 cursor-pointer ${i === carouselIndex ? dotActive : dotInactive}`}
-                      />
-                    ))}
-                  </div>
-                )}
               </div>
             )}
+
+            {/* Legacy Projects Table */}
+            <div className={`mt-14 pt-10 border-t ${carouselDivider}`}>
+              <div className="mb-6">
+                <span className={`font-syne font-bold text-lg block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                  Daftar Proyek
+                </span>
+              </div>
+              {legacyLoading ? (
+                <div className="flex items-center justify-center py-10">
+                  <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              ) : (
+                <LegacyTable projects={legacyProjects} />
+              )}
+            </div>
 
             {filtered.length === 0 && (
               <div className="text-center py-20">
@@ -416,9 +435,12 @@ export default function PortfolioPage() {
             </div>
           </div>
         </section>
+      </div>
       </main>
 
-      <Footer />
+      <div data-preview-id="footer" data-preview-label="Footer">
+        <Footer />
+      </div>
 
       {selected && (
         <ProjectModal project={selected} onClose={() => setSelected(null)} />

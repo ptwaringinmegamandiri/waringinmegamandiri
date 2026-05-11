@@ -263,7 +263,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-3">
             <a
-              href="mailto:info@waringinmegamandiri.co.id"
+              href="mailto:info@waringinmegamandiri.com"
               className="btn-neon-solid px-6 py-3 rounded-lg text-sm cursor-pointer whitespace-nowrap text-center inline-flex items-center justify-center gap-2"
             >
               <i className="ri-mail-send-line" />

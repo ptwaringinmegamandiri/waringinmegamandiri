@@ -81,161 +81,175 @@ export default function NewsPage() {
 
   return (
     <div className={`min-h-screen ${pageBg}`}>
-      <Navbar />
+      <div data-preview-id="navbar" data-preview-label="Navbar">
+        <Navbar />
+      </div>
 
-      {/* Hero */}
-      <section className="relative pt-36 pb-16 overflow-hidden">
-        <div className="absolute inset-0 grid-pattern-sm opacity-20 pointer-events-none" />
-        <div
-          className="absolute top-0 right-1/4 w-[500px] h-[300px] rounded-full blur-3xl pointer-events-none"
-          style={{ backgroundColor: isDark ? 'rgba(14,165,233,0.05)' : 'rgba(37,99,235,0.04)' }}
-        />
+      <main>
+        {/* Hero */}
+        <div data-preview-id="news-hero" data-preview-label="News Hero">
+          <section className="relative pt-36 pb-16 overflow-hidden">
+            <div className="absolute inset-0 grid-pattern-sm opacity-20 pointer-events-none" />
+            <div
+              className="absolute top-0 right-1/4 w-[500px] h-[300px] rounded-full blur-3xl pointer-events-none"
+              style={{ backgroundColor: isDark ? 'rgba(14,165,233,0.05)' : 'rgba(37,99,235,0.04)' }}
+            />
 
-        <div className="relative max-w-4xl mx-auto px-6 lg:px-10 text-center">
-          <div className={`inline-flex items-center gap-2 border rounded-full px-4 py-1.5 mb-6 ${heroBadgeBorder}`}>
-            <i className={`ri-newspaper-line text-sm ${heroBadgeText}`} />
-            <span className={`text-xs font-body font-medium tracking-widest uppercase ${heroBadgeText}`}>{t('news.badge')}</span>
-          </div>
+            <div className="relative max-w-4xl mx-auto px-6 lg:px-10 text-center">
+              <div className={`inline-flex items-center gap-2 border rounded-full px-4 py-1.5 mb-6 ${heroBadgeBorder}`}>
+                <i className={`ri-newspaper-line text-sm ${heroBadgeText}`} />
+                <span className={`text-xs font-body font-medium tracking-widest uppercase ${heroBadgeText}`}>{t('news.badge')}</span>
+              </div>
 
-          <h1 className={`font-syne font-bold text-4xl md:text-5xl leading-tight mb-4 ${heroTitle}`}>
-            {t('news.title1')}{' '}
-            <span className={heroAccent}>{t('news.title2')}</span>
-          </h1>
-          <p className={`font-body text-base md:text-lg leading-relaxed max-w-2xl mx-auto ${heroSub}`}>
-            {t('news.subtitle')}
-          </p>
+              <h1 className={`font-syne font-bold text-4xl md:text-5xl leading-tight mb-4 ${heroTitle}`}>
+                {t('news.title1')}{' '}
+                <span className={heroAccent}>{t('news.title2')}</span>
+              </h1>
+              <p className={`font-body text-base md:text-lg leading-relaxed max-w-2xl mx-auto ${heroSub}`}>
+                {t('news.subtitle')}
+              </p>
+            </div>
+          </section>
         </div>
-      </section>
 
-      {/* Featured Articles */}
-      {activeCategory === 'all' && featured.length > 0 && (
-        <section className="pb-8">
-          <div className="max-w-7xl mx-auto px-6 lg:px-10">
-            <div className="flex items-center gap-3 mb-6">
-              <div className={`w-1 h-5 rounded-full ${featuredAccentBar}`} />
-              <h2 className={`font-syne font-bold text-lg ${featuredTitle}`}>{t('news.artikelPilihan')}</h2>
-            </div>
-            <div className="space-y-5">
-              {featured.map((article) => (
-                <NewsCard key={article.id} article={article} featured onClick={() => setSelectedArticle(article)} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* All Articles */}
-      <section className={`py-12 border-t ${sectionBorder}`}>
-        <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          {/* Category Filter */}
-          <div className="flex flex-wrap gap-2 mb-10">
-            {categories.map((cat) => (
-              <button
-                key={cat.key}
-                onClick={() => setActiveCategory(cat.key)}
-                className={`px-4 py-1.5 rounded-full text-xs font-body font-semibold border transition-all duration-200 cursor-pointer whitespace-nowrap ${
-                  activeCategory === cat.key ? catActive : catInactive
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-            <span className={`ml-auto text-xs font-body self-center hidden sm:block ${countText}`}>
-              {filtered.length} {t('news.artikel')}
-            </span>
-          </div>
-
-          {/* Loading */}
-          {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              {[...Array(6)].map((_, i) => (
-                <div key={i} className={`rounded-2xl overflow-hidden animate-pulse ${isDark ? 'bg-slate-800/50' : 'bg-slate-100'}`}>
-                  <div className={`w-full h-48 ${isDark ? 'bg-slate-700/60' : 'bg-slate-200'}`} />
-                  <div className="p-5 space-y-3">
-                    <div className={`h-3 w-20 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
-                    <div className={`h-4 w-full rounded ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
-                    <div className={`h-4 w-3/4 rounded ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
-                  </div>
+        {/* Featured Articles */}
+        {activeCategory === 'all' && featured.length > 0 && (
+          <div data-preview-id="news-featured" data-preview-label="Featured Articles">
+            <section className="pb-8">
+              <div className="max-w-7xl mx-auto px-6 lg:px-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className={`w-1 h-5 rounded-full ${featuredAccentBar}`} />
+                  <h2 className={`font-syne font-bold text-lg ${featuredTitle}`}>{t('news.artikelPilihan')}</h2>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <>
-              {/* Grid */}
-              {displayArticles.length > 0 ? (
+                <div className="space-y-5">
+                  {featured.map((article) => (
+                    <NewsCard key={article.id} article={article} featured onClick={() => setSelectedArticle(article)} />
+                  ))}
+                </div>
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* All Articles */}
+        <div data-preview-id="news-grid" data-preview-label="News Grid">
+          <section className={`py-12 border-t ${sectionBorder}`}>
+            <div className="max-w-7xl mx-auto px-6 lg:px-10">
+              {/* Category Filter */}
+              <div className="flex flex-wrap gap-2 mb-10">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.key}
+                    onClick={() => setActiveCategory(cat.key)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-body font-semibold border transition-all duration-200 cursor-pointer whitespace-nowrap ${
+                      activeCategory === cat.key ? catActive : catInactive
+                    }`}
+                  >
+                    {cat.label}
+                  </button>
+                ))}
+                <span className={`ml-auto text-xs font-body self-center hidden sm:block ${countText}`}>
+                  {filtered.length} {t('news.artikel')}
+                </span>
+              </div>
+
+              {/* Loading */}
+              {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                  {displayArticles.map((article) => (
-                    <NewsCard key={article.id} article={article} onClick={() => setSelectedArticle(article)} />
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className={`rounded-2xl overflow-hidden animate-pulse ${isDark ? 'bg-slate-800/50' : 'bg-slate-100'}`}>
+                      <div className={`w-full h-48 ${isDark ? 'bg-slate-700/60' : 'bg-slate-200'}`} />
+                      <div className="p-5 space-y-3">
+                        <div className={`h-3 w-20 rounded-full ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
+                        <div className={`h-4 w-full rounded ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
+                        <div className={`h-4 w-3/4 rounded ${isDark ? 'bg-slate-700' : 'bg-slate-200'}`} />
+                      </div>
+                    </div>
                   ))}
                 </div>
               ) : (
-                activeCategory !== 'all' && filtered.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {filtered.map((article) => (
-                      <NewsCard key={article.id} article={article} onClick={() => setSelectedArticle(article)} />
-                    ))}
+                <>
+                  {/* Grid */}
+                  {displayArticles.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                      {displayArticles.map((article) => (
+                        <NewsCard key={article.id} article={article} onClick={() => setSelectedArticle(article)} />
+                      ))}
+                    </div>
+                  ) : (
+                    activeCategory !== 'all' && filtered.length > 0 ? (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {filtered.map((article) => (
+                          <NewsCard key={article.id} article={article} onClick={() => setSelectedArticle(article)} />
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-16">
+                        <i className={`ri-newspaper-line text-4xl mb-3 block ${emptyIcon}`} />
+                        <p className={`font-body ${emptyText}`}>{t('news.tidakAda')}</p>
+                      </div>
+                    )
+                  )}
+                </>
+              )}
+            </div>
+          </section>
+        </div>
+
+        {/* Newsletter */}
+        <div data-preview-id="news-newsletter" data-preview-label="Newsletter">
+          <section className={`py-20 border-t ${sectionBorder}`}>
+            <div className="max-w-2xl mx-auto px-6 lg:px-10 text-center">
+              <div className={`rounded-3xl p-10 ${newsletterCardBg}`}>
+                <div className={`w-14 h-14 flex items-center justify-center rounded-full mx-auto mb-5 ${newsletterIconBg}`}>
+                  <i className={`ri-mail-send-line text-2xl ${newsletterIconColor}`} />
+                </div>
+                <h3 className={`font-syne font-bold text-2xl mb-3 ${newsletterTitle}`}>
+                  {t('news.newsletterTitle')}
+                </h3>
+                <p className={`font-body text-sm leading-relaxed max-w-sm mx-auto mb-7 ${newsletterSub}`}>
+                  {t('news.newsletterSubtitle')}
+                </p>
+
+                {subscribed ? (
+                  <div className={`flex items-center justify-center gap-2 font-body font-medium ${subscribedColor}`}>
+                    <i className="ri-checkbox-circle-line text-xl" />
+                    <span>{t('news.subscribed')}</span>
                   </div>
                 ) : (
-                  <div className="text-center py-16">
-                    <i className={`ri-newspaper-line text-4xl mb-3 block ${emptyIcon}`} />
-                    <p className={`font-body ${emptyText}`}>{t('news.tidakAda')}</p>
-                  </div>
-                )
-              )}
-            </>
-          )}
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className={`py-20 border-t ${sectionBorder}`}>
-        <div className="max-w-2xl mx-auto px-6 lg:px-10 text-center">
-          <div className={`rounded-3xl p-10 ${newsletterCardBg}`}>
-            <div className={`w-14 h-14 flex items-center justify-center rounded-full mx-auto mb-5 ${newsletterIconBg}`}>
-              <i className={`ri-mail-send-line text-2xl ${newsletterIconColor}`} />
-            </div>
-            <h3 className={`font-syne font-bold text-2xl mb-3 ${newsletterTitle}`}>
-              {t('news.newsletterTitle')}
-            </h3>
-            <p className={`font-body text-sm leading-relaxed max-w-sm mx-auto mb-7 ${newsletterSub}`}>
-              {t('news.newsletterSubtitle')}
-            </p>
-
-            {subscribed ? (
-              <div className={`flex items-center justify-center gap-2 font-body font-medium ${subscribedColor}`}>
-                <i className="ri-checkbox-circle-line text-xl" />
-                <span>{t('news.subscribed')}</span>
+                  <form
+                    onSubmit={handleSubscribe}
+                    data-readdy-form
+                    id="newsletter-form"
+                    className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto"
+                  >
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={t('news.placeholder')}
+                      className={`flex-1 rounded-xl px-4 py-3 text-sm outline-none transition-colors font-body ${inputBg}`}
+                    />
+                    <button
+                      type="submit"
+                      disabled={subLoading}
+                      className="btn-neon-solid px-6 py-3 rounded-xl font-body font-semibold text-sm whitespace-nowrap cursor-pointer disabled:opacity-60"
+                    >
+                      {subLoading ? <i className="ri-loader-4-line animate-spin" /> : t('news.subscribe')}
+                    </button>
+                  </form>
+                )}
               </div>
-            ) : (
-              <form
-                onSubmit={handleSubscribe}
-                data-readdy-form
-                id="newsletter-form"
-                className="flex flex-col sm:flex-row gap-3 max-w-sm mx-auto"
-              >
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t('news.placeholder')}
-                  className={`flex-1 rounded-xl px-4 py-3 text-sm outline-none transition-colors font-body ${inputBg}`}
-                />
-                <button
-                  type="submit"
-                  disabled={subLoading}
-                  className="btn-neon-solid px-6 py-3 rounded-xl font-body font-semibold text-sm whitespace-nowrap cursor-pointer disabled:opacity-60"
-                >
-                  {subLoading ? <i className="ri-loader-4-line animate-spin" /> : t('news.subscribe')}
-                </button>
-              </form>
-            )}
-          </div>
+            </div>
+          </section>
         </div>
-      </section>
+      </main>
 
-      <Footer />
+      <div data-preview-id="footer" data-preview-label="Footer">
+        <Footer />
+      </div>
 
       <NewsDetailModal article={selectedArticle} onClose={() => setSelectedArticle(null)} />
     </div>

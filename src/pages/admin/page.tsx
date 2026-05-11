@@ -1,17 +1,25 @@
-import { useState, useEffect, useCallback } from 'react';
-import { supabase, ProjectRow, NewsRow, CareerRow } from '@/lib/supabase';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { supabase, ProjectRow, NewsRow, CareerRow, LegacyProjectRow } from '@/lib/supabase';
 import ProjectForm from './components/ProjectForm';
 import NewsForm from './components/NewsForm';
 import CareerForm from './components/CareerForm';
 import HighlightSettings from './components/HighlightSettings';
 import SiteSettings from './components/SiteSettings';
 import ApplicationsPanel from './components/ApplicationsPanel';
+import AiCopilotPanel from './components/AiCopilotPanel';
+import DataExchangePanel from './components/DataExchangePanel';
+import ThemeEditor from './components/ThemeEditor';
+import InlineEditPopup, { InlineEditData } from './components/InlineEditPopup';
+import LivePreview from './components/LivePreview';
+import TemplatePresets from './components/TemplatePresets';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 import { projects as mockProjects } from '@/mocks/projects';
 import { newsArticles as mockNews } from '@/mocks/news';
 import { jobListings as mockCareers } from '@/mocks/careers';
-import { generateDescription, startAiChat } from '@/lib/gemini';
+import { useLegacyProjects } from '@/hooks/useLegacyProjects';
+import LegacyProjectForm from './components/LegacyProjectForm';
 
-type ActiveTab = 'projects' | 'news' | 'careers' | 'highlight' | 'settings' | 'applications';
+type ActiveTab = 'projects' | 'news' | 'careers' | 'highlight' | 'settings' | 'applications' | 'theme' | 'legacy';
 type ViewMode = 'list' | 'add' | 'edit';
 
 const BUILDING_TYPE_LABELS: Record<string, string> = {
@@ -22,10 +30,27 @@ const BUILDING_TYPE_LABELS: Record<string, string> = {
   'Club House': 'Club House', Infrastruktur: 'Infrastruktur', Lainnya: 'Lainnya',
 };
 
+const TABS: { key: ActiveTab; label: string; icon: string }[] = [
+  { key: 'projects', label: 'Proyek', icon: 'ri-building-line' },
+  { key: 'legacy', label: 'Sejarah', icon: 'ri-time-line' },
+  { key: 'news', label: 'News', icon: 'ri-newspaper-line' },
+  { key: 'careers', label: 'Karir', icon: 'ri-briefcase-line' },
+  { key: 'highlight', label: 'Highlight', icon: 'ri-star-line' },
+  { key: 'applications', label: 'Lamaran', icon: 'ri-inbox-line' },
+  { key: 'settings', label: 'Pengaturan', icon: 'ri-settings-3-line' },
+  { key: 'theme', label: 'Tema & Layout', icon: 'ri-palette-line' },
+];
+
 export default function AdminPage() {
+  const { theme, sections, refresh } = useSiteTheme();
   const [activeTab, setActiveTab] = useState<ActiveTab>('projects');
   const [view, setView] = useState<ViewMode>('list');
   const [toast, setToast] = useState('');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [chatExpanded, setChatExpanded] = useState(false);
+  const [previewEditMode, setPreviewEditMode] = useState(false);
+  const [selectedSection, setSelectedSection] = useState<string | null>(null);
+  const [inlineEditData, setInlineEditData] = useState<InlineEditData | null>(null);
 
   // Projects state
   const [projects, setProjects] = useState<ProjectRow[]>([]);
@@ -56,58 +81,20 @@ export default function AdminPage() {
   const [deletingCareer, setDeletingCareer] = useState(false);
   const [importingCareers, setImportingCareers] = useState(false);
   const [importCareersProgress, setImportCareersProgress] = useState(0);
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [chatMessages, setChatMessages] = useState<{role: string, text: string}[]>([]);
-  const [userInput, setUserInput] = useState('');
-  const [isChatLoading, setIsChatLoading] = useState(false);
-  const [aiChatSession, setAiChatSession] = useState<any>(null);
 
+  // Legacy projects state
+  const { projects: legacyProjects, loading: legacyLoading, refetch: fetchLegacy } = useLegacyProjects();
+  const [editLegacy, setEditLegacy] = useState<LegacyProjectRow | null>(null);
+  const [legacySearch, setLegacySearch] = useState('');
+  const [deleteLegacyId, setDeleteLegacyId] = useState<number | null>(null);
+  const [deletingLegacy, setDeletingLegacy] = useState(false);
 
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(''), 4000);
   };
-  const handleAiGenerate = async (title: string, callback: (desc: string) => void) => {
-    if (!title) {
-      showToast("Isi judul proyek dulu agar AI bisa menulis deskripsi.");
-      return;
-    }
-    
-    setIsAiLoading(true);
-    try {
-      const aiResult = await generateDescription(title);
-      callback(aiResult);
-      showToast("Deskripsi berhasil dibuat oleh AI!");
-    } catch (error) {
-      showToast("Gagal memanggil AI. Cek koneksi atau API Key.");
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
-    const handleSendChatMessage = async () => {
-    if (!userInput.trim() || !aiChatSession) return;
 
-    const userMessage = userInput;
-    setUserInput('');
-    setChatMessages(prev => [...prev, { role: 'user', text: userMessage }]);
-    setIsChatLoading(true);
-
-    try {
-      const result = await aiChatSession.sendMessage(userMessage);
-      const response = await result.response;
-      const text = response.text(); // Kita simpan dulu ke variabel biar aman
-      setChatMessages(prev => [...prev, { role: 'model', text: text }]);
-    } catch (error) {
-      console.error("Chat Error:", error);
-      setChatMessages(prev => [...prev, { role: 'model', text: "Koneksi terputus. Coba cek API Key di Vercel, Bos." }]);
-    } finally {
-      setIsChatLoading(false);
-    }
-  };
-
-
-
-  // ─── Fetch functions ───────────────────────────────────────────────────────
+  // Fetch functions
   const fetchProjects = useCallback(async () => {
     setProjectsLoading(true);
     const { data, error } = await supabase
@@ -121,20 +108,14 @@ export default function AdminPage() {
 
   const fetchNews = useCallback(async () => {
     setNewsLoading(true);
-    const { data, error } = await supabase
-      .from('news')
-      .select('*')
-      .order('id', { ascending: false });
+    const { data, error } = await supabase.from('news').select('*').order('id', { ascending: false });
     if (!error && data) setNewsList(data as NewsRow[]);
     setNewsLoading(false);
   }, []);
 
   const fetchCareers = useCallback(async () => {
     setCareersLoading(true);
-    const { data, error } = await supabase
-      .from('careers')
-      .select('*')
-      .order('id', { ascending: false });
+    const { data, error } = await supabase.from('careers').select('*').order('id', { ascending: false });
     if (!error && data) setCareers(data as CareerRow[]);
     setCareersLoading(false);
   }, []);
@@ -142,61 +123,25 @@ export default function AdminPage() {
   useEffect(() => { fetchProjects(); }, [fetchProjects]);
   useEffect(() => { fetchNews(); }, [fetchNews]);
   useEffect(() => { fetchCareers(); }, [fetchCareers]);
-  useEffect(() => {
-    // Memulai sesi chat AI saat halaman admin dibuka
-    const session = startAiChat();
-    setAiChatSession(session);
-  }, []);
 
-
-  // ─── Tab change ────────────────────────────────────────────────────────────
   const handleTabChange = (tab: ActiveTab) => {
     setActiveTab(tab);
     setView('list');
     setEditProject(null);
     setEditNews(null);
     setEditCareer(null);
+    setEditLegacy(null);
   };
 
-  // ─── Project handlers ──────────────────────────────────────────────────────
-  const handleImportMockData = async () => {
-    if (!window.confirm(`Import proyek dari data lama ke database? Proyek yang sudah ada akan dilewati (tidak duplikat).`)) return;
-    setImporting(true);
-    setImportProgress(0);
-
-    // Fetch existing project names to avoid duplicates
-    const { data: existingProjects } = await supabase.from('projects').select('name');
-    const existingNames = new Set((existingProjects || []).map((p: { name: string }) => p.name.toLowerCase()));
-
-    let success = 0;
-    let skipped = 0;
-    for (let i = 0; i < mockProjects.length; i++) {
-      const p = mockProjects[i];
-      if (existingNames.has(p.name.toLowerCase())) {
-        skipped++;
-        setImportProgress(Math.round(((i + 1) / mockProjects.length) * 100));
-        continue;
-      }
-      const payload = {
-        name: p.name, building_type: p.buildingType, location: p.location,
-        year: p.year, status: p.status, work_package: p.workPackage,
-        unit_count: p.unitCount || null, building_area: p.buildingArea || null,
-        floors: p.floors || null, description: p.description,
-        cover_image: p.image || null, client: p.client, value: p.value,
-      };
-      const { data: inserted, error } = await supabase.from('projects').insert(payload).select('id').maybeSingle();
-      if (!error && inserted) {
-        const imgRows = p.images.map((url: string, idx: number) => ({ project_id: inserted.id, image_url: url, sort_order: idx }));
-        if (imgRows.length > 0) await supabase.from('project_images').insert(imgRows);
-        success++;
-      }
-      setImportProgress(Math.round(((i + 1) / mockProjects.length) * 100));
-    }
-    setImporting(false);
-    setImportProgress(0);
-    fetchProjects();
-    showToast(`Import selesai: ${success} ditambahkan, ${skipped} dilewati (sudah ada).`);
+  const handleAdd = () => {
+    setEditProject(null);
+    setEditNews(null);
+    setEditCareer(null);
+    setEditLegacy(null);
+    setView('add');
   };
+
+  const handleCancel = () => setView('list');
 
   const handleDeleteProject = async () => {
     if (!deleteProjectId) return;
@@ -208,7 +153,6 @@ export default function AdminPage() {
     showToast('Proyek berhasil dihapus.');
   };
 
-  // ─── News handlers ─────────────────────────────────────────────────────────
   const handleDeleteNews = async () => {
     if (!deleteNewsId) return;
     setDeletingNews(true);
@@ -219,7 +163,6 @@ export default function AdminPage() {
     showToast('Artikel berhasil dihapus.');
   };
 
-  // ─── Career handlers ───────────────────────────────────────────────────────
   const handleDeleteCareer = async () => {
     if (!deleteCareerID) return;
     setDeletingCareer(true);
@@ -230,607 +173,613 @@ export default function AdminPage() {
     showToast('Lowongan berhasil dihapus.');
   };
 
+  const handleDeleteLegacy = async () => {
+    if (!deleteLegacyId) return;
+    setDeletingLegacy(true);
+    await supabase.from('legacy_projects').delete().eq('id', deleteLegacyId);
+    setDeleteLegacyId(null);
+    setDeletingLegacy(false);
+    fetchLegacy();
+    showToast('Proyek sejarah berhasil dihapus.');
+  };
+
   const handleToggleCareerActive = async (career: CareerRow) => {
     await supabase.from('careers').update({ is_active: !career.is_active }).eq('id', career.id);
     fetchCareers();
     showToast(career.is_active ? 'Lowongan dinonaktifkan.' : 'Lowongan diaktifkan.');
   };
 
-  // ─── News Import ───────────────────────────────────────────────────────────
+  const handleImportMockData = async () => {
+    if (!window.confirm(`Import proyek dari data lama ke database? Proyek yang sudah ada akan dilewati.`)) return;
+    setImporting(true);
+    setImportProgress(0);
+    const { data: existingProjects } = await supabase.from('projects').select('name');
+    const existingNames = new Set((existingProjects || []).map((p: { name: string }) => p.name.toLowerCase()));
+    let success = 0, skipped = 0;
+    for (let i = 0; i < mockProjects.length; i++) {
+      const p = mockProjects[i];
+      if (existingNames.has(p.name.toLowerCase())) { skipped++; setImportProgress(Math.round(((i + 1) / mockProjects.length) * 100)); continue; }
+      const payload = { name: p.name, building_type: p.buildingType, location: p.location, year: p.year, status: p.status, work_package: p.workPackage, unit_count: p.unitCount || null, building_area: p.buildingArea || null, floors: p.floors || null, description: p.description, cover_image: p.image || null, client: p.client, value: p.value };
+      const { data: inserted, error } = await supabase.from('projects').insert(payload).select('id').maybeSingle();
+      if (!error && inserted) {
+        const imgRows = p.images.map((url: string, idx: number) => ({ project_id: inserted.id, image_url: url, sort_order: idx }));
+        if (imgRows.length > 0) await supabase.from('project_images').insert(imgRows);
+        success++;
+      }
+      setImportProgress(Math.round(((i + 1) / mockProjects.length) * 100));
+    }
+    setImporting(false); setImportProgress(0); fetchProjects();
+    showToast(`Import selesai: ${success} ditambahkan, ${skipped} dilewati.`);
+  };
+
   const handleImportMockNews = async () => {
-    if (!window.confirm(`Import ${mockNews.length} artikel dari data yang sudah ada ke database?`)) return;
-    setImportingNews(true);
-    setImportNewsProgress(0);
+    if (!window.confirm(`Import ${mockNews.length} artikel dari data lama?`)) return;
+    setImportingNews(true); setImportNewsProgress(0);
     let success = 0;
     for (let i = 0; i < mockNews.length; i++) {
       const n = mockNews[i];
-      const payload = {
-        slug: n.slug,
-        category: n.category,
-        title: n.title,
-        excerpt: n.excerpt,
-        image: n.image,
-        author: n.author,
-        date: n.date,
-        read_time: n.readTime,
-        featured: n.featured,
-        tags: n.tags,
-        content: n.excerpt,
-      };
-      const { error } = await supabase.from('news').insert(payload);
+      const { error } = await supabase.from('news').insert({ slug: n.slug, category: n.category, title: n.title, excerpt: n.excerpt, image: n.image, author: n.author, date: n.date, read_time: n.readTime, featured: n.featured, tags: n.tags, content: n.excerpt });
       if (!error) success++;
       setImportNewsProgress(Math.round(((i + 1) / mockNews.length) * 100));
     }
-    setImportingNews(false);
-    setImportNewsProgress(0);
-    fetchNews();
-    showToast(`Berhasil import ${success} artikel ke database!`);
+    setImportingNews(false); setImportNewsProgress(0); fetchNews();
+    showToast(`Berhasil import ${success} artikel!`);
   };
 
-  // ─── Careers Import ────────────────────────────────────────────────────────
   const handleImportMockCareers = async () => {
-    if (!window.confirm(`Import ${mockCareers.length} lowongan dari data yang sudah ada ke database?`)) return;
-    setImportingCareers(true);
-    setImportCareersProgress(0);
+    if (!window.confirm(`Import ${mockCareers.length} lowongan dari data lama?`)) return;
+    setImportingCareers(true); setImportCareersProgress(0);
     let success = 0;
     for (let i = 0; i < mockCareers.length; i++) {
       const c = mockCareers[i];
-      const payload = {
-        title: c.title,
-        department: c.department,
-        location: c.location,
-        type: c.type,
-        level: c.level,
-        salary: c.salary,
-        deadline: c.deadline,
-        description: c.description,
-        requirements: c.requirements,
-        benefits: c.benefits,
-        tags: c.tags,
-        is_active: true,
-      };
-      const { error } = await supabase.from('careers').insert(payload);
+      const { error } = await supabase.from('careers').insert({ title: c.title, department: c.department, location: c.location, type: c.type, level: c.level, salary: c.salary, deadline: c.deadline, description: c.description, requirements: c.requirements, benefits: c.benefits, tags: c.tags, is_active: true });
       if (!error) success++;
       setImportCareersProgress(Math.round(((i + 1) / mockCareers.length) * 100));
     }
-    setImportingCareers(false);
-    setImportCareersProgress(0);
-    fetchCareers();
-    showToast(`Berhasil import ${success} lowongan ke database!`);
+    setImportingCareers(false); setImportCareersProgress(0); fetchCareers();
+    showToast(`Berhasil import ${success} lowongan!`);
   };
 
-  // ─── Filtered lists ────────────────────────────────────────────────────────
   const filteredProjects = projects.filter((p) =>
     p.name.toLowerCase().includes(projectSearch.toLowerCase()) ||
     p.location.toLowerCase().includes(projectSearch.toLowerCase()) ||
     p.client.toLowerCase().includes(projectSearch.toLowerCase())
   );
-
   const filteredNews = newsList.filter((n) =>
     n.title.toLowerCase().includes(newsSearch.toLowerCase()) ||
     n.category.toLowerCase().includes(newsSearch.toLowerCase()) ||
     n.author.toLowerCase().includes(newsSearch.toLowerCase())
   );
-
   const filteredCareers = careers.filter((c) =>
     c.title.toLowerCase().includes(careerSearch.toLowerCase()) ||
     c.department.toLowerCase().includes(careerSearch.toLowerCase()) ||
     c.location.toLowerCase().includes(careerSearch.toLowerCase())
   );
 
+  const filteredLegacy = legacyProjects.filter((p) =>
+    p.name.toLowerCase().includes(legacySearch.toLowerCase()) ||
+    p.client.toLowerCase().includes(legacySearch.toLowerCase()) ||
+    p.category.toLowerCase().includes(legacySearch.toLowerCase())
+  );
+
   const getAddLabel = () => {
     if (activeTab === 'projects') return 'Tambah Proyek';
+    if (activeTab === 'legacy') return 'Tambah Proyek Sejarah';
     if (activeTab === 'news') return 'Tambah Artikel';
-    return 'Tambah Lowongan';
+    if (activeTab === 'careers') return 'Tambah Lowongan';
+    return '';
   };
 
-  const handleAdd = () => {
-    setEditProject(null);
-    setEditNews(null);
-    setEditCareer(null);
-    setView('add');
-  };
-
-  const handleCancel = () => setView('list');
-
-  return (
-    <div className="min-h-screen bg-[#080C14] text-white">
-      {/* Toast */}
-      {toast && (
-        <div className="fixed top-6 right-6 z-50 bg-amber-400 text-black text-sm font-bold px-5 py-3 rounded-xl flex items-center gap-2 animate-fade-in">
-          <i className="ri-checkbox-circle-line text-base" />{toast}
-        </div>
-      )}
-
-      {/* Delete Confirm Modals */}
-      {deleteProjectId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#111827] border border-slate-700 rounded-2xl p-8 max-w-sm w-full mx-4 text-center">
-            <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="ri-delete-bin-line text-2xl text-red-400" />
+  // ─── RENDER SIDEBAR CONTENT ─────────────────────────────────────────────
+  const renderSidebarContent = () => {
+    switch (activeTab) {
+      case 'projects':
+        if (view !== 'list') return (
+          <div className="p-5">
+            <div className="mb-4">
+              <h2 className="font-bold text-sm text-white">{view === 'edit' ? 'Edit Proyek' : 'Tambah Proyek Baru'}</h2>
+              <p className="text-slate-500 text-xs mt-0.5">{view === 'edit' ? `Mengedit: ${editProject?.name}` : 'Isi detail proyek dan upload foto'}</p>
             </div>
-            <h3 className="font-bold text-lg mb-2">Hapus Proyek?</h3>
-            <p className="text-slate-400 text-sm mb-6">Tindakan ini tidak bisa dibatalkan. Semua foto proyek juga akan dihapus.</p>
-            <div className="flex gap-3">
-              <button onClick={handleDeleteProject} disabled={deletingProject} className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold text-sm py-3 rounded-lg cursor-pointer whitespace-nowrap disabled:opacity-50">
-                {deletingProject ? 'Menghapus...' : 'Ya, Hapus'}
-              </button>
-              <button onClick={() => setDeleteProjectId(null)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm py-3 rounded-lg cursor-pointer whitespace-nowrap">Batal</button>
-            </div>
+            <ProjectForm project={editProject} onSaved={() => { fetchProjects(); setView('list'); showToast(view === 'edit' ? 'Proyek berhasil diperbarui!' : 'Proyek berhasil ditambahkan!'); }} onCancel={handleCancel} />
           </div>
-        </div>
-      )}
-
-      {deleteNewsId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#111827] border border-slate-700 rounded-2xl p-8 max-w-sm w-full mx-4 text-center">
-            <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="ri-delete-bin-line text-2xl text-red-400" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Hapus Artikel?</h3>
-            <p className="text-slate-400 text-sm mb-6">Artikel yang dihapus tidak bisa dikembalikan.</p>
-            <div className="flex gap-3">
-              <button onClick={handleDeleteNews} disabled={deletingNews} className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold text-sm py-3 rounded-lg cursor-pointer whitespace-nowrap disabled:opacity-50">
-                {deletingNews ? 'Menghapus...' : 'Ya, Hapus'}
-              </button>
-              <button onClick={() => setDeleteNewsId(null)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm py-3 rounded-lg cursor-pointer whitespace-nowrap">Batal</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {deleteCareerID && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#111827] border border-slate-700 rounded-2xl p-8 max-w-sm w-full mx-4 text-center">
-            <div className="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i className="ri-delete-bin-line text-2xl text-red-400" />
-            </div>
-            <h3 className="font-bold text-lg mb-2">Hapus Lowongan?</h3>
-            <p className="text-slate-400 text-sm mb-6">Lowongan yang dihapus tidak bisa dikembalikan.</p>
-            <div className="flex gap-3">
-              <button onClick={handleDeleteCareer} disabled={deletingCareer} className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold text-sm py-3 rounded-lg cursor-pointer whitespace-nowrap disabled:opacity-50">
-                {deletingCareer ? 'Menghapus...' : 'Ya, Hapus'}
-              </button>
-              <button onClick={() => setDeleteCareerID(null)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-sm py-3 rounded-lg cursor-pointer whitespace-nowrap">Batal</button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Header */}
-      <header className="border-b border-slate-800 bg-[#0A0E14] sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <a href="/" className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer">
-              <i className="ri-arrow-left-line text-sm" />
-            </a>
-            <div>
-              <h1 className="font-bold text-base leading-tight">Admin Panel</h1>
-              <p className="text-slate-500 text-xs">PT Waringin Mega Mandiri</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {view === 'list' && activeTab !== 'highlight' && activeTab !== 'settings' && activeTab !== 'applications' && (
-              <button
-                onClick={handleAdd}
-                className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-sm px-5 py-2.5 rounded-lg cursor-pointer whitespace-nowrap flex items-center gap-2 transition-colors"
-              >
-                <i className="ri-add-line" />{getAddLabel()}
-              </button>
-            )}
-            {view !== 'list' && (
-              <button onClick={handleCancel} className="text-slate-400 hover:text-white text-sm cursor-pointer flex items-center gap-1.5 transition-colors">
-                <i className="ri-close-line" /> Batal
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Tab Navigation */}
-        {view === 'list' && (
-          <div className="max-w-7xl mx-auto px-6 flex gap-1 pb-0 overflow-x-auto">
-            {([
-              { key: 'projects', label: 'Proyek', icon: 'ri-building-line', count: projects.length },
-              { key: 'news', label: 'News', icon: 'ri-newspaper-line', count: newsList.length },
-              { key: 'careers', label: 'Karir', icon: 'ri-briefcase-line', count: careers.length },
-              { key: 'highlight', label: 'Highlight', icon: 'ri-star-line', count: null },
-              { key: 'applications', label: 'Lamaran', icon: 'ri-inbox-line', count: null },
-              { key: 'settings', label: 'Pengaturan', icon: 'ri-settings-3-line', count: null },
-            ] as { key: ActiveTab; label: string; icon: string; count: number | null }[]).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => handleTabChange(tab.key)}
-                className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-colors cursor-pointer whitespace-nowrap ${
-                  activeTab === tab.key
-                    ? 'border-amber-400 text-amber-400'
-                    : 'border-transparent text-slate-500 hover:text-slate-300'
-                }`}
-              >
-                <i className={tab.icon} />
-                {tab.label}
-                {tab.count !== null && (
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${activeTab === tab.key ? 'bg-amber-400/20 text-amber-400' : 'bg-slate-800 text-slate-500'}`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
-
-      <main className="max-w-7xl mx-auto px-6 py-8">
-
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* PROJECTS TAB */}
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'projects' && view === 'list' && (
-          <>
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
+        );
+        return (
+          <div className="p-5 space-y-5">
+            <DataExchangePanel entity="projects" label="Proyek" onImported={fetchProjects} />
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
                 <span className="font-black text-2xl text-amber-400 block">{projects.length}</span>
-                <span className="text-slate-500 text-xs">Total Proyek</span>
+                <span className="text-slate-500 text-xs mt-1">Total</span>
               </div>
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
-                <span className="font-black text-2xl text-sky-400 block animate-pulse">{projects.filter((p) => p.status === 'Ongoing').length}</span>
-                <span className="text-slate-500 text-xs">Ongoing</span>
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-sky-400 block">{projects.filter(p => p.status === 'Ongoing').length}</span>
+                <span className="text-slate-500 text-xs mt-1">Ongoing</span>
               </div>
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
-                <span className="font-black text-2xl text-green-400 block">{projects.filter((p) => p.status === 'Selesai').length}</span>
-                <span className="text-slate-500 text-xs">Selesai</span>
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-green-400 block">{projects.filter(p => p.status === 'Selesai').length}</span>
+                <span className="text-slate-500 text-xs mt-1">Selesai</span>
               </div>
             </div>
-
-            <div className="relative mb-6">
-              <i className="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm" />
-              <input type="text" value={projectSearch} onChange={(e) => setProjectSearch(e.target.value)} placeholder="Cari nama proyek, lokasi, atau klien..." className="w-full bg-[#0D1117] border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 transition-colors" />
+            <div className="relative">
+              <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
+              <input type="text" value={projectSearch} onChange={(e) => setProjectSearch(e.target.value)} placeholder="Cari proyek..." className="w-full bg-[#111827] border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400/60 transition-colors" />
             </div>
-
             {projectsLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-              </div>
+              <div className="flex items-center justify-center py-10"><div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" /></div>
             ) : filteredProjects.length === 0 ? (
-              <div className="text-center py-16">
-                <i className="ri-folder-open-line text-5xl text-slate-700 block mb-4" />
+              <div className="text-center py-8">
+                <i className="ri-folder-open-line text-3xl text-slate-700 block mb-2" />
                 {projects.length === 0 ? (
                   <>
-                    <p className="text-slate-400 text-base font-semibold mb-2">Database masih kosong</p>
-                    <p className="text-slate-600 text-sm mb-6 max-w-sm mx-auto">Kamu punya 77 proyek di data lama. Klik tombol di bawah untuk memindahkannya ke database.</p>
-                    <button onClick={handleImportMockData} disabled={importing} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-sm px-6 py-3 rounded-lg cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors disabled:opacity-50 mx-auto">
-                      {importing ? <><div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" /> Mengimport... {importProgress}%</> : <><i className="ri-download-cloud-line" /> Import 77 Proyek dari Data Lama</>}
+                    <p className="text-slate-500 text-xs mb-3">Database kosong</p>
+                    <button onClick={handleImportMockData} disabled={importing} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 transition-colors disabled:opacity-50">
+                      {importing ? <><div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" /> {importProgress}%</> : <><i className="ri-download-cloud-line" /> Import 77 Proyek</>}
                     </button>
-                    {importing && (
-                      <div className="mt-4 max-w-xs mx-auto">
-                        <div className="w-full bg-slate-800 rounded-full h-2">
-                          <div className="bg-amber-400 h-2 rounded-full transition-all duration-300" style={{ width: `${importProgress}%` }} />
-                        </div>
-                        <p className="text-slate-500 text-xs mt-2">{importProgress}% selesai...</p>
-                      </div>
-                    )}
                   </>
-                ) : (
-                  <p className="text-slate-500 text-sm">Tidak ada proyek yang cocok dengan pencarian.</p>
-                )}
+                ) : <p className="text-slate-500 text-xs">Tidak ada hasil pencarian.</p>}
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto pr-1">
                 {filteredProjects.map((p) => {
-                  const coverImg = p.project_images && p.project_images.length > 0
-                    ? p.project_images.sort((a, b) => a.sort_order - b.sort_order)[0].image_url
-                    : p.cover_image;
+                  const coverImg = p.project_images?.sort((a, b) => a.sort_order - b.sort_order)[0]?.image_url || p.cover_image;
                   return (
-                    <div key={p.id} className="bg-[#0D1117] border border-slate-800 hover:border-slate-600 rounded-xl p-4 flex items-center gap-4 transition-colors">
-                      <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-800 shrink-0">
-                        {coverImg ? <img src={coverImg} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><i className="ri-image-line text-slate-600 text-xl" /></div>}
+                    <div key={p.id} className={`bg-[#111827] border rounded-xl p-4 flex items-center gap-3.5 transition-all cursor-pointer group ${selectedSection === `project-${p.id}` ? 'border-amber-400 ring-1 ring-amber-400/30' : 'border-slate-800 hover:border-slate-600'}`} onClick={() => { setEditProject(p); setView('edit'); }}>
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-800 shrink-0">
+                        {coverImg ? <img src={coverImg} alt={p.name} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><i className="ri-image-line text-slate-600 text-base" /></div>}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded ${p.status === 'Ongoing' ? 'bg-sky-400/15 text-sky-400' : 'bg-green-400/15 text-green-400'}`}>{p.status}</span>
-                          <span className="text-xs text-slate-600 bg-slate-800 px-2 py-0.5 rounded">{BUILDING_TYPE_LABELS[p.building_type] || p.building_type}</span>
-                          <span className="text-xs text-amber-400 font-bold">{p.year}</span>
-                        </div>
                         <h3 className="font-bold text-sm text-white truncate">{p.name}</h3>
-                        <p className="text-slate-500 text-xs truncate"><i className="ri-map-pin-line mr-1" />{p.location}<span className="mx-2 text-slate-700">·</span><i className="ri-user-line mr-1" />{p.client}</p>
+                        <p className="text-slate-500 text-xs truncate mt-0.5">{p.location} · {p.year}</p>
                       </div>
-                      <div className="hidden md:block text-right shrink-0">
-                        <p className="text-amber-400 font-bold text-xs">{p.value}</p>
-                        <p className="text-slate-600 text-xs mt-0.5">{p.project_images ? p.project_images.length : 0} foto</p>
-                      </div>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <button onClick={() => { setEditProject(p); setView('edit'); }} className="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-amber-400/20 hover:text-amber-400 rounded-lg text-slate-400 transition-colors cursor-pointer"><i className="ri-edit-line text-sm" /></button>
-                        <button onClick={() => setDeleteProjectId(p.id)} className="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-lg text-slate-400 transition-colors cursor-pointer"><i className="ri-delete-bin-line text-sm" /></button>
+                      <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={(e) => { e.stopPropagation(); setEditProject(p); setView('edit'); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-amber-400/20 hover:text-amber-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-edit-line text-xs" /></button>
+                        <button onClick={(e) => { e.stopPropagation(); setDeleteProjectId(p.id); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-delete-bin-line text-xs" /></button>
                       </div>
                     </div>
                   );
                 })}
               </div>
             )}
-          </>
-        )}
-
-        {activeTab === 'projects' && (view === 'add' || view === 'edit') && (
-          <div className="max-w-2xl mx-auto">
-            <div className="mb-6">
-              <h2 className="font-bold text-xl">{view === 'edit' ? 'Edit Proyek' : 'Tambah Proyek Baru'}</h2>
-              <p className="text-slate-500 text-sm mt-1">{view === 'edit' ? `Mengedit: ${editProject?.name}` : 'Isi detail proyek dan upload foto'}</p>
-            </div>
-            <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
-              <ProjectForm 
-  project={editProject} 
-  onAiGenerate={handleAiGenerate}
-  isAiLoading={isAiLoading}
-  onSaved={() => { 
-    fetchProjects(); 
-    setView('list'); 
-    showToast(view === 'edit' ? 'Proyek berhasil diperbarui!' : 'Proyek berhasil ditambahkan!'); 
-  }} 
-  onCancel={handleCancel} 
-/>
-            </div>
           </div>
-        )}
+        );
 
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* NEWS TAB */}
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'news' && view === 'list' && (
-          <>
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
+      case 'news':
+        if (view !== 'list') return (
+          <div className="p-5">
+            <div className="mb-4">
+              <h2 className="font-bold text-sm text-white">{view === 'edit' ? 'Edit Artikel' : 'Tambah Artikel Baru'}</h2>
+              <p className="text-slate-500 text-xs mt-0.5">{view === 'edit' ? `Mengedit: ${editNews?.title}` : 'Isi detail artikel'}</p>
+            </div>
+            <NewsForm news={editNews} onSaved={() => { fetchNews(); setView('list'); showToast(view === 'edit' ? 'Artikel diperbarui!' : 'Artikel ditambahkan!'); }} onCancel={handleCancel} />
+          </div>
+        );
+        return (
+          <div className="p-5 space-y-5">
+            <DataExchangePanel entity="news" label="News" onImported={fetchNews} />
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
                 <span className="font-black text-2xl text-amber-400 block">{newsList.length}</span>
-                <span className="text-slate-500 text-xs">Total Artikel</span>
+                <span className="text-slate-500 text-xs mt-1">Total</span>
               </div>
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
-                <span className="font-black text-2xl text-green-400 block">{newsList.filter((n) => n.featured).length}</span>
-                <span className="text-slate-500 text-xs">Featured</span>
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-green-400 block">{newsList.filter(n => n.featured).length}</span>
+                <span className="text-slate-500 text-xs mt-1">Featured</span>
               </div>
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
-                <span className="font-black text-2xl text-slate-400 block">{[...new Set(newsList.map((n) => n.category))].length}</span>
-                <span className="text-slate-500 text-xs">Kategori</span>
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-slate-400 block">{[...new Set(newsList.map(n => n.category))].length}</span>
+                <span className="text-slate-500 text-xs mt-1">Kategori</span>
               </div>
             </div>
-
-            <div className="relative mb-6">
-              <i className="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm" />
-              <input type="text" value={newsSearch} onChange={(e) => setNewsSearch(e.target.value)} placeholder="Cari judul, kategori, atau penulis..." className="w-full bg-[#0D1117] border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 transition-colors" />
+            <div className="relative">
+              <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
+              <input type="text" value={newsSearch} onChange={(e) => setNewsSearch(e.target.value)} placeholder="Cari artikel..." className="w-full bg-[#111827] border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400/60 transition-colors" />
             </div>
-
             {newsLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-              </div>
+              <div className="flex items-center justify-center py-10"><div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" /></div>
             ) : filteredNews.length === 0 ? (
-              <div className="text-center py-16">
-                <i className="ri-newspaper-line text-5xl text-slate-700 block mb-4" />
+              <div className="text-center py-8">
+                <i className="ri-newspaper-line text-3xl text-slate-700 block mb-2" />
                 {newsList.length === 0 ? (
                   <>
-                    <p className="text-slate-400 text-base font-semibold mb-2">Database artikel masih kosong</p>
-                    <p className="text-slate-600 text-sm mb-6 max-w-sm mx-auto">Ada {mockNews.length} artikel di data lama. Klik tombol di bawah untuk memindahkannya ke database.</p>
-                    <button onClick={handleImportMockNews} disabled={importingNews} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-sm px-6 py-3 rounded-lg cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors disabled:opacity-50 mx-auto">
-                      {importingNews ? <><div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" /> Mengimport... {importNewsProgress}%</> : <><i className="ri-download-cloud-line" /> Import {mockNews.length} Artikel dari Data Lama</>}
+                    <p className="text-slate-500 text-xs mb-3">Database kosong</p>
+                    <button onClick={handleImportMockNews} disabled={importingNews} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 transition-colors disabled:opacity-50">
+                      {importingNews ? <><div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" /> {importNewsProgress}%</> : <><i className="ri-download-cloud-line" /> Import {mockNews.length} Artikel</>}
                     </button>
-                    {importingNews && (
-                      <div className="mt-4 max-w-xs mx-auto">
-                        <div className="w-full bg-slate-800 rounded-full h-2">
-                          <div className="bg-amber-400 h-2 rounded-full transition-all duration-300" style={{ width: `${importNewsProgress}%` }} />
-                        </div>
-                        <p className="text-slate-500 text-xs mt-2">{importNewsProgress}% selesai...</p>
-                      </div>
-                    )}
                   </>
-                ) : (
-                  <p className="text-slate-500 text-sm">Tidak ada artikel yang cocok dengan pencarian.</p>
-                )}
+                ) : <p className="text-slate-500 text-xs">Tidak ada hasil.</p>}
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto pr-1">
                 {filteredNews.map((n) => (
-                  <div key={n.id} className="bg-[#0D1117] border border-slate-800 hover:border-slate-600 rounded-xl p-4 flex items-center gap-4 transition-colors">
-                    <div className="w-16 h-16 rounded-lg overflow-hidden bg-slate-800 shrink-0">
-                      {n.image ? <img src={n.image} alt={n.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><i className="ri-image-line text-slate-600 text-xl" /></div>}
+                  <div key={n.id} className={`bg-[#111827] border rounded-xl p-4 flex items-center gap-3.5 transition-all cursor-pointer group ${selectedSection === `news-${n.id}` ? 'border-amber-400 ring-1 ring-amber-400/30' : 'border-slate-800 hover:border-slate-600'}`} onClick={() => { setEditNews(n); setView('edit'); }}>
+                    <div className="w-12 h-12 rounded-lg overflow-hidden bg-slate-800 shrink-0">
+                      {n.image ? <img src={n.image} alt={n.title} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center"><i className="ri-image-line text-slate-600 text-base" /></div>}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className="text-xs text-slate-600 bg-slate-800 px-2 py-0.5 rounded">{n.category}</span>
-                        {n.featured && <span className="text-xs font-bold px-2 py-0.5 rounded bg-amber-400/15 text-amber-400">Featured</span>}
-                        <span className="text-xs text-slate-600">{n.date}</span>
-                      </div>
                       <h3 className="font-bold text-sm text-white truncate">{n.title}</h3>
-                      <p className="text-slate-500 text-xs truncate"><i className="ri-user-line mr-1" />{n.author}<span className="mx-2 text-slate-700">·</span><i className="ri-time-line mr-1" />{n.read_time}</p>
+                      <p className="text-slate-500 text-xs truncate mt-0.5">{n.category} · {n.date}</p>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button onClick={() => { setEditNews(n); setView('edit'); }} className="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-amber-400/20 hover:text-amber-400 rounded-lg text-slate-400 transition-colors cursor-pointer"><i className="ri-edit-line text-sm" /></button>
-                      <button onClick={() => setDeleteNewsId(n.id)} className="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-lg text-slate-400 transition-colors cursor-pointer"><i className="ri-delete-bin-line text-sm" /></button>
+                    <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={(e) => { e.stopPropagation(); setEditNews(n); setView('edit'); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-amber-400/20 hover:text-amber-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-edit-line text-xs" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setDeleteNewsId(n.id); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-delete-bin-line text-xs" /></button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </>
-        )}
-
-        {activeTab === 'news' && (view === 'add' || view === 'edit') && (
-          <div className="max-w-2xl mx-auto">
-            <div className="mb-6">
-              <h2 className="font-bold text-xl">{view === 'edit' ? 'Edit Artikel' : 'Tambah Artikel Baru'}</h2>
-              <p className="text-slate-500 text-sm mt-1">{view === 'edit' ? `Mengedit: ${editNews?.title}` : 'Isi detail artikel berita'}</p>
-            </div>
-            <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
-              <NewsForm news={editNews} onSaved={() => { fetchNews(); setView('list'); showToast(view === 'edit' ? 'Artikel berhasil diperbarui!' : 'Artikel berhasil ditambahkan!'); }} onCancel={handleCancel} />
-            </div>
           </div>
-        )}
+        );
 
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* CAREERS TAB */}
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'careers' && view === 'list' && (
-          <>
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
+      case 'careers':
+        if (view !== 'list') return (
+          <div className="p-5">
+            <div className="mb-4">
+              <h2 className="font-bold text-sm text-white">{view === 'edit' ? 'Edit Lowongan' : 'Tambah Lowongan Baru'}</h2>
+              <p className="text-slate-500 text-xs mt-0.5">{view === 'edit' ? `Mengedit: ${editCareer?.title}` : 'Isi detail posisi'}</p>
+            </div>
+            <CareerForm career={editCareer} onSaved={() => { fetchCareers(); setView('list'); showToast(view === 'edit' ? 'Lowongan diperbarui!' : 'Lowongan ditambahkan!'); }} onCancel={handleCancel} />
+          </div>
+        );
+        return (
+          <div className="p-5 space-y-5">
+            <DataExchangePanel entity="careers" label="Lowongan" onImported={fetchCareers} />
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
                 <span className="font-black text-2xl text-amber-400 block">{careers.length}</span>
-                <span className="text-slate-500 text-xs">Total Lowongan</span>
+                <span className="text-slate-500 text-xs mt-1">Total</span>
               </div>
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
-                <span className="font-black text-2xl text-green-400 block">{careers.filter((c) => c.is_active).length}</span>
-                <span className="text-slate-500 text-xs">Aktif</span>
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-green-400 block">{careers.filter(c => c.is_active).length}</span>
+                <span className="text-slate-500 text-xs mt-1">Aktif</span>
               </div>
-              <div className="bg-[#0D1117] border border-slate-800 rounded-xl p-4 text-center">
-                <span className="font-black text-2xl text-slate-400 block">{careers.filter((c) => !c.is_active).length}</span>
-                <span className="text-slate-500 text-xs">Nonaktif</span>
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-slate-400 block">{careers.filter(c => !c.is_active).length}</span>
+                <span className="text-slate-500 text-xs mt-1">Nonaktif</span>
               </div>
             </div>
-
-            <div className="relative mb-6">
-              <i className="ri-search-line absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 text-sm" />
-              <input type="text" value={careerSearch} onChange={(e) => setCareerSearch(e.target.value)} placeholder="Cari posisi, departemen, atau lokasi..." className="w-full bg-[#0D1117] border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-400 transition-colors" />
+            <div className="relative">
+              <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
+              <input type="text" value={careerSearch} onChange={(e) => setCareerSearch(e.target.value)} placeholder="Cari lowongan..." className="w-full bg-[#111827] border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400/60 transition-colors" />
             </div>
-
             {careersLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
-              </div>
+              <div className="flex items-center justify-center py-10"><div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" /></div>
             ) : filteredCareers.length === 0 ? (
-              <div className="text-center py-16">
-                <i className="ri-briefcase-line text-5xl text-slate-700 block mb-4" />
+              <div className="text-center py-8">
+                <i className="ri-briefcase-line text-3xl text-slate-700 block mb-2" />
                 {careers.length === 0 ? (
                   <>
-                    <p className="text-slate-400 text-base font-semibold mb-2">Database lowongan masih kosong</p>
-                    <p className="text-slate-600 text-sm mb-6 max-w-sm mx-auto">Ada {mockCareers.length} lowongan di data lama. Klik tombol di bawah untuk memindahkannya ke database.</p>
-                    <button onClick={handleImportMockCareers} disabled={importingCareers} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-sm px-6 py-3 rounded-lg cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors disabled:opacity-50 mx-auto">
-                      {importingCareers ? <><div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" /> Mengimport... {importCareersProgress}%</> : <><i className="ri-download-cloud-line" /> Import {mockCareers.length} Lowongan dari Data Lama</>}
+                    <p className="text-slate-500 text-xs mb-3">Database kosong</p>
+                    <button onClick={handleImportMockCareers} disabled={importingCareers} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 transition-colors disabled:opacity-50">
+                      {importingCareers ? <><div className="w-3 h-3 border-2 border-black border-t-transparent rounded-full animate-spin" /> {importCareersProgress}%</> : <><i className="ri-download-cloud-line" /> Import {mockCareers.length} Lowongan</>}
                     </button>
-                    {importingCareers && (
-                      <div className="mt-4 max-w-xs mx-auto">
-                        <div className="w-full bg-slate-800 rounded-full h-2">
-                          <div className="bg-amber-400 h-2 rounded-full transition-all duration-300" style={{ width: `${importCareersProgress}%` }} />
-                        </div>
-                        <p className="text-slate-500 text-xs mt-2">{importCareersProgress}% selesai...</p>
-                      </div>
-                    )}
                   </>
-                ) : (
-                  <p className="text-slate-500 text-sm">Tidak ada lowongan yang cocok dengan pencarian.</p>
-                )}
+                ) : <p className="text-slate-500 text-xs">Tidak ada hasil.</p>}
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto pr-1">
                 {filteredCareers.map((c) => (
-                  <div key={c.id} className={`bg-[#0D1117] border rounded-xl p-4 flex items-center gap-4 transition-colors ${c.is_active ? 'border-slate-800 hover:border-slate-600' : 'border-slate-800/50 opacity-60'}`}>
-                    <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
-                      <i className="ri-briefcase-line text-slate-500 text-lg" />
-                    </div>
+                  <div key={c.id} className={`bg-[#111827] border rounded-xl p-4 flex items-center gap-3.5 transition-all cursor-pointer group ${c.is_active ? (selectedSection === `career-${c.id}` ? 'border-amber-400 ring-1 ring-amber-400/30' : 'border-slate-800 hover:border-slate-600') : 'border-slate-800/50 opacity-60'}`} onClick={() => { setEditCareer(c); setView('edit'); }}>
+                    <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center shrink-0"><i className="ri-briefcase-line text-slate-500 text-base" /></div>
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1 flex-wrap">
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded ${c.is_active ? 'bg-green-400/15 text-green-400' : 'bg-slate-700 text-slate-500'}`}>{c.is_active ? 'Aktif' : 'Nonaktif'}</span>
-                        <span className="text-xs text-slate-600 bg-slate-800 px-2 py-0.5 rounded">{c.type}</span>
-                        <span className="text-xs text-slate-600 bg-slate-800 px-2 py-0.5 rounded">{c.level}</span>
-                      </div>
                       <h3 className="font-bold text-sm text-white truncate">{c.title}</h3>
-                      <p className="text-slate-500 text-xs truncate">
-                        <i className="ri-building-line mr-1" />{c.department}
-                        <span className="mx-2 text-slate-700">·</span>
-                        <i className="ri-map-pin-line mr-1" />{c.location}
-                        <span className="mx-2 text-slate-700">·</span>
-                        <i className="ri-time-line mr-1" />Deadline: {c.deadline}
-                      </p>
+                      <p className="text-slate-500 text-xs truncate mt-0.5">{c.department} · {c.location}</p>
                     </div>
-                    <div className="hidden md:block text-right shrink-0">
-                      <p className="text-amber-400 font-bold text-xs">{c.salary}</p>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <button
-                        onClick={() => handleToggleCareerActive(c)}
-                        className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors cursor-pointer ${c.is_active ? 'bg-slate-800 hover:bg-slate-700 text-slate-400' : 'bg-green-500/20 hover:bg-green-500/30 text-green-400'}`}
-                        title={c.is_active ? 'Nonaktifkan' : 'Aktifkan'}
-                      >
-                        <i className={c.is_active ? 'ri-eye-off-line text-sm' : 'ri-eye-line text-sm'} />
-                      </button>
-                      <button onClick={() => { setEditCareer(c); setView('edit'); }} className="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-amber-400/20 hover:text-amber-400 rounded-lg text-slate-400 transition-colors cursor-pointer"><i className="ri-edit-line text-sm" /></button>
-                      <button onClick={() => setDeleteCareerID(c.id)} className="w-9 h-9 flex items-center justify-center bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-lg text-slate-400 transition-colors cursor-pointer"><i className="ri-delete-bin-line text-sm" /></button>
+                    <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={(e) => { e.stopPropagation(); handleToggleCareerActive(c); }} className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors cursor-pointer ${c.is_active ? 'bg-slate-800 text-slate-400' : 'bg-green-500/20 text-green-400'}`}><i className={c.is_active ? 'ri-eye-off-line text-xs' : 'ri-eye-line text-xs'} /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setEditCareer(c); setView('edit'); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-amber-400/20 hover:text-amber-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-edit-line text-xs" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setDeleteCareerID(c.id); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-delete-bin-line text-xs" /></button>
                     </div>
                   </div>
                 ))}
               </div>
             )}
-          </>
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* HIGHLIGHT TAB */}
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'highlight' && view === 'list' && (
-          <HighlightSettings />
-        )}
-
-        {activeTab === 'careers' && (view === 'add' || view === 'edit') && (
-          <div className="max-w-2xl mx-auto">
-            <div className="mb-6">
-              <h2 className="font-bold text-xl">{view === 'edit' ? 'Edit Lowongan' : 'Tambah Lowongan Baru'}</h2>
-              <p className="text-slate-500 text-sm mt-1">{view === 'edit' ? `Mengedit: ${editCareer?.title}` : 'Isi detail posisi yang dibuka'}</p>
-            </div>
-            <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
-              <CareerForm career={editCareer} onSaved={() => { fetchCareers(); setView('list'); showToast(view === 'edit' ? 'Lowongan berhasil diperbarui!' : 'Lowongan berhasil ditambahkan!'); }} onCancel={handleCancel} />
-            </div>
           </div>
-        )}
+        );
 
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* APPLICATIONS TAB */}
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'applications' && view === 'list' && (
-          <ApplicationsPanel />
-        )}
-
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {/* SETTINGS TAB */}
-        {/* ═══════════════════════════════════════════════════════════════════ */}
-        {activeTab === 'settings' && view === 'list' && (
-          <SiteSettings />
-        )}
-          {/* Taruh kodenya di sini */}
-          {chatMessages.length > -1 && (
-            <div className="mt-12 bg-[#0D1628] border border-blue-500/20 rounded-xl overflow-hidden shadow-2xl">
-              <div className="bg-blue-600/10 p-4 border-b border-blue-500/20">
-                <h3 className="text-white font-bold flex items-center gap-2">
-                  <span className="text-xl">🤖</span> AI Site Manager (v0 Alternative)
-                </h3>
+      case 'legacy':
+        if (view !== 'list') return (
+          <div className="p-5">
+            <div className="mb-4">
+              <h2 className="font-bold text-sm text-white">{view === 'edit' ? 'Edit Proyek Sejarah' : 'Tambah Proyek Sejarah'}</h2>
+              <p className="text-slate-500 text-xs mt-0.5">{view === 'edit' ? `Mengedit: ${editLegacy?.name}` : 'Isi detail proyek 2001-2008'}</p>
+            </div>
+            <LegacyProjectForm project={editLegacy} onSaved={() => { fetchLegacy(); setView('list'); showToast(view === 'edit' ? 'Proyek sejarah diperbarui!' : 'Proyek sejarah ditambahkan!'); }} onCancel={handleCancel} />
+          </div>
+        );
+        return (
+          <div className="p-5 space-y-5">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-amber-400 block">{legacyProjects.length}</span>
+                <span className="text-slate-500 text-xs mt-1">Total</span>
               </div>
-              
-              <div className="h-80 overflow-y-auto p-4 space-y-4 bg-black/20">
-                {chatMessages.length === 0 && (
-                  <p className="text-gray-500 text-center text-sm mt-10">Halo Bos! Saya asisten developer kamu. Mau edit apa hari ini?</p>
-                )}
-                                               {chatMessages.map((msg, i) => (
-                  <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[85%] p-3 rounded-lg text-sm ${msg.role === 'user' ? 'bg-blue-600 text-white' : 'bg-gray-800 text-gray-200 border border-gray-700'}`}>
-                      {msg.text}
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-sky-400 block">{legacyProjects.filter(p => p.year >= 2001 && p.year <= 2004).length}</span>
+                <span className="text-slate-500 text-xs mt-1">2001-2004</span>
+              </div>
+              <div className="bg-[#111827] border border-slate-800 rounded-xl p-4 text-center">
+                <span className="font-black text-2xl text-green-400 block">{legacyProjects.filter(p => p.year >= 2005 && p.year <= 2008).length}</span>
+                <span className="text-slate-500 text-xs mt-1">2005-2008</span>
+              </div>
+            </div>
+            <div className="relative">
+              <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs" />
+              <input type="text" value={legacySearch} onChange={(e) => setLegacySearch(e.target.value)} placeholder="Cari proyek sejarah..." className="w-full bg-[#111827] border border-slate-700 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-amber-400/60 transition-colors" />
+            </div>
+            {legacyLoading ? (
+              <div className="flex items-center justify-center py-10"><div className="w-6 h-6 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" /></div>
+            ) : filteredLegacy.length === 0 ? (
+              <div className="text-center py-8">
+                <i className="ri-time-line text-3xl text-slate-700 block mb-2" />
+                {legacyProjects.length === 0 ? (
+                  <p className="text-slate-500 text-xs">Database kosong. Tambahkan proyek sejarah.</p>
+                ) : <p className="text-slate-500 text-xs">Tidak ada hasil pencarian.</p>}
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto pr-1">
+                {filteredLegacy.map((p) => (
+                  <div key={p.id} className={`bg-[#111827] border rounded-xl p-4 flex items-center gap-3.5 transition-all cursor-pointer group ${selectedSection === `legacy-${p.id}` ? 'border-amber-400 ring-1 ring-amber-400/30' : 'border-slate-800 hover:border-slate-600'}`} onClick={() => { setEditLegacy(p); setView('edit'); }}>
+                    <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center shrink-0">
+                      <span className="font-syne font-bold text-xs text-slate-500">{p.year}</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-sm text-white truncate">{p.name}</h3>
+                      <p className="text-slate-500 text-xs truncate mt-0.5">{p.client} · {p.value}</p>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={(e) => { e.stopPropagation(); setEditLegacy(p); setView('edit'); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-amber-400/20 hover:text-amber-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-edit-line text-xs" /></button>
+                      <button onClick={(e) => { e.stopPropagation(); setDeleteLegacyId(p.id); }} className="w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-md text-slate-400 transition-colors cursor-pointer"><i className="ri-delete-bin-line text-xs" /></button>
                     </div>
                   </div>
                 ))}
-                {isChatLoading && <div className="text-blue-400 text-xs animate-pulse p-2">AI sedang berpikir...</div>}
               </div>
+            )}
+          </div>
+        );
 
-              <div className="p-4 border-t border-blue-500/20 flex gap-2 bg-black/40">
-                <input 
-                  value={userInput}
-                  onChange={(e) => setUserInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendChatMessage()}
-                  placeholder="Suruh AI edit web atau buat konten..."
-                  className="flex-1 bg-[#070C17] border border-gray-700 rounded-lg px-4 py-2 text-white text-sm outline-none focus:border-blue-500"
-                />
-                <button 
-                  onClick={handleSendChatMessage}
-                  disabled={isChatLoading}
-                  className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg font-bold text-sm disabled:opacity-50"
+      case 'highlight': return <div className="p-5"><HighlightSettings /></div>;
+      case 'applications': return <div className="p-5"><ApplicationsPanel /></div>;
+      case 'settings': return <div className="p-5"><SiteSettings /></div>;
+      case 'theme':
+        return (
+          <div className="p-5 space-y-5 overflow-y-auto pr-1 h-full">
+            <TemplatePresets />
+            <ThemeEditor onChange={() => {}} />
+          </div>
+        );
+      default: return null;
+    }
+  };
+
+  return (
+    <div className="h-screen w-screen bg-[#080C14] text-white flex flex-col overflow-hidden">
+      {/* Toast */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-[60] bg-amber-400 text-black text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg animate-fade-in">
+          <i className="ri-checkbox-circle-line text-sm" />{toast}
+        </div>
+      )}
+
+      {/* Delete Confirm Modals */}
+      {deleteProjectId && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#111827] border border-slate-700 rounded-2xl p-6 max-w-sm w-full mx-4 text-center">
+            <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3"><i className="ri-delete-bin-line text-xl text-red-400" /></div>
+            <h3 className="font-bold text-sm mb-1">Hapus Proyek?</h3>
+            <p className="text-slate-400 text-xs mb-4">Tindakan ini tidak bisa dibatalkan.</p>
+            <div className="flex gap-2">
+              <button onClick={handleDeleteProject} disabled={deletingProject} className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap disabled:opacity-50">{deletingProject ? 'Menghapus...' : 'Ya, Hapus'}</button>
+              <button onClick={() => setDeleteProjectId(null)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap">Batal</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deleteNewsId && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#111827] border border-slate-700 rounded-2xl p-6 max-w-sm w-full mx-4 text-center">
+            <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3"><i className="ri-delete-bin-line text-xl text-red-400" /></div>
+            <h3 className="font-bold text-sm mb-1">Hapus Artikel?</h3>
+            <p className="text-slate-400 text-xs mb-4">Tidak bisa dikembalikan.</p>
+            <div className="flex gap-2">
+              <button onClick={handleDeleteNews} disabled={deletingNews} className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap disabled:opacity-50">{deletingNews ? 'Menghapus...' : 'Ya, Hapus'}</button>
+              <button onClick={() => setDeleteNewsId(null)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap">Batal</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deleteCareerID && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#111827] border border-slate-700 rounded-2xl p-6 max-w-sm w-full mx-4 text-center">
+            <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3"><i className="ri-delete-bin-line text-xl text-red-400" /></div>
+            <h3 className="font-bold text-sm mb-1">Hapus Lowongan?</h3>
+            <p className="text-slate-400 text-xs mb-4">Tidak bisa dikembalikan.</p>
+            <div className="flex gap-2">
+              <button onClick={handleDeleteCareer} disabled={deletingCareer} className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap disabled:opacity-50">{deletingCareer ? 'Menghapus...' : 'Ya, Hapus'}</button>
+              <button onClick={() => setDeleteCareerID(null)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap">Batal</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {deleteLegacyId && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 backdrop-blur-sm">
+          <div className="bg-[#111827] border border-slate-700 rounded-2xl p-6 max-w-sm w-full mx-4 text-center">
+            <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-3"><i className="ri-delete-bin-line text-xl text-red-400" /></div>
+            <h3 className="font-bold text-sm mb-1">Hapus Proyek Sejarah?</h3>
+            <p className="text-slate-400 text-xs mb-4">Tidak bisa dikembalikan.</p>
+            <div className="flex gap-2">
+              <button onClick={handleDeleteLegacy} disabled={deletingLegacy} className="flex-1 bg-red-500 hover:bg-red-400 text-white font-bold text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap disabled:opacity-50">{deletingLegacy ? 'Menghapus...' : 'Ya, Hapus'}</button>
+              <button onClick={() => setDeleteLegacyId(null)} className="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs py-2.5 rounded-lg cursor-pointer whitespace-nowrap">Batal</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Inline Edit Popup */}
+      <InlineEditPopup
+        data={inlineEditData}
+        themeValues={theme as Record<string, string>}
+        onClose={() => setInlineEditData(null)}
+        onSaved={() => {
+          showToast('Perubahan tersimpan! Preview diperbarui.');
+          refresh();
+          // Trigger preview iframe refresh
+          setTimeout(() => {
+            const iframe = document.querySelector('iframe[title="Website Preview"]') as HTMLIFrameElement | null;
+            if (iframe?.contentWindow) {
+              iframe.contentWindow.postMessage(
+                { type: 'WMM_THEME_UPDATE', theme: theme, sections: sections },
+                '*'
+              );
+            }
+          }, 300);
+        }}
+      />
+
+      {/* ═══════ TOP HEADER ═══════ */}
+      <header className="h-12 bg-[#0A0E14] border-b border-slate-800 flex items-center px-4 shrink-0 z-40">
+        <a href="/" className="flex items-center gap-2 mr-6 shrink-0">
+          <div className="w-6 h-6 flex items-center justify-center rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors">
+            <i className="ri-arrow-left-line text-xs" />
+          </div>
+          <span className="font-bold text-xs">WMM Admin</span>
+        </a>
+
+        {/* Tab pills */}
+        <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => handleTabChange(tab.key)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold transition-all cursor-pointer whitespace-nowrap ${
+                activeTab === tab.key
+                  ? 'bg-amber-400/15 text-amber-400 border border-amber-400/20'
+                  : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'
+              }`}
+            >
+              <i className={tab.icon} />
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Right actions */}
+        <div className="flex items-center gap-2 ml-4 shrink-0">
+          {view === 'list' && activeTab !== 'highlight' && activeTab !== 'settings' && activeTab !== 'applications' && activeTab !== 'theme' && (
+            <button onClick={handleAdd} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-[11px] px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap flex items-center gap-1 transition-colors">
+              <i className="ri-add-line" />{getAddLabel()}
+            </button>
+          )}
+          {view !== 'list' && (
+            <button onClick={handleCancel} className="text-slate-400 hover:text-white text-[11px] cursor-pointer flex items-center gap-1 transition-colors">
+              <i className="ri-close-line" /> Batal
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/* ═══════ MAIN BODY: 3-column layout ═══════ */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* LEFT SIDEBAR: Tab content */}
+        <div className={`shrink-0 border-r border-slate-800 bg-[#0A0E14] overflow-y-auto transition-all duration-300 ${sidebarCollapsed ? 'w-0 opacity-0' : 'w-[400px]'}`}>
+          {renderSidebarContent()}
+        </div>
+
+        {/* Collapse toggle */}
+        <button
+          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+          className="w-5 shrink-0 bg-[#0A0E14] border-r border-slate-800 hover:bg-slate-800 flex items-center justify-center cursor-pointer transition-colors"
+          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          <i className={sidebarCollapsed ? 'ri-arrow-right-s-line text-slate-500 text-xs' : 'ri-arrow-left-s-line text-slate-500 text-xs'} />
+        </button>
+
+        {/* RIGHT PANEL: Preview + AI Chat */}
+        <div className="flex-1 flex flex-col min-w-0 bg-[#050A14] overflow-hidden">
+          {/* Live Preview (top, takes most space) */}
+          <div className={`flex-1 min-h-0 relative ${chatExpanded ? 'hidden' : 'flex flex-col'}`}>
+            <LivePreview
+              themeData={theme}
+              sectionsData={sections}
+              editMode={previewEditMode}
+              selectedSection={selectedSection}
+              onSelectSection={(id) => {
+                setSelectedSection(id);
+                // Auto-scroll sidebar to matching item when in list view
+                if (activeTab === 'projects' && id?.startsWith('project-')) {
+                  const pid = Number(id.replace('project-', ''));
+                  const p = projects.find(x => x.id === pid);
+                  if (p) { setEditProject(p); setView('edit'); }
+                }
+                if (activeTab === 'news' && id?.startsWith('news-')) {
+                  const nid = Number(id.replace('news-', ''));
+                  const n = newsList.find(x => x.id === nid);
+                  if (n) { setEditNews(n); setView('edit'); }
+                }
+                if (activeTab === 'careers' && id?.startsWith('career-')) {
+                  const cid = Number(id.replace('career-', ''));
+                  const c = careers.find(x => x.id === cid);
+                  if (c) { setEditCareer(c); setView('edit'); }
+                }
+              }}
+              onInlineEdit={(payload) => {
+                setInlineEditData({
+                  sectionId: payload.id,
+                  sectionLabel: payload.label,
+                  editField: payload.editField,
+                  fields: payload.editableFields.map((key) => ({ key, label: key, value: theme[key as keyof typeof theme] || '' })),
+                });
+              }}
+              onToggleEditMode={() => setPreviewEditMode(!previewEditMode)}
+            />
+            {selectedSection && (
+              <div className="absolute bottom-3 left-3 bg-amber-400/90 text-black text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 shadow-lg">
+                <i className="ri-edit-line" /> {selectedSection}
+                <button onClick={() => setSelectedSection(null)} className="ml-1 hover:text-red-600 cursor-pointer"><i className="ri-close-line" /></button>
+              </div>
+            )}
+          </div>
+
+          {/* AI Chat Panel (bottom, expandable) */}
+          <div className={`shrink-0 border-t border-slate-800 bg-[#0A0E14] flex flex-col transition-all duration-300 ${chatExpanded ? 'flex-1' : 'h-[280px]'}`}>
+            {/* Chat header / toggle */}
+            <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800/50 shrink-0">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 flex items-center justify-center rounded bg-amber-400/10 border border-amber-400/20">
+                  <i className="ri-robot-2-line text-amber-400 text-[10px]" />
+                </div>
+                <span className="font-bold text-[11px] text-white">AI Copilot</span>
+                <span className="text-[10px] text-slate-500">Hybrid AI — Rule + LLM</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setChatExpanded(!chatExpanded)}
+                  className="w-6 h-6 flex items-center justify-center rounded hover:bg-slate-700 text-slate-400 hover:text-white cursor-pointer transition-colors"
+                  title={chatExpanded ? 'Minimize chat' : 'Expand chat'}
                 >
-                  Kirim
+                  <i className={chatExpanded ? 'ri-contract-up-down-line text-xs' : 'ri-expand-up-down-line text-xs'} />
+                </button>
+                <button
+                  onClick={() => setPreviewEditMode(!previewEditMode)}
+                  className={`w-6 h-6 flex items-center justify-center rounded cursor-pointer transition-colors ${previewEditMode ? 'bg-amber-400/15 text-amber-400' : 'hover:bg-slate-700 text-slate-400 hover:text-white'}`}
+                  title="Select to Edit"
+                >
+                  <i className={previewEditMode ? 'ri-cursor-fill text-xs' : 'ri-cursor-line text-xs'} />
                 </button>
               </div>
             </div>
-          )}
-        </main>
+
+            {/* Chat content */}
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <AiCopilotPanel
+                onProjectAdded={fetchProjects}
+                onNewsAdded={fetchNews}
+                onCareerAdded={fetchCareers}
+                compact={!chatExpanded}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

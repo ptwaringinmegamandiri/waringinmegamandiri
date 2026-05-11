@@ -187,9 +187,12 @@ export default function KontakPage() {
 
   return (
     <div className={`min-h-screen ${pageBg}`}>
-      <Navbar />
+      <div data-preview-id="navbar" data-preview-label="Navbar">
+        <Navbar />
+      </div>
 
       {/* Hero */}
+      <div data-preview-id="kontak-hero" data-preview-label="Kontak Hero">
       <section className="relative pt-36 pb-20 overflow-hidden">
         <div className="absolute inset-0">
           {isDark ? (
@@ -200,7 +203,7 @@ export default function KontakPage() {
             />
           ) : (
             <img
-              src="https://readdy.ai/api/search-image?query=bright%20modern%20construction%20office%20building%20exterior%20with%20glass%20facade%2C%20clear%20blue%20sky%2C%20professional%20corporate%20architecture%2C%20clean%20daylight%20photography%2C%20sharp%20details%2C%20optimistic%20business%20environment%2C%20Jakarta%20Indonesia%20skyline%20background&width=1920&height=700&seq=wmm-kontak-light-v2&orientation=landscape"
+              src="https://readdy.ai/api/search-image?query=modern%20construction%20company%20office%20building%20exterior%20during%20golden%20hour%20sunset%2C%20warm%20amber%20and%20orange%20sky%2C%20glass%20facade%20reflecting%20sunset%20colors%2C%20professional%20corporate%20architecture%20with%20warm%20lighting%2C%20cinematic%20wide%20angle%20photography%2C%20Jakarta%20Indonesia%20skyline%20with%20warm%20tones%2C%20no%20harsh%20shadows&width=1920&height=700&seq=wmm-kontak-light-v3&orientation=landscape"
               alt="Contact PT Waringin Mega Mandiri"
               className="w-full h-full object-cover object-top"
             />
@@ -220,14 +223,18 @@ export default function KontakPage() {
             {t('kontak.heroTitle1')}{' '}
             <span style={heroGradient}>{t('kontak.heroTitle2')}</span>
           </h1>
-          <div className="flex justify-center mb-6"><div className="neon-line-short" /></div>
+          <div className="flex justify-center mb-6">
+            <div className="neon-line-short" />
+          </div>
           <p className={`font-body text-lg md:text-xl leading-relaxed max-w-2xl mx-auto ${heroSubtitleColor}`}>
             {t('kontak.heroSubtitle')}
           </p>
         </div>
       </section>
+      </div>
 
       {/* Contact Cards */}
+      <div data-preview-id="kontak-cards" data-preview-label="Contact Cards">
       <section className="pb-6 pt-10 md:pt-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -253,8 +260,10 @@ export default function KontakPage() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* Main: Info + Form */}
+      <div data-preview-id="kontak-form" data-preview-label="Contact Form">
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
@@ -489,19 +498,16 @@ export default function KontakPage() {
           </div>
         </div>
       </section>
+      </div>
 
       {/* Google Maps */}
+      <div data-preview-id="kontak-maps" data-preview-label="Google Maps">
       <section className="pb-16">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
-          <a
-            href="https://maps.app.goo.gl/pB95n6dDYvbNg5RP7"
-            target="_blank"
-            rel="nofollow noreferrer"
-            className="mb-6 flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity duration-300"
-          >
+          <div className="mb-6 flex items-center gap-3">
             <div className={`w-1 h-6 rounded-full ${mapAccentBar}`} />
             <h2 className={`font-syne font-bold text-xl ${mapTitleColor}`}>{t('kontak.mapTitle')}</h2>
-          </a>
+          </div>
           <div className={`rounded-2xl overflow-hidden border-2 ${mapBorderColor}`} style={{ height: '380px' }}>
             <iframe
               src={settings.maps_embed_url}
@@ -516,8 +522,11 @@ export default function KontakPage() {
           </div>
         </div>
       </section>
+      </div>
 
-      <Footer />
+      <div data-preview-id="footer" data-preview-label="Footer">
+        <Footer />
+      </div>
     </div>
   );
 }

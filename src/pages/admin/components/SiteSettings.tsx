@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
+import AiConfigPanel from './AiConfigPanel';
 
 interface SettingField {
   key: string;
@@ -52,7 +53,7 @@ const SETTING_GROUPS: { title: string; icon: string; fields: SettingField[] }[] 
 ];
 
 export default function SiteSettings() {
-  const [settings, setSettings] = useState<Record<string, string>>({});
+  const [settings, setSettings] = useState<Record<string, string>>();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedKeys, setSavedKeys] = useState<Set<string>>(new Set());
@@ -83,19 +84,9 @@ export default function SiteSettings() {
   const handleSaveGroup = async (fields: SettingField[]) => {
     setSaving(true);
     const keys = fields.map((f) => f.key);
-    const updates = keys.map((key) => ({
-      key,
-      value: settings[key] || '',
-      updated_at: new Date().toISOString(),
-    }));
-
-    for (const upd of updates) {
-      await supabase
-        .from('site_settings')
-        .update({ value: upd.value, updated_at: upd.updated_at })
-        .eq('key', upd.key);
+    for (const key of keys) {
+      await supabase.from('site_settings').update({ value: settings[key] || '', updated_at: new Date().toISOString() }).eq('key', key);
     }
-
     setSavedKeys((prev) => {
       const next = new Set(prev);
       keys.forEach((k) => next.add(k));
@@ -108,7 +99,6 @@ export default function SiteSettings() {
         return next;
       });
     }, 2500);
-
     setSaving(false);
     showToast('Pengaturan berhasil disimpan dan langsung berlaku di website!');
   };
@@ -117,10 +107,7 @@ export default function SiteSettings() {
     setSaving(true);
     const allFields = SETTING_GROUPS.flatMap((g) => g.fields);
     for (const field of allFields) {
-      await supabase
-        .from('site_settings')
-        .update({ value: settings[field.key] || '', updated_at: new Date().toISOString() })
-        .eq('key', field.key);
+      await supabase.from('site_settings').update({ value: settings[field.key] || '', updated_at: new Date().toISOString() }).eq('key', field.key);
     }
     setSaving(false);
     showToast('Semua pengaturan berhasil disimpan!');
@@ -144,7 +131,12 @@ export default function SiteSettings() {
 
       <div className="mb-6">
         <h2 className="font-bold text-xl text-white">Pengaturan Website</h2>
-        <p className="text-slate-500 text-sm mt-1">Ubah informasi kontak, alamat, dan media sosial yang tampil di website</p>
+        <p className="text-slate-500 text-sm mt-1">Ubah informasi kontak, alamat, media sosial, dan AI config</p>
+      </div>
+
+      {/* AI Config Panel */}
+      <div className="mb-6">
+        <AiConfigPanel />
       </div>
 
       <div className="space-y-6">

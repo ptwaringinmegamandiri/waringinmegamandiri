@@ -16,7 +16,7 @@ function MemberCard({ member, isDark }: MemberCardProps) {
   const nameColor = isDark ? 'text-white' : 'text-slate-800';
   const positionColor = isDark ? 'text-sky-400' : 'text-blue-600';
   const positionBg = isDark ? 'bg-sky-400/10 border-sky-400/20' : 'bg-blue-50 border-blue-200';
-  const descColor = isDark ? 'text-slate-400' : 'text-slate-500';
+  const descColor = isDark ? 'text-slate-400' : 'text-slate-700';
   const dividerColor = isDark ? 'bg-sky-400/20' : 'bg-blue-100';
   const iconColor = isDark ? 'text-sky-400/40' : 'text-blue-200';
 
@@ -66,7 +66,7 @@ export default function TeamSection() {
 
   const sectionBg = isDark ? 'bg-[#060A10]' : 'bg-[#EEF4FF]';
   const titleColor = isDark ? 'text-white' : 'text-slate-900';
-  const subtitleColor = isDark ? 'text-slate-400' : 'text-slate-500';
+  const subtitleColor = isDark ? 'text-slate-400' : 'text-slate-700';
   const accentColor = isDark ? '#60A5FA' : '#1D4ED8';
   const accentEnd = isDark ? '#BAD9FF' : '#3B82F6';
   const groupLabelColor = isDark ? 'text-white' : 'text-slate-800';

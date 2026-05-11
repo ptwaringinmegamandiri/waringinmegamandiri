@@ -5,7 +5,7 @@ export default function EmailButton() {
 
   return (
     <a
-      href="mailto:info@waringinmegamandiri.co.id"
+      href="mailto:info@waringinmegamandiri.com"
       className="fixed bottom-6 right-6 z-50 flex items-center gap-3 cursor-pointer group"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

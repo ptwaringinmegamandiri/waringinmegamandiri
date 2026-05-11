@@ -70,3 +70,47 @@ export interface CareerRow {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface LegacyProjectRow {
+  id: number;
+  year: number;
+  name: string;
+  client: string;
+  value: string;
+  category: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface SiteThemeConfig {
+  accent_color?: string;
+  secondary_color?: string;
+  theme_mode?: 'dark' | 'light';
+  hero_image_url?: string;
+  hero_title?: string;
+  hero_subtitle?: string;
+  hero_tagline?: string;
+  stats_text: string;
+  services_title: string;
+  services_desc: string;
+  projects_title: string;
+  clients_title: string;
+  clients_desc: string;
+  cta_title: string;
+  cta_desc: string;
+  cta_primary_text: string;
+  cta_secondary_text: string;
+  hero_cta_primary_text: string;
+  hero_cta_primary_url: string;
+  hero_cta_secondary_text: string;
+  hero_cta_secondary_url: string;
+}
+
+export interface SectionsVisibility {
+  hero?: boolean;
+  stats?: boolean;
+  services?: boolean;
+  projects?: boolean;
+  clients?: boolean;
+  cta?: boolean;
+}

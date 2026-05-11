@@ -22,8 +22,8 @@ export interface SiteSettingsMap {
 const DEFAULT_SETTINGS: SiteSettingsMap = {
   phone: '+62 21 573 8001',
   phone_alt: '+62 812-9999-0001',
-  email: 'info@waringinmegamandiri.co.id',
-  email_alt: 'marketing@waringinmegamandiri.co.id',
+  email: 'info@waringinmegamandiri.com',
+  email_alt: 'marketing@waringinmegamandiri.com',
   whatsapp: '+6281299990001',
   address: 'Jl. Bendungan Hilir Raya G1 No.5, Bendungan Hilir, Tanah Abang, Jakarta Pusat 10210',
   address_short: 'Jakarta Pusat, DKI Jakarta',

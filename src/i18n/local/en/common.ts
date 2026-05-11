@@ -79,7 +79,7 @@ const translations = {
   'cta.title2': 'Together With Us?',
   'cta.subtitle': 'Consult your construction needs with our professional team. Get a free cost estimate and the best solution for your project.',
   'cta.konsultasi': 'Free Consultation',
-  'cta.telepon': '+62 21 5738001',
+  'cta.telepon': '+62 21 5270 1234',
 
   // About Page
   'about.title': 'About Us',
@@ -217,7 +217,7 @@ const translations = {
   'kontak.phone': 'Phone',
   'kontak.phoneVal': '+62 21 5270 1234',
   'kontak.email': 'Email',
-  'kontak.emailVal': 'info@waringinmegamandiri.co.id',
+  'kontak.emailVal': 'info@waringinmegamandiri.com',
   'kontak.whatsapp': 'WhatsApp',
   'kontak.whatsappVal': '+62 812-3456-7890',
   'kontak.hours': 'Operating Hours',
