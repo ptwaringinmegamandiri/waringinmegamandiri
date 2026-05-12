@@ -17,8 +17,18 @@ const PAGES = [
   { key: 'kontak', label: 'Kontak', path: '/kontak' },
 ];
 
-// Page cache so switching pages doesn't re-mount components
-const PAGE_CACHE: Record<string, React.ReactNode> = {};
+// Page renderer — always returns fresh JSX (no element caching to support live updates)
+function renderPage(page: string, key: number): React.ReactNode {
+  switch (page) {
+    case 'home': return <HomePage key={`home-${key}`} />;
+    case 'about': return <AboutPage key={`about-${key}`} />;
+    case 'portfolio': return <PortfolioPage key={`portfolio-${key}`} />;
+    case 'news': return <NewsPage key={`news-${key}`} />;
+    case 'karir': return <KarirPage key={`karir-${key}`} />;
+    case 'kontak': return <KontakPage key={`kontak-${key}`} />;
+    default: return <HomePage key={`home-${key}`} />;
+  }
+}
 
 export default function PreviewPage() {
   const [searchParams] = useSearchParams();
@@ -26,27 +36,9 @@ export default function PreviewPage() {
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [hoveredElement, setHoveredElement] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(searchParams.get('page') || 'home');
+  const [refreshKey, setRefreshKey] = useState(0);
   const mainRef = useRef<HTMLDivElement>(null);
   const editCleanupRef = useRef<(() => void) | null>(null);
-
-  // Cache pages on first render so they don't re-mount
-  if (!PAGE_CACHE.home) PAGE_CACHE.home = <HomePage />;
-  if (!PAGE_CACHE.about) PAGE_CACHE.about = <AboutPage />;
-  if (!PAGE_CACHE.portfolio) PAGE_CACHE.portfolio = <PortfolioPage />;
-  if (!PAGE_CACHE.news) PAGE_CACHE.news = <NewsPage />;
-  if (!PAGE_CACHE.karir) PAGE_CACHE.karir = <KarirPage />;
-  if (!PAGE_CACHE.kontak) PAGE_CACHE.kontak = <KontakPage />;
-
-  // Sync selectedElement to DOM class
-  useEffect(() => {
-    document.querySelectorAll('[data-preview-id].selected-preview').forEach((el) => {
-      el.classList.remove('selected-preview');
-    });
-    if (selectedElement) {
-      const el = document.querySelector(`[data-preview-id="${selectedElement}"]`);
-      if (el) el.classList.add('selected-preview');
-    }
-  }, [selectedElement]);
 
   // Send height to parent iframe
   useEffect(() => {
@@ -63,7 +55,18 @@ export default function PreviewPage() {
       window.removeEventListener('load', sendHeight);
       observer.disconnect();
     };
-  }, [currentPage]);
+  }, [currentPage, refreshKey]);
+
+  // Sync selectedElement to DOM class
+  useEffect(() => {
+    document.querySelectorAll('[data-preview-id].selected-preview').forEach((el) => {
+      el.classList.remove('selected-preview');
+    });
+    if (selectedElement) {
+      const el = document.querySelector(`[data-preview-id="${selectedElement}"]`);
+      if (el) el.classList.add('selected-preview');
+    }
+  }, [selectedElement]);
 
   // Listen for postMessage from admin (page switch, edit mode, theme updates, highlight)
   useEffect(() => {
@@ -90,11 +93,16 @@ export default function PreviewPage() {
         if (incomingSections) {
           window.dispatchEvent(new CustomEvent('WMM_SECTIONS_UPDATE', { detail: incomingSections }));
         }
+        // NOTE: Do NOT dispatch WMM_SETTINGS_REFRESH here — that causes infinite loop
+        // because admin LivePreview will detect data change and send WMM_THEME_UPDATE again.
+        // Only apply CSS updates directly. DB refresh should only happen on explicit user actions.
       }
       if (e.data?.type === 'WMM_PREVIEW_SWITCH_PAGE') {
         const page = e.data.page as string;
         if (page && PAGES.some((p) => p.key === page)) {
           setCurrentPage(page);
+          setSelectedElement(null);
+          setHoveredElement(null);
         }
       }
       if (e.data?.type === 'WMM_PREVIEW_EDIT_MODE') {
@@ -217,10 +225,6 @@ export default function PreviewPage() {
     return cleanup;
   }, [editMode, cleanupEditMode]);
 
-  const renderPage = () => {
-    return PAGE_CACHE[currentPage] || PAGE_CACHE.home;
-  };
-
   return (
     <div ref={mainRef} className="min-h-screen">
       {/* Edit mode: visual styling only */}
@@ -275,7 +279,7 @@ export default function PreviewPage() {
         `}</style>
       )}
 
-      {renderPage()}
+      {renderPage(currentPage, refreshKey)}
     </div>
   );
 }

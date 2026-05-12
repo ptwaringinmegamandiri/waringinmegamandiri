@@ -90,20 +90,73 @@ export interface SiteThemeConfig {
   hero_title?: string;
   hero_subtitle?: string;
   hero_tagline?: string;
-  stats_text: string;
-  services_title: string;
-  services_desc: string;
-  projects_title: string;
-  clients_title: string;
-  clients_desc: string;
-  cta_title: string;
-  cta_desc: string;
-  cta_primary_text: string;
-  cta_secondary_text: string;
-  hero_cta_primary_text: string;
-  hero_cta_primary_url: string;
-  hero_cta_secondary_text: string;
-  hero_cta_secondary_url: string;
+  stats_text?: string;
+  services_title?: string;
+  services_desc?: string;
+  projects_title?: string;
+  clients_title?: string;
+  clients_desc?: string;
+  cta_title?: string;
+  cta_desc?: string;
+  cta_primary_text?: string;
+  cta_secondary_text?: string;
+  hero_cta_primary_text?: string;
+  hero_cta_primary_url?: string;
+  hero_cta_secondary_text?: string;
+  hero_cta_secondary_url?: string;
+  // About page
+  about_title?: string;
+  about_subtitle?: string;
+  about_profile_text?: string;
+  about_vision?: string;
+  about_mission?: string;
+  // Karir page
+  karir_title?: string;
+  karir_subtitle?: string;
+  karir_cta_title?: string;
+  karir_cta_desc?: string;
+  // News page
+  news_title?: string;
+  news_subtitle?: string;
+  news_newsletter_title?: string;
+  news_newsletter_desc?: string;
+  // Portfolio page
+  portfolio_title?: string;
+  portfolio_subtitle?: string;
+  portfolio_cta_text?: string;
+  // Kontak page
+  kontak_title?: string;
+  kontak_subtitle?: string;
+  kontak_cta_text?: string;
+  // Navbar
+  navbar_brand_text?: string;
+  navbar_cta_text?: string;
+  navbar_logo_url?: string;
+  navbar_logo_width?: string;
+  navbar_logo_height?: string;
+  // Footer
+  footer_tagline?: string;
+  footer_copyright?: string;
+  footer_logo_url?: string;
+  footer_logo_width?: string;
+  footer_logo_height?: string;
+  // Styling
+  hero_title_color?: string;
+  hero_subtitle_color?: string;
+  hero_title_size?: string;
+  hero_subtitle_size?: string;
+  section_title_color?: string;
+  section_title_size?: string;
+  body_text_color?: string;
+  body_text_size?: string;
+  cta_title_color?: string;
+  cta_title_size?: string;
+  cta_desc_color?: string;
+  cta_desc_size?: string;
+  navbar_text_color?: string;
+  navbar_brand_size?: string;
+  footer_text_color?: string;
+  footer_text_size?: string;
 }
 
 export interface SectionsVisibility {

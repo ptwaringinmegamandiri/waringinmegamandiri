@@ -8,10 +8,12 @@ import { useThemeContext } from '@/context/ThemeContext';
 import { useNews } from '@/hooks/useNews';
 import type { NewsArticle } from '@/hooks/useNews';
 import { newsCategories } from '@/mocks/news';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 
 export default function NewsPage() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
+  const { theme } = useSiteTheme();
   const { articles, loading } = useNews();
   const [activeCategory, setActiveCategory] = useState('all');
   const [email, setEmail] = useState('');
@@ -81,13 +83,13 @@ export default function NewsPage() {
 
   return (
     <div className={`min-h-screen ${pageBg}`}>
-      <div data-preview-id="navbar" data-preview-label="Navbar">
+      <div data-preview-id="navbar" data-preview-label="Navbar" data-editable-fields="navbar_brand_text,navbar_cta_text">
         <Navbar />
       </div>
 
-      <main>
+      <main className="flex-1">
         {/* Hero */}
-        <div data-preview-id="news-hero" data-preview-label="News Hero">
+        <div data-preview-id="news-hero" data-preview-label="News Hero" data-editable-fields="news_title,news_subtitle">
           <section className="relative pt-36 pb-16 overflow-hidden">
             <div className="absolute inset-0 grid-pattern-sm opacity-20 pointer-events-none" />
             <div
@@ -102,11 +104,11 @@ export default function NewsPage() {
               </div>
 
               <h1 className={`font-syne font-bold text-4xl md:text-5xl leading-tight mb-4 ${heroTitle}`}>
-                {t('news.title1')}{' '}
+                {theme.news_title || t('news.title1')}{' '}
                 <span className={heroAccent}>{t('news.title2')}</span>
               </h1>
               <p className={`font-body text-base md:text-lg leading-relaxed max-w-2xl mx-auto ${heroSub}`}>
-                {t('news.subtitle')}
+                {theme.news_subtitle || t('news.subtitle')}
               </p>
             </div>
           </section>
@@ -197,7 +199,7 @@ export default function NewsPage() {
         </div>
 
         {/* Newsletter */}
-        <div data-preview-id="news-newsletter" data-preview-label="Newsletter">
+        <div data-preview-id="news-newsletter" data-preview-label="Newsletter" data-editable-fields="news_newsletter_title,news_newsletter_desc">
           <section className={`py-20 border-t ${sectionBorder}`}>
             <div className="max-w-2xl mx-auto px-6 lg:px-10 text-center">
               <div className={`rounded-3xl p-10 ${newsletterCardBg}`}>
@@ -205,10 +207,10 @@ export default function NewsPage() {
                   <i className={`ri-mail-send-line text-2xl ${newsletterIconColor}`} />
                 </div>
                 <h3 className={`font-syne font-bold text-2xl mb-3 ${newsletterTitle}`}>
-                  {t('news.newsletterTitle')}
+                  {theme.news_newsletter_title || t('news.newsletterTitle')}
                 </h3>
                 <p className={`font-body text-sm leading-relaxed max-w-sm mx-auto mb-7 ${newsletterSub}`}>
-                  {t('news.newsletterSubtitle')}
+                  {theme.news_newsletter_desc || t('news.newsletterSubtitle')}
                 </p>
 
                 {subscribed ? (
@@ -247,9 +249,12 @@ export default function NewsPage() {
         </div>
       </main>
 
-      <div data-preview-id="footer" data-preview-label="Footer">
+      <footer
+        data-preview-id="footer"
+        data-editable-fields="footer_logo_url,footer_tagline,footer_copyright"
+      >
         <Footer />
-      </div>
+      </footer>
 
       <NewsDetailModal article={selectedArticle} onClose={() => setSelectedArticle(null)} />
     </div>

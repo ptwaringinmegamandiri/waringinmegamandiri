@@ -4,6 +4,7 @@ import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import { useThemeContext } from '@/context/ThemeContext';
 import { useSiteSettings } from '@/hooks/useSiteSettings';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 
 type FormState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -11,6 +12,7 @@ export default function KontakPage() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
   const { settings } = useSiteSettings();
+  const { theme } = useSiteTheme();
   const [formState, setFormState] = useState<FormState>('idle');
   const [charCount, setCharCount] = useState(0);
   const formRef = useRef<HTMLFormElement>(null);
@@ -157,6 +159,7 @@ export default function KontakPage() {
       val: settings.address,
       href: `https://maps.google.com/?q=${encodeURIComponent(settings.address)}`,
       sub: settings.address_short,
+      fieldKey: 'address',
     },
     {
       icon: 'ri-phone-line',
@@ -166,6 +169,7 @@ export default function KontakPage() {
       val: settings.phone,
       href: `tel:${settings.phone.replace(/\s/g, '')}`,
       sub: settings.phone_alt,
+      fieldKey: 'phone',
     },
     {
       icon: 'ri-mail-line',
@@ -175,24 +179,25 @@ export default function KontakPage() {
       val: settings.email,
       href: `mailto:${settings.email}`,
       sub: settings.email_alt,
+      fieldKey: 'email',
     },
   ];
 
   const socialLinks = [
-    { icon: 'ri-instagram-line', label: 'Instagram', handle: '@wmm.id', href: settings.instagram },
-    { icon: 'ri-linkedin-box-line', label: 'LinkedIn', handle: 'Waringin Mega Mandiri', href: settings.linkedin },
-    { icon: 'ri-facebook-line', label: 'Facebook', handle: 'PT WMM Official', href: settings.facebook },
-    { icon: 'ri-youtube-line', label: 'YouTube', handle: 'WMM Channel', href: settings.youtube },
+    { icon: 'ri-instagram-line', label: 'Instagram', handle: '@wmm.id', href: settings.instagram, fieldKey: 'instagram' },
+    { icon: 'ri-linkedin-box-line', label: 'LinkedIn', handle: 'Waringin Mega Mandiri', href: settings.linkedin, fieldKey: 'linkedin' },
+    { icon: 'ri-facebook-line', label: 'Facebook', handle: 'PT WMM Official', href: settings.facebook, fieldKey: 'facebook' },
+    { icon: 'ri-youtube-line', label: 'YouTube', handle: 'WMM Channel', href: settings.youtube, fieldKey: 'youtube' },
   ];
 
   return (
     <div className={`min-h-screen ${pageBg}`}>
-      <div data-preview-id="navbar" data-preview-label="Navbar">
+      <div data-preview-id="navbar" data-preview-label="Navbar" data-editable-fields="navbar_brand_text,navbar_cta_text">
         <Navbar />
       </div>
 
       {/* Hero */}
-      <div data-preview-id="kontak-hero" data-preview-label="Kontak Hero">
+      <div data-preview-id="kontak-hero" data-preview-label="Kontak Hero" data-editable-fields="kontak_title,kontak_subtitle">
       <section className="relative pt-36 pb-20 overflow-hidden">
         <div className="absolute inset-0">
           {isDark ? (
@@ -220,21 +225,26 @@ export default function KontakPage() {
             </span>
           </div>
           <h1 className={`font-syne font-black text-5xl md:text-6xl lg:text-7xl leading-tight mb-5 ${heroTitleColor}`}>
-            {t('kontak.heroTitle1')}{' '}
+            {theme.kontak_title || t('kontak.heroTitle1')}{' '}
             <span style={heroGradient}>{t('kontak.heroTitle2')}</span>
           </h1>
           <div className="flex justify-center mb-6">
             <div className="neon-line-short" />
           </div>
           <p className={`font-body text-lg md:text-xl leading-relaxed max-w-2xl mx-auto ${heroSubtitleColor}`}>
-            {t('kontak.heroSubtitle')}
+            {theme.kontak_subtitle || t('kontak.heroSubtitle')}
           </p>
         </div>
       </section>
       </div>
 
       {/* Contact Cards */}
-      <div data-preview-id="kontak-cards" data-preview-label="Contact Cards">
+      <div
+        data-preview-id="kontak-cards"
+        data-preview-label="Contact Cards"
+        data-editable-fields="phone,phone_alt,email,email_alt,address,address_short"
+        data-edit-field="phone"
+      >
       <section className="pb-6 pt-10 md:pt-12">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -279,7 +289,13 @@ export default function KontakPage() {
               </div>
 
               {/* Operating Hours */}
-              <div className={`rounded-2xl p-6 ${infoCardBg}`}>
+              <div
+                className={`rounded-2xl p-6 ${infoCardBg}`}
+                data-preview-id="kontak-hours"
+                data-preview-label="Jam Operasional"
+                data-editable-fields="hours_weekdays,hours_saturday,hours_sunday"
+                data-edit-field="hours_weekdays"
+              >
                 <div className="flex items-center gap-3 mb-5">
                   <div className={`w-10 h-10 flex items-center justify-center rounded-xl border shrink-0 ${infoIconBg}`}>
                     <i className={`ri-time-line text-lg ${infoIconColor}`} />
@@ -308,7 +324,13 @@ export default function KontakPage() {
               </div>
 
               {/* Social Media */}
-              <div className={`rounded-2xl p-6 ${infoCardBg}`}>
+              <div
+                className={`rounded-2xl p-6 ${infoCardBg}`}
+                data-preview-id="kontak-social"
+                data-preview-label="Social Media"
+                data-editable-fields="instagram,linkedin,facebook,youtube"
+                data-edit-field="instagram"
+              >
                 <h3 className={`font-syne font-bold text-base mb-4 ${infoCardTitleColor}`}>Social Media</h3>
                 <div className="grid grid-cols-2 gap-3">
                   {socialLinks.map((s) => (
@@ -501,7 +523,12 @@ export default function KontakPage() {
       </div>
 
       {/* Google Maps */}
-      <div data-preview-id="kontak-maps" data-preview-label="Google Maps">
+      <div
+        data-preview-id="kontak-maps"
+        data-preview-label="Google Maps"
+        data-editable-fields="maps_embed_url"
+        data-edit-field="maps_embed_url"
+      >
       <section className="pb-16">
         <div className="max-w-7xl mx-auto px-6 lg:px-10">
           <div className="mb-6 flex items-center gap-3">
@@ -524,9 +551,12 @@ export default function KontakPage() {
       </section>
       </div>
 
-      <div data-preview-id="footer" data-preview-label="Footer">
+      <footer
+        data-preview-id="footer"
+        data-editable-fields="footer_logo_url,footer_tagline,footer_copyright"
+      >
         <Footer />
-      </div>
+      </footer>
     </div>
   );
 }

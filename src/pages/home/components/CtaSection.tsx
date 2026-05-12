@@ -1,6 +1,7 @@
 import { useRef } from 'react';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import { useThemeContext } from '@/context/ThemeContext';
+import { renderRichText } from '@/lib/richText';
 
 export default function CtaSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -10,6 +11,13 @@ export default function CtaSection() {
   const ctaDesc = theme.cta_desc || 'Tim ahli kami siap membantu mewujudkan visi konstruksi Anda — mulai dari perencanaan hingga serah terima proyek.';
   const ctaPrimaryText = theme.cta_primary_text || 'Konsultasi Gratis';
   const ctaSecondaryText = theme.cta_secondary_text || 'Telepon Kami';
+
+  // Styling dari theme
+  const ctaTitleColor = theme.cta_title_color || (isDark ? '#FFFFFF' : '#0F172A');
+  const ctaDescColor = theme.cta_desc_color || (isDark ? '#94A3B8' : '#475569');
+  const ctaTitleSize = parseInt(theme.cta_title_size || '42', 10);
+  const ctaDescSize = parseInt(theme.cta_desc_size || '18', 10);
+
   const ctaTitleLines = ctaTitle.split('\n');
 
   return (
@@ -19,7 +27,7 @@ export default function CtaSection() {
       style={{ backgroundColor: isDark ? '#070C17' : '#F0F6FF' }}
       data-preview-id="cta-section"
       data-preview-label="Call to Action"
-      data-editable-fields="cta_title,cta_desc,cta_primary_text,cta_secondary_text"
+      data-editable-fields="cta_title,cta_desc,cta_primary_text,cta_secondary_text,cta_title_color,cta_desc_color,cta_title_size,cta_desc_size"
       data-edit-field="cta"
     >
       <div className="absolute inset-0">
@@ -29,24 +37,30 @@ export default function CtaSection() {
           className="w-full h-full object-cover object-top"
         />
         <div className="absolute inset-0" style={{ backgroundColor: isDark ? 'rgba(13,17,23,0.92)' : 'rgba(240,246,255,0.85)' }} />
-        <div className="absolute inset-0 grid-pattern opacity-15" />
+        <div className="absolute inset-0 grid-pattern opacity-15 pointer-events-none" />
       </div>
 
       <div className="relative max-w-4xl mx-auto px-6 lg:px-10 text-center">
         <span className="section-label block mb-4">HUBUNGI KAMI</span>
-        <h2 className={`font-syne font-black text-3xl md:text-4xl lg:text-5xl mb-6 leading-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+          <h2
+          className="font-syne font-black mb-6 leading-tight"
+          style={{ color: ctaTitleColor, fontSize: `clamp(28px, 5vw, ${ctaTitleSize}px)` }}
+        >
           {ctaTitleLines.map((line, i) => (
             <span key={i}>
-              {line}
-              {i < ctaTitleLines.length - 1 && <br className="hidden md:block" />}
+              {renderRichText(line, { fontSize: ctaTitleSize, lineHeight: '1.2', color: ctaTitleColor }, `cta-title-${i}`)}
+              {i < ctaTitleLines.length - 1 && <br />}
             </span>
           ))}
         </h2>
         <div className="flex justify-center mb-8">
           <div className="neon-line-short" />
         </div>
-        <p className={`font-body text-base leading-relaxed mb-10 max-w-2xl mx-auto ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-          {ctaDesc}
+        <p
+          className="font-body leading-relaxed mb-10 max-w-2xl mx-auto"
+          style={{ color: ctaDescColor, fontSize: `clamp(14px, 2.5vw, ${ctaDescSize}px)` }}
+        >
+          {renderRichText(ctaDesc, { fontSize: ctaDescSize, lineHeight: '1.75', color: ctaDescColor }, 'cta-desc')}
         </p>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
           <a

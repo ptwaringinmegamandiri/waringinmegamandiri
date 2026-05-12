@@ -10,6 +10,7 @@ import { useThemeContext } from '@/context/ThemeContext';
 import { Project, BuildingType } from '@/mocks/projects';
 import { useProjects } from '@/hooks/useProjects';
 import { useLegacyProjects } from '@/hooks/useLegacyProjects';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 import type { LegacyProjectRow } from '@/lib/supabase';
 
 type StatusFilter = 'Semua' | 'Selesai' | 'Ongoing';
@@ -37,6 +38,7 @@ const BUILDING_TYPE_LABELS: Record<string, string> = {
 export default function PortfolioPage() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
+  const { theme } = useSiteTheme();
   const { projects, featuredProjects, loading: projectsLoading } = useProjects();
   const { projects: legacyProjects, loading: legacyLoading } = useLegacyProjects();
   const [activeStatus, setActiveStatus] = useState<StatusFilter>('Semua');
@@ -191,14 +193,14 @@ export default function PortfolioPage() {
 
   return (
     <div className={`min-h-screen ${sectionBg}`}>
-      <div data-preview-id="navbar" data-preview-label="Navbar">
+      <div data-preview-id="navbar" data-preview-label="Navbar" data-editable-fields="navbar_brand_text,navbar_cta_text">
         <Navbar />
       </div>
-      <main>
-        <div data-preview-id="portfolio-hero" data-preview-label="Portfolio Hero">
+      <main className="flex-1">
+        <div data-preview-id="portfolio-hero" data-preview-label="Portfolio Hero" data-editable-fields="portfolio_title,portfolio_subtitle">
           <HeroBanner
-            title={t('portfolio.title')}
-            subtitle={t('portfolio.subtitle')}
+            title={theme.portfolio_title || t('portfolio.title')}
+            subtitle={theme.portfolio_subtitle || t('portfolio.subtitle')}
             breadcrumb={t('portfolio.breadcrumb')}
           />
         </div>
@@ -423,7 +425,7 @@ export default function PortfolioPage() {
             {/* CTA */}
             <div className={`text-center mt-16 pt-12 border-t ${ctaBorderColor}`}>
               <p className={`font-body text-base mb-6 max-w-xl mx-auto ${ctaTextColor}`}>
-                {t('portfolio.konsultasiCta')}
+                {theme.portfolio_cta_text || t('portfolio.konsultasiCta')}
               </p>
               <a
                 href="/kontak"
@@ -438,9 +440,12 @@ export default function PortfolioPage() {
       </div>
       </main>
 
-      <div data-preview-id="footer" data-preview-label="Footer">
+      <footer
+        data-preview-id="footer"
+        data-editable-fields="footer_logo_url,footer_tagline,footer_copyright"
+      >
         <Footer />
-      </div>
+      </footer>
 
       {selected && (
         <ProjectModal project={selected} onClose={() => setSelected(null)} />

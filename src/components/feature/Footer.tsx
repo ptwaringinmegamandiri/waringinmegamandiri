@@ -1,19 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '@/context/ThemeContext';
-
-const socials = [
-  { icon: 'ri-instagram-line', href: '#', label: 'Instagram' },
-  { icon: 'ri-linkedin-box-line', href: '#', label: 'LinkedIn' },
-  { icon: 'ri-facebook-line', href: '#', label: 'Facebook' },
-  { icon: 'ri-youtube-line', href: '#', label: 'YouTube' },
-];
-
-const kontakInfo = {
-  address: 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210',
-  phone: '+62 21 5738001',
-  email: 'info@waringinmegamandiri.com',
-};
+import { useSiteTheme } from '@/context/SiteThemeContext';
 
 const certifications = [
   { icon: 'ri-verified-badge-line', label: 'ISO 9001:2015' },
@@ -33,6 +21,30 @@ const sbuItems = [
 export default function Footer() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
+  const { theme } = useSiteTheme();
+
+  const footerLogoUrl = theme.footer_logo_url || '';
+  const footerTagline = theme.footer_tagline || t('footer.desc');
+  const footerCopyright = theme.footer_copyright || '© 2024 PT WARINGIN MEGA MANDIRI · ALL RIGHTS RESERVED';
+
+  // Footer dimensions + colors
+  const footerLogoWidth = parseInt(theme.footer_logo_width || '120', 10);
+  const footerLogoHeight = parseInt(theme.footer_logo_height || '40', 10);
+  const footerTextColor = theme.footer_text_color || (isDark ? '#94A3B8' : '#475569');
+  const footerTextSize = parseInt(theme.footer_text_size || '14', 10);
+
+  // Kontak dari theme
+  const kontakAddress = theme.address || 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210';
+  const kontakPhone = theme.phone || '+62 21 5738001';
+  const kontakEmail = theme.email || 'info@waringinmegamandiri.com';
+
+  // Social dari theme
+  const socials = [
+    { icon: 'ri-instagram-line', href: theme.instagram || '#', label: 'Instagram' },
+    { icon: 'ri-linkedin-box-line', href: theme.linkedin || '#', label: 'LinkedIn' },
+    { icon: 'ri-facebook-line', href: theme.facebook || '#', label: 'Facebook' },
+    { icon: 'ri-youtube-line', href: theme.youtube || '#', label: 'YouTube' },
+  ].filter(s => s.href !== '#');
 
   const perusahaanLinks = [
     { label: 'Beranda', path: '/' },
@@ -52,7 +64,11 @@ export default function Footer() {
   ];
 
   return (
-    <footer className={`relative overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#050A14]' : 'bg-slate-50'}`}>
+    <footer
+      className={`relative overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#050A14]' : 'bg-slate-50'}`}
+      data-preview-id="footer"
+      data-editable-fields="footer_logo_url,footer_tagline,footer_copyright,footer_logo_width,footer_logo_height,footer_text_color,footer_text_size,address,phone,email,instagram,linkedin,facebook,youtube"
+    >
       {/* Top accent line */}
       <div className="h-px w-full" style={{ background: isDark ? 'linear-gradient(90deg, transparent, rgba(56,189,248,0.4), rgba(56,189,248,0.15), transparent)' : 'linear-gradient(90deg, transparent, rgba(14,165,233,0.35), rgba(14,165,233,0.12), transparent)' }} />
 
@@ -68,9 +84,9 @@ export default function Footer() {
           {/* Brand col */}
           <div className="lg:col-span-4">
             <div className="flex items-center gap-5 mb-5">
-              <div className="w-24 h-20 overflow-hidden rounded shrink-0">
+              <div className="overflow-hidden rounded shrink-0" style={{ width: footerLogoWidth, height: footerLogoHeight }}>
                 <img
-                  src="https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png"
+                  src={footerLogoUrl || "https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png"}
                   alt="PT Waringin Mega Mandiri"
                   className="w-full h-full object-contain"
                 />
@@ -82,8 +98,11 @@ export default function Footer() {
               </div>
             </div>
 
-            <p className={`text-sm leading-relaxed mb-6 font-body max-w-xs ${isDark ? 'text-white/80' : 'text-slate-600'}`}>
-              {t('footer.desc')}
+            <p
+              className="leading-relaxed mb-6 font-body max-w-xs"
+              style={{ color: footerTextColor, fontSize: `${footerTextSize}px` }}
+            >
+              {footerTagline}
             </p>
 
             {/* Certifications inline */}
@@ -156,14 +175,14 @@ export default function Footer() {
                 <div className={`w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 mt-0.5 ${isDark ? 'bg-sky-400/8 border-sky-400/15' : 'bg-sky-500/8 border-sky-500/15'}`}>
                   <i className={`ri-map-pin-line text-xs ${isDark ? 'text-sky-400' : 'text-sky-500'}`} />
                 </div>
-                <span className={`text-sm leading-relaxed font-body transition-colors ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>{kontakInfo.address}</span>
+                <span className={`text-sm leading-relaxed font-body transition-colors ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>{kontakAddress}</span>
               </li>
               <li className="flex items-center gap-3">
                 <div className={`w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 ${isDark ? 'bg-emerald-400/8 border-emerald-400/15' : 'bg-emerald-500/8 border-emerald-500/15'}`}>
                   <i className={`ri-phone-line text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
                 </div>
                 <a href="tel:+62215738001" className={`text-sm transition-colors cursor-pointer font-body ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>
-                  {kontakInfo.phone}
+                  {kontakPhone}
                 </a>
               </li>
               <li className="flex items-center gap-3">
@@ -171,7 +190,7 @@ export default function Footer() {
                   <i className={`ri-mail-line text-xs ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
                 </div>
                 <a href="mailto:info@waringinmegamandiri.com" className={`text-sm transition-colors cursor-pointer font-body break-all ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>
-                  {kontakInfo.email}
+                  {kontakEmail}
                 </a>
               </li>
             </ul>
@@ -189,7 +208,12 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className={`border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 ${isDark ? 'border-slate-800/80' : 'border-slate-200'}`}>
-          <p className={`text-xs font-body tracking-wider ${isDark ? 'text-slate-600' : 'text-slate-500'}`}>© 2024 PT WARINGIN MEGA MANDIRI · ALL RIGHTS RESERVED</p>
+          <p
+            className="font-body tracking-wider"
+            style={{ color: footerTextColor, fontSize: `${footerTextSize}px` }}
+          >
+            {footerCopyright}
+          </p>
           <div className="flex items-center gap-4 text-xs">
             <span className={`transition-colors cursor-pointer font-body ${isDark ? 'text-slate-700 hover:text-slate-500' : 'text-slate-500 hover:text-slate-800'}`}>{t('footer.privacy')}</span>
             <span className={isDark ? 'text-slate-800' : 'text-slate-300'}>|</span>

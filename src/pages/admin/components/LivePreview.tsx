@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 
 const PAGES = [
   { key: 'home', label: 'Beranda' },
@@ -8,6 +8,9 @@ const PAGES = [
   { key: 'karir', label: 'Karir' },
   { key: 'kontak', label: 'Kontak' },
 ];
+
+const MOBILE_WIDTH = 375;
+const MOBILE_HEIGHT = 812;
 
 export interface InlineEditPayload {
   id: string;
@@ -39,14 +42,15 @@ export default function LivePreview({
   const [loaded, setLoaded] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [internalEditMode, setInternalEditMode] = useState(false);
+  const [deviceMode, setDeviceMode] = useState<'desktop' | 'mobile'>('desktop');
 
   const editMode = externalEditMode ?? internalEditMode;
 
-  const postTheme = useCallback(() => {
+  const postTheme = useCallback((theme?: Record<string, string>, sections?: Record<string, boolean>) => {
     const iframe = iframeRef.current;
     if (!iframe?.contentWindow) return;
     iframe.contentWindow.postMessage(
-      { type: 'WMM_THEME_UPDATE', theme: themeData || {}, sections: sectionsData || {} },
+      { type: 'WMM_THEME_UPDATE', theme: theme || themeData || {}, sections: sections || sectionsData || {} },
       '*'
     );
   }, [themeData, sectionsData]);
@@ -58,15 +62,14 @@ export default function LivePreview({
     setCurrentPage(page);
   }, []);
 
-  useEffect(() => {
-    if (loaded) postTheme();
-  }, [themeData, sectionsData, loaded, postTheme]);
-
   const handleLoad = () => {
     setLoaded(true);
-    postTheme();
     const iframe = iframeRef.current;
     if (iframe?.contentWindow) {
+      iframe.contentWindow.postMessage(
+        { type: 'WMM_THEME_UPDATE', theme: themeData || {}, sections: sectionsData || {} },
+        '*'
+      );
       iframe.contentWindow.postMessage({ type: 'WMM_PREVIEW_SWITCH_PAGE', page: currentPage }, '*');
       iframe.contentWindow.postMessage({ type: 'WMM_PREVIEW_EDIT_MODE', enabled: editMode }, '*');
     }
@@ -115,6 +118,17 @@ export default function LivePreview({
     }
   };
 
+  // Expose postTheme so parent can manually push fresh data after save
+  useEffect(() => {
+    const handler = (e: CustomEvent) => {
+      if (e.detail?.type === 'WMM_LIVE_PREVIEW_PUSH_THEME') {
+        postTheme(e.detail.theme, e.detail.sections);
+      }
+    };
+    window.addEventListener('WMM_LIVE_PREVIEW_PUSH_THEME' as any, handler);
+    return () => window.removeEventListener('WMM_LIVE_PREVIEW_PUSH_THEME' as any, handler);
+  }, [postTheme]);
+
   const iframeUrl = `${window.location.origin}${__BASE_PATH__ || ''}/preview?page=${currentPage}`;
 
   return (
@@ -137,6 +151,34 @@ export default function LivePreview({
           ))}
         </div>
         <div className="flex items-center gap-2 shrink-0 ml-2">
+          {/* Device toggle */}
+          <div className="flex items-center bg-slate-800 rounded-md p-0.5">
+            <button
+              onClick={() => setDeviceMode('desktop')}
+              className={`px-2 py-0.5 rounded text-[10px] transition-colors cursor-pointer ${
+                deviceMode === 'desktop'
+                  ? 'bg-slate-600 text-white'
+                  : 'text-slate-500 hover:text-slate-300'
+              }`}
+              title="Desktop"
+            >
+              <i className="ri-computer-line" />
+            </button>
+            <button
+              onClick={() => setDeviceMode('mobile')}
+              className={`px-2 py-0.5 rounded text-[10px] transition-colors cursor-pointer ${
+                deviceMode === 'mobile'
+                  ? 'bg-slate-600 text-white'
+                  : 'text-slate-500 hover:text-slate-300'
+              }`}
+              title="Mobile"
+            >
+              <i className="ri-smartphone-line" />
+            </button>
+          </div>
+
+          <div className="w-px h-3 bg-slate-700" />
+
           <button
             onClick={handleToggleEdit}
             className={`flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-semibold cursor-pointer transition-colors whitespace-nowrap ${
@@ -157,14 +199,41 @@ export default function LivePreview({
         </div>
       </div>
 
-      <iframe
-        ref={iframeRef}
-        src={iframeUrl}
-        onLoad={handleLoad}
-        className="w-full border-0 flex-1"
-        style={{ minHeight: 0 }}
-        title="Website Preview"
-      />
+      {/* Preview Container */}
+      <div className={`flex-1 overflow-auto ${deviceMode === 'mobile' ? 'bg-slate-900/50' : ''}`}>
+        {deviceMode === 'mobile' ? (
+          /* Mobile: centered phone frame with proper scroll */
+          <div className="min-h-full flex items-start justify-center py-6 px-4">
+            <div className="relative shrink-0 rounded-[32px] border-[8px] border-slate-800 bg-slate-800 overflow-hidden shadow-2xl">
+              {/* Notch */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-28 h-5 bg-slate-800 rounded-b-xl z-10" />
+              <iframe
+                ref={iframeRef}
+                src={iframeUrl}
+                onLoad={handleLoad}
+                className="border-0 bg-white block"
+                style={{
+                  width: MOBILE_WIDTH,
+                  height: MOBILE_HEIGHT,
+                  maxWidth: '100%',
+                  borderRadius: '24px',
+                }}
+                title="Website Preview Mobile"
+              />
+            </div>
+          </div>
+        ) : (
+          /* Desktop: full width */
+          <iframe
+            ref={iframeRef}
+            src={iframeUrl}
+            onLoad={handleLoad}
+            className="w-full h-full border-0"
+            style={{ minHeight: 0 }}
+            title="Website Preview"
+          />
+        )}
+      </div>
     </div>
   );
 }

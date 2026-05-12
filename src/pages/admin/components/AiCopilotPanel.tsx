@@ -152,13 +152,13 @@ export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAd
     // ── RULE-BASED INTENT PARSE ─────────────────────────────────
     const intent = parseIntent(trimmed);
 
-    // If rule-based detected a CRUD action with high confidence → execute it
+    // All rule-based actions that should be executed directly (including help!)
     const crudTypes = ['add_project', 'update_project', 'delete_project', 'add_news', 'update_news', 'delete_news',
       'add_career', 'update_career', 'delete_career', 'list_projects', 'list_news', 'list_careers',
       'update_setting', 'update_theme_color', 'update_hero_content', 'update_sections',
-      'generate_image', 'generate_hero_image'];
+      'generate_image', 'generate_hero_image', 'help'];
 
-    if (intent.type !== 'unknown' && intent.type !== 'help' && (intent.confidence === 'high' || crudTypes.includes(intent.type))) {
+    if (intent.type !== 'unknown' && (intent.confidence === 'high' || crudTypes.includes(intent.type))) {
       setLoadingText(getRandom(LOADING_VARIATIONS));
       const res = await executeIntent(intent);
 
@@ -192,7 +192,7 @@ export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAd
     }
 
     // ── FALLBACK TO EXTERNAL AI ──────────────────────────────────
-    // If rule-based returns unknown or help → ask external AI for natural response
+    // If rule-based returns unknown → ask external AI for natural response
     setLoadingText(getRandom(LOADING_AI_VARIATIONS));
 
     const aiResponse = await sendAiChat(

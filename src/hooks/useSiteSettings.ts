@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 
 export interface SiteSettingsMap {
@@ -41,20 +41,31 @@ export function useSiteSettings() {
   const [settings, setSettings] = useState<SiteSettingsMap>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetch = async () => {
-      const { data, error } = await supabase.from('site_settings').select('key, value');
-      if (!error && data && data.length > 0) {
-        const map: Partial<SiteSettingsMap> = {};
-        data.forEach((row: { key: string; value: string }) => {
-          (map as Record<string, string>)[row.key] = row.value || '';
-        });
-        setSettings({ ...DEFAULT_SETTINGS, ...map });
-      }
-      setLoading(false);
-    };
-    fetch();
+  const fetchSettings = useCallback(async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from('site_settings').select('key, value');
+    if (!error && data && data.length > 0) {
+      const map: Partial<SiteSettingsMap> = {};
+      data.forEach((row: { key: string; value: string }) => {
+        (map as Record<string, string>)[row.key] = row.value || '';
+      });
+      setSettings((prev) => ({ ...prev, ...map }));
+    }
+    setLoading(false);
   }, []);
 
-  return { settings, loading };
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
+
+  // Listen for refresh signal from preview or admin
+  useEffect(() => {
+    const handler = () => {
+      fetchSettings();
+    };
+    window.addEventListener('WMM_SETTINGS_REFRESH', handler);
+    return () => window.removeEventListener('WMM_SETTINGS_REFRESH', handler);
+  }, [fetchSettings]);
+
+  return { settings, loading, refresh: fetchSettings };
 }

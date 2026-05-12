@@ -1,8 +1,8 @@
-// ... existing code ...
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '@/context/ThemeContext';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 
 const LANGUAGES = [
   { code: 'id', label: 'ID', flag: '🇮🇩' },
@@ -13,12 +13,22 @@ const LANGUAGES = [
 export default function Navbar() {
   const { i18n } = useTranslation();
   const { toggleTheme, isDark } = useThemeContext();
+  const { theme } = useSiteTheme();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(false);
   const location = useLocation();
 
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0];
+
+  const brandText = theme.navbar_brand_text || 'WARINGIN';
+  const ctaText = theme.navbar_cta_text || 'Hubungi Kami';
+  const navbarLogoUrl = theme.navbar_logo_url || '';
+  const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
+  const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
+  const navTextColor = theme.navbar_text_color || (isDark ? '#FFFFFF' : '#0F172A');
+  const brandSize = parseInt(theme.navbar_brand_size || '16', 10);
 
   const navLinks = [
     { label: 'Beranda', path: '/' },
@@ -33,6 +43,13 @@ export default function Navbar() {
     const handleScroll = () => setScrolled(window.scrollY > 60);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobileView(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   useEffect(() => {
@@ -55,19 +72,31 @@ export default function Navbar() {
         <div className="mx-auto px-4 md:px-6 lg:px-8 xl:px-10 max-w-[1400px]">
           <div className="flex items-center justify-between h-20 md:h-24 gap-4">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group shrink-0">
-              <div className="w-12 h-12 flex items-center justify-center overflow-hidden rounded">
+            <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0"
+              data-preview-id="navbar"
+              data-editable-fields="navbar_logo_url,navbar_brand_text,navbar_cta_text,navbar_logo_width,navbar_logo_height,navbar_text_color,navbar_brand_size"
+            >
+              <div className="flex items-center justify-center overflow-hidden rounded shrink-0"
+                style={{
+                  width: isMobileView ? Math.min(logoWidth, 100) : logoWidth,
+                  height: isMobileView ? Math.min(logoHeight, 36) : logoHeight,
+                }}
+              >
                 <img
-                  src="https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png"
+                  src={navbarLogoUrl || "https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png"}
                   alt="PT Waringin Mega Mandiri"
                   className="w-full h-full object-contain"
                 />
               </div>
               <div>
-                <p className={`font-syne font-bold text-base tracking-wide leading-none ${isDark ? 'text-white' : 'text-[#0F172A]'}`}>
-                  WARINGIN
+                <p className={`font-syne font-bold tracking-wide leading-none ${isDark ? 'text-white' : 'text-[#0F172A]'}`}
+                  style={{ fontSize: `${brandSize}px`, color: navTextColor }}
+                >
+                  {brandText}
                 </p>
-                <p className="font-body text-sky-400 text-sm tracking-[0.12em] leading-none mt-1 font-medium">
+                <p className="font-body text-sky-400 text-sm tracking-[0.12em] leading-none mt-1.5 font-medium"
+                  style={{ color: navTextColor }}
+                >
                   MEGA MANDIRI
                 </p>
               </div>
@@ -151,7 +180,7 @@ export default function Navbar() {
                 href="mailto:info@waringinmegamandiri.com"
                 className="bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap transition-colors"
               >
-                Hubungi Kami
+                {ctaText}
               </a>
             </div>
 
@@ -173,12 +202,12 @@ export default function Navbar() {
               )}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="w-10 h-10 flex flex-col items-center justify-center gap-1.5 cursor-pointer"
+                className="w-10 h-10 flex flex-col items-center justify-center gap-[6px] cursor-pointer"
                 aria-label="Toggle menu"
               >
-                <span className={`block w-6 h-0.5 transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-                <span className={`block w-6 h-0.5 transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? 'opacity-0' : ''}`} />
-                <span className={`block w-6 h-0.5 transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? 'rotate-45 translate-y-[9px]' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`} />
               </button>
             </div>
           </div>
@@ -211,7 +240,7 @@ export default function Navbar() {
                 href="mailto:info@waringinmegamandiri.com"
                 className="bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm px-5 py-3 rounded-lg text-center mt-4 cursor-pointer"
               >
-                Hubungi Kami
+                {ctaText}
               </a>
             </div>
           </div>

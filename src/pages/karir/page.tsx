@@ -7,11 +7,13 @@ import ApplyModal from '@/pages/karir/components/ApplyModal';
 import { careerStats } from '@/mocks/careers';
 import { useThemeContext } from '@/context/ThemeContext';
 import { useCareers } from '@/hooks/useCareers';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 import type { Career } from '@/hooks/useCareers';
 
 export default function KarirPage() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
+  const { theme } = useSiteTheme();
   const { careers, loading } = useCareers();
   const [selectedJob, setSelectedJob] = useState<Career | null>(null);
   const [expandedJob, setExpandedJob] = useState<number | null>(null);
@@ -39,12 +41,12 @@ export default function KarirPage() {
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-[var(--dark-bg)]' : 'bg-[#F0F6FF]'}`}>
-      <div data-preview-id="navbar" data-preview-label="Navbar">
+      <div data-preview-id="navbar" data-preview-label="Navbar" data-editable-fields="navbar_brand_text,navbar_cta_text">
         <Navbar />
       </div>
 
       {/* Hero */}
-      <div data-preview-id="karir-hero" data-preview-label="Karir Hero">
+      <div data-preview-id="karir-hero" data-preview-label="Karir Hero" data-editable-fields="karir_title,karir_subtitle">
         <section className="relative min-h-[580px] flex items-center overflow-hidden">
           <div className="absolute inset-0 w-full h-full">
             {isDark ? (
@@ -90,12 +92,12 @@ export default function KarirPage() {
             </div>
 
             <h1 className="font-syne font-bold text-4xl md:text-5xl leading-tight mb-5" style={{ color: isDark ? '#ffffff' : '#0F172A' }}>
-              {t('karir.title1')}<br />
+              {theme.karir_title || t('karir.title1')}<br />
               <span style={{ color: isDark ? '#38BDF8' : '#1D4ED8' }}>{t('karir.title2')}</span>
             </h1>
 
             <p className="text-base md:text-lg leading-relaxed font-body max-w-2xl mx-auto mb-10" style={{ color: isDark ? '#94A3B8' : '#374151' }}>
-              {t('karir.subtitle')}
+              {theme.karir_subtitle || t('karir.subtitle')}
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
@@ -205,7 +207,7 @@ export default function KarirPage() {
       </div>
 
       {/* Spontaneous Apply CTA */}
-      <div data-preview-id="karir-cta" data-preview-label="Apply CTA">
+      <div data-preview-id="karir-cta" data-preview-label="Apply CTA" data-editable-fields="karir_cta_title,karir_cta_desc">
         <section className="py-20 border-t" style={{ borderColor: sectionBorderColor }}>
           <div className="max-w-3xl mx-auto px-6 lg:px-10 text-center">
             <div
@@ -226,10 +228,10 @@ export default function KarirPage() {
                 <i className="ri-user-add-line text-2xl" style={{ color: isDark ? '#38BDF8' : '#1D4ED8' }} />
               </div>
               <h3 className="font-syne font-bold text-2xl mb-3" style={{ color: isDark ? '#ffffff' : '#0F172A' }}>
-                {t('karir.tidakCocok')}
+                {theme.karir_cta_title || t('karir.tidakCocok')}
               </h3>
               <p className="font-body text-sm leading-relaxed max-w-md mx-auto mb-7" style={{ color: isDark ? '#94A3B8' : '#374151' }}>
-                {t('karir.kirimSpontan')}
+                {theme.karir_cta_desc || t('karir.kirimSpontan')}
               </p>
               <a
                 href="mailto:info@waringinmegamandiri.com"
@@ -242,9 +244,12 @@ export default function KarirPage() {
         </section>
       </div>
 
-      <div data-preview-id="footer" data-preview-label="Footer">
+      <footer
+        data-preview-id="footer"
+        data-editable-fields="footer_logo_url,footer_tagline,footer_copyright"
+      >
         <Footer />
-      </div>
+      </footer>
 
       {selectedJob && (
         <ApplyModal job={selectedJob} onClose={() => setSelectedJob(null)} />

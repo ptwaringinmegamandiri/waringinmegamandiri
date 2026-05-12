@@ -13,10 +13,10 @@ export default function HomePage() {
 
   return (
     <div className="bg-[var(--dark-bg)] min-h-screen">
-      <div data-preview-id="navbar" data-preview-label="Navbar">
+      <div data-preview-id="navbar" data-preview-label="Navbar" data-editable-fields="navbar_brand_text,navbar_cta_text">
         <Navbar />
       </div>
-      <main>
+      <main className="flex-1">
         {sections.hero !== false && (
           <div data-preview-id="hero" data-preview-label="Hero Banner">
             <HeroSection />
@@ -48,9 +48,12 @@ export default function HomePage() {
           </div>
         )}
       </main>
-      <div data-preview-id="footer" data-preview-label="Footer">
+      <footer
+        data-preview-id="footer"
+        data-editable-fields="footer_logo_url,footer_tagline,footer_copyright"
+      >
         <Footer />
-      </div>
+      </footer>
     </div>
   );
 }

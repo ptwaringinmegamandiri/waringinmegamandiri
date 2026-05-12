@@ -9,10 +9,8 @@ import SiteSettings from './components/SiteSettings';
 import ApplicationsPanel from './components/ApplicationsPanel';
 import AiCopilotPanel from './components/AiCopilotPanel';
 import DataExchangePanel from './components/DataExchangePanel';
-import ThemeEditor from './components/ThemeEditor';
 import InlineEditPopup, { InlineEditData } from './components/InlineEditPopup';
 import LivePreview from './components/LivePreview';
-import TemplatePresets from './components/TemplatePresets';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import { projects as mockProjects } from '@/mocks/projects';
 import { newsArticles as mockNews } from '@/mocks/news';
@@ -20,7 +18,7 @@ import { jobListings as mockCareers } from '@/mocks/careers';
 import { useLegacyProjects } from '@/hooks/useLegacyProjects';
 import LegacyProjectForm from './components/LegacyProjectForm';
 
-type ActiveTab = 'projects' | 'news' | 'careers' | 'highlight' | 'settings' | 'applications' | 'theme' | 'legacy';
+type ActiveTab = 'projects' | 'news' | 'careers' | 'highlight' | 'settings' | 'applications' | 'legacy';
 type ViewMode = 'list' | 'add' | 'edit';
 
 const BUILDING_TYPE_LABELS: Record<string, string> = {
@@ -39,12 +37,15 @@ const TABS: { key: ActiveTab; label: string; icon: string }[] = [
   { key: 'highlight', label: 'Highlight', icon: 'ri-star-line' },
   { key: 'applications', label: 'Lamaran', icon: 'ri-inbox-line' },
   { key: 'settings', label: 'Pengaturan', icon: 'ri-settings-3-line' },
-  { key: 'theme', label: 'Tema & Layout', icon: 'ri-palette-line' },
 ];
 
 export default function AdminPage() {
   const navigate = useNavigate();
   const { theme, sections, refresh } = useSiteTheme();
+  const themeRef = useRef(theme);
+  const sectionsRef = useRef(sections);
+  useEffect(() => { themeRef.current = theme; }, [theme]);
+  useEffect(() => { sectionsRef.current = sections; }, [sections]);
   const [authUser, setAuthUser] = useState<null | { email?: string }>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>('projects');
@@ -92,6 +93,16 @@ export default function AdminPage() {
   const [legacySearch, setLegacySearch] = useState('');
   const [deleteLegacyId, setDeleteLegacyId] = useState<number | null>(null);
   const [deletingLegacy, setDeletingLegacy] = useState(false);
+
+  // === RESIZABLE STATE ===
+  const [sidebarWidth, setSidebarWidth] = useState(400);
+  const [chatHeight, setChatHeight] = useState(280);
+  const [isResizingSidebar, setIsResizingSidebar] = useState(false);
+  const [isResizingChat, setIsResizingChat] = useState(false);
+  const resizeStartXRef = useRef(0);
+  const resizeStartWidthRef = useRef(400);
+  const resizeStartYRef = useRef(0);
+  const resizeStartHeightRef = useRef(280);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -592,16 +603,57 @@ export default function AdminPage() {
       case 'highlight': return <div className="p-5"><HighlightSettings /></div>;
       case 'applications': return <div className="p-5"><ApplicationsPanel /></div>;
       case 'settings': return <div className="p-5"><SiteSettings /></div>;
-      case 'theme':
-        return (
-          <div className="p-5 space-y-5 overflow-y-auto pr-1 h-full">
-            <TemplatePresets />
-            <ThemeEditor onChange={() => {}} />
-          </div>
-        );
       default: return null;
     }
   };
+
+  // === RESIZE HANDLERS ===
+  const startResizeSidebar = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingSidebar(true);
+    resizeStartXRef.current = e.clientX;
+    resizeStartWidthRef.current = sidebarWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }, [sidebarWidth]);
+
+  const startResizeChat = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsResizingChat(true);
+    resizeStartYRef.current = e.clientY;
+    resizeStartHeightRef.current = chatHeight;
+    document.body.style.cursor = 'row-resize';
+    document.body.style.userSelect = 'none';
+  }, [chatHeight]);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isResizingSidebar) {
+        const delta = e.clientX - resizeStartXRef.current;
+        const newWidth = Math.max(260, Math.min(600, resizeStartWidthRef.current + delta));
+        setSidebarWidth(newWidth);
+      }
+      if (isResizingChat) {
+        const delta = resizeStartYRef.current - e.clientY; // drag up = taller
+        const newHeight = Math.max(140, Math.min(520, resizeStartHeightRef.current + delta));
+        setChatHeight(newHeight);
+      }
+    };
+    const handleMouseUp = () => {
+      setIsResizingSidebar(false);
+      setIsResizingChat(false);
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    };
+    if (isResizingSidebar || isResizingChat) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    }
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizingSidebar, isResizingChat]);
 
   return (
     <div className="h-screen w-screen bg-[#080C14] text-white flex flex-col overflow-hidden">
@@ -679,19 +731,25 @@ export default function AdminPage() {
         data={inlineEditData}
         themeValues={(theme || {}) as Record<string, string>}
         onClose={() => setInlineEditData(null)}
-        onSaved={() => {
+        onSaved={async () => {
           showToast('Perubahan tersimpan! Preview diperbarui.');
-          refresh();
-          // Trigger preview iframe refresh
-          setTimeout(() => {
-            const iframe = document.querySelector('iframe[title="Website Preview"]') as HTMLIFrameElement | null;
-            if (iframe?.contentWindow) {
-              iframe.contentWindow.postMessage(
-                { type: 'WMM_THEME_UPDATE', theme: theme, sections: sections },
-                '*'
-              );
+          // Refresh local state
+          await refresh();
+          // Fetch fresh theme from DB
+          const { data: freshRows } = await supabase.from('site_settings').select('key, value');
+          const freshTheme: Record<string, string> = {};
+          const freshSections: Record<string, boolean> = {};
+          (freshRows || []).forEach((r: { key: string; value: string }) => {
+            if (['hero','stats','services','projects','clients','cta'].includes(r.key)) {
+              freshSections[r.key] = r.value === 'true' || r.value === '1' || r.value === 'yes';
+            } else {
+              freshTheme[r.key] = r.value;
             }
-          }, 300);
+          });
+          // Manually push to LivePreview via custom event (avoiding infinite loop)
+          window.dispatchEvent(new CustomEvent('WMM_LIVE_PREVIEW_PUSH_THEME', {
+            detail: { type: 'WMM_LIVE_PREVIEW_PUSH_THEME', theme: freshTheme, sections: freshSections },
+          }));
         }}
       />
 
@@ -736,7 +794,7 @@ export default function AdminPage() {
               </button>
             </div>
           )}
-          {view === 'list' && activeTab !== 'highlight' && activeTab !== 'settings' && activeTab !== 'applications' && activeTab !== 'theme' && (
+          {view === 'list' && activeTab !== 'highlight' && activeTab !== 'settings' && activeTab !== 'applications' && (
             <button onClick={handleAdd} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-[11px] px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap flex items-center gap-1 transition-colors">
               <i className="ri-add-line" />{getAddLabel()}
             </button>
@@ -752,18 +810,35 @@ export default function AdminPage() {
       {/* ═══════ MAIN BODY: 3-column layout ═══════ */}
       <div className="flex flex-1 overflow-hidden">
         {/* LEFT SIDEBAR: Tab content */}
-        <div className={`shrink-0 border-r border-slate-800 bg-[#0A0E14] overflow-y-auto transition-all duration-300 ${sidebarCollapsed ? 'w-0 opacity-0' : 'w-[400px]'}`}>
+        <div
+          className={`shrink-0 border-r border-slate-800 bg-[#0A0E14] overflow-y-auto transition-opacity duration-300 ${sidebarCollapsed ? 'w-0 opacity-0' : 'opacity-100'}`}
+          style={{ width: sidebarCollapsed ? 0 : sidebarWidth }}
+        >
           {renderSidebarContent()}
         </div>
 
-        {/* Collapse toggle */}
-        <button
-          onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-          className="w-5 shrink-0 bg-[#0A0E14] border-r border-slate-800 hover:bg-slate-800 flex items-center justify-center cursor-pointer transition-colors"
-          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          <i className={sidebarCollapsed ? 'ri-arrow-right-s-line text-slate-500 text-xs' : 'ri-arrow-left-s-line text-slate-500 text-xs'} />
-        </button>
+        {/* Collapse toggle + Resize handle */}
+        <div className="shrink-0 flex flex-col">
+          {/* Collapse button */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="w-5 h-8 bg-[#0A0E14] border-r border-slate-800 hover:bg-slate-800 flex items-center justify-center cursor-pointer transition-colors"
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            <i className={sidebarCollapsed ? 'ri-arrow-right-s-line text-slate-500 text-xs' : 'ri-arrow-left-s-line text-slate-500 text-xs'} />
+          </button>
+          {/* Vertical resize drag handle */}
+          {!sidebarCollapsed && (
+            <div
+              className="flex-1 w-5 cursor-col-resize hover:bg-slate-700/50 active:bg-slate-600/50 transition-colors flex items-center justify-center"
+              onMouseDown={startResizeSidebar}
+              title="Drag untuk resize sidebar"
+            >
+              <div className="w-px h-8 bg-slate-600" />
+            </div>
+          )}
+          {sidebarCollapsed && <div className="flex-1 w-5" />}
+        </div>
 
         {/* RIGHT PANEL: Preview + AI Chat */}
         <div className="flex-1 flex flex-col min-w-0 bg-[#050A14] overflow-hidden">
@@ -813,8 +888,22 @@ export default function AdminPage() {
             )}
           </div>
 
+          {/* Horizontal resize handle (between preview & chat) */}
+          {!chatExpanded && (
+            <div
+              className="h-3 shrink-0 cursor-row-resize hover:bg-slate-700/50 active:bg-slate-600/50 transition-colors flex items-center justify-center border-t border-b border-slate-800/50"
+              onMouseDown={startResizeChat}
+              title="Drag untuk resize panel AI chat"
+            >
+              <div className="w-8 h-px bg-slate-600 rounded" />
+            </div>
+          )}
+
           {/* AI Chat Panel (bottom, expandable) */}
-          <div className={`shrink-0 border-t border-slate-800 bg-[#0A0E14] flex flex-col transition-all duration-300 ${chatExpanded ? 'flex-1' : 'h-[280px]'}`}>
+          <div
+            className={`shrink-0 border-t border-slate-800 bg-[#0A0E14] flex flex-col transition-all duration-300 ${chatExpanded ? 'flex-1' : ''}`}
+            style={{ height: chatExpanded ? undefined : chatHeight }}
+          >
             {/* Chat header / toggle */}
             <div className="flex items-center justify-between px-4 py-2 border-b border-slate-800/50 shrink-0">
               <div className="flex items-center gap-2">
@@ -848,18 +937,23 @@ export default function AdminPage() {
                 onProjectAdded={fetchProjects}
                 onNewsAdded={fetchNews}
                 onCareerAdded={fetchCareers}
-                onThemeUpdated={() => {
+                onThemeUpdated={async () => {
                   refresh();
-                  // Trigger preview iframe refresh
-                  setTimeout(() => {
-                    const iframe = document.querySelector('iframe[title="Website Preview"]') as HTMLIFrameElement | null;
-                    if (iframe?.contentWindow) {
-                      iframe.contentWindow.postMessage(
-                        { type: 'WMM_THEME_UPDATE', theme: theme, sections: sections },
-                        '*'
-                      );
+                  // Fetch fresh theme from DB
+                  const { data: freshRows } = await supabase.from('site_settings').select('key, value');
+                  const freshTheme: Record<string, string> = {};
+                  const freshSections: Record<string, boolean> = {};
+                  (freshRows || []).forEach((r: { key: string; value: string }) => {
+                    if (['hero','stats','services','projects','clients','cta'].includes(r.key)) {
+                      freshSections[r.key] = r.value === 'true' || r.value === '1' || r.value === 'yes';
+                    } else {
+                      freshTheme[r.key] = r.value;
                     }
-                  }, 300);
+                  });
+                  // Manually push to LivePreview via custom event
+                  window.dispatchEvent(new CustomEvent('WMM_LIVE_PREVIEW_PUSH_THEME', {
+                    detail: { type: 'WMM_LIVE_PREVIEW_PUSH_THEME', theme: freshTheme, sections: freshSections },
+                  }));
                 }}
                 compact={!chatExpanded}
               />

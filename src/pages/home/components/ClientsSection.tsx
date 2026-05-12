@@ -2,55 +2,13 @@ import { useEffect, useRef } from 'react';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import { useThemeContext } from '@/context/ThemeContext';
 
-const clients = [
-  {
-    name: 'APL Group',
-    fullName: 'APL Group (PT Astakona Megatama)',
-    desc: 'Pengembang properti komersial & residensial skala nasional',
-    icon: 'ri-building-4-line',
-    projects: 3,
-    category: 'Properti',
-  },
-  {
-    name: 'Astra Land',
-    fullName: 'Astra Land Indonesia',
-    desc: 'Anak perusahaan Astra International di bidang properti premium',
-    icon: 'ri-community-line',
-    projects: 5,
-    category: 'Properti',
-  },
-  {
-    name: 'ASG Group',
-    fullName: 'ASG Group',
-    desc: 'Pengembang kawasan perumahan dan komersial terpadu',
-    icon: 'ri-home-8-line',
-    projects: 4,
-    category: 'Properti',
-  },
-  {
-    name: 'Yayasan Charitas',
-    fullName: 'Yayasan Rumah Sakit Charitas',
-    desc: 'Institusi kesehatan terkemuka di Sumatera Selatan',
-    icon: 'ri-hospital-line',
-    projects: 2,
-    category: 'Kesehatan',
-  },
-  {
-    name: 'PT Sabang Raya',
-    fullName: 'PT Sabang Raya Investama',
-    desc: 'Perusahaan investasi & hospitality di kawasan Batam',
-    icon: 'ri-hotel-line',
-    projects: 1,
-    category: 'Hospitality',
-  },
-  {
-    name: 'Hilton Garden Inn',
-    fullName: 'Hilton Garden Inn Batam',
-    desc: 'Brand hotel internasional kelas dunia di Indonesia',
-    icon: 'ri-building-2-line',
-    projects: 1,
-    category: 'Hospitality',
-  },
+const clientsBase = [
+  { key: 'client_card_1', name: 'APL Group', fullName: 'APL Group (PT Astakona Megatama)', desc: 'Pengembang properti komersial & residensial skala nasional', icon: 'ri-building-4-line', projects: 3, category: 'Properti' },
+  { key: 'client_card_2', name: 'Astra Land', fullName: 'Astra Land Indonesia', desc: 'Anak perusahaan Astra International di bidang properti premium', icon: 'ri-community-line', projects: 5, category: 'Properti' },
+  { key: 'client_card_3', name: 'ASG Group', fullName: 'ASG Group', desc: 'Pengembang kawasan perumahan dan komersial terpadu', icon: 'ri-home-8-line', projects: 4, category: 'Properti' },
+  { key: 'client_card_4', name: 'Yayasan Charitas', fullName: 'Yayasan Rumah Sakit Charitas', desc: 'Institusi kesehatan terkemuka di Sumatera Selatan', icon: 'ri-hospital-line', projects: 2, category: 'Kesehatan' },
+  { key: 'client_card_5', name: 'PT Sabang Raya', fullName: 'PT Sabang Raya Investama', desc: 'Perusahaan investasi & hospitality di kawasan Batam', icon: 'ri-hotel-line', projects: 1, category: 'Hospitality' },
+  { key: 'client_card_6', name: 'Hilton Garden Inn', fullName: 'Hilton Garden Inn Batam', desc: 'Brand hotel internasional kelas dunia di Indonesia', icon: 'ri-building-2-line', projects: 1, category: 'Hospitality' },
 ];
 
 const categoryColors: Record<string, string> = {
@@ -65,6 +23,14 @@ export default function ClientsSection() {
   const { isDark } = useThemeContext();
   const clientsTitle = theme.clients_title || 'Dipercaya oleh Perusahaan Terkemuka';
   const clientsDesc = theme.clients_desc || 'Kami telah dipercaya oleh berbagai perusahaan dan institusi terkemuka di Indonesia untuk menangani proyek konstruksi skala besar dengan standar kualitas internasional.';
+
+  const clients = clientsBase.map((c) => ({
+    ...c,
+    name: theme[`${c.key}_name` as keyof typeof theme] || c.name,
+    fullName: theme[`${c.key}_fullName` as keyof typeof theme] || c.fullName,
+    desc: theme[`${c.key}_desc` as keyof typeof theme] || c.desc,
+    projects: Number(theme[`${c.key}_projects` as keyof typeof theme]) || c.projects,
+  }));
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -94,7 +60,7 @@ export default function ClientsSection() {
       id="klien-mitra"
       data-preview-id="clients-section"
       data-preview-label="Klien & Mitra"
-      data-editable-fields="clients_title,clients_desc"
+      data-editable-fields="clients_title,clients_desc,client_card_1_name,client_card_1_fullName,client_card_1_desc,client_card_1_projects,client_card_2_name,client_card_2_fullName,client_card_2_desc,client_card_2_projects,client_card_3_name,client_card_3_fullName,client_card_3_desc,client_card_3_projects,client_card_4_name,client_card_4_fullName,client_card_4_desc,client_card_4_projects,client_card_5_name,client_card_5_fullName,client_card_5_desc,client_card_5_projects,client_card_6_name,client_card_6_fullName,client_card_6_desc,client_card_6_projects"
       data-edit-field="clients"
     >
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
@@ -126,7 +92,10 @@ export default function ClientsSection() {
             const iconClass = categoryColors[client.category] || categoryColors['Properti'];
             return (
               <div
-                key={client.name}
+                key={client.key}
+                data-preview-id={client.key}
+                data-preview-label={client.name}
+                data-editable-fields={`${client.key}_name,${client.key}_fullName,${client.key}_desc,${client.key}_projects`}
                 className={`reveal-client relative overflow-hidden group cursor-default p-6 rounded-xl border ${isDark ? 'border-slate-700/50 bg-gradient-to-br from-[#0D1628] to-[#0B1424] hover:border-sky-400/30' : 'border-blue-200 bg-white hover:border-blue-400'} transition-all duration-300`}
                 style={{
                   opacity: 0,

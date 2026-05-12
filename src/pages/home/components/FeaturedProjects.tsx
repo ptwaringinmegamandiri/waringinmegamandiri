@@ -128,8 +128,8 @@ export default function FeaturedProjects() {
           <div className="hidden lg:block" style={{ minHeight: '480px' }}>
             <div className={`absolute inset-0 transition-opacity duration-500 ${animating ? 'opacity-0' : 'opacity-100'}`}>
               <img src={project.image} alt={project.name} className="w-full h-full object-cover object-top" />
-              <div className={`absolute inset-0 bg-gradient-to-r ${isDark ? 'from-[#0D1117]/95 via-[#0D1117]/60 to-transparent' : 'from-slate-900/90 via-slate-900/60 to-transparent'}`} />
-              <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-[#0D1117]/80 via-transparent to-transparent' : 'from-slate-900/80 via-transparent to-transparent'}`} />
+              <div className={`absolute inset-0 bg-gradient-to-r ${isDark ? 'from-[#0D1117]/95 via-[#0D1117]/60 to-transparent' : 'from-slate-900/90 via-slate-900/60 to-transparent'} pointer-events-none`} />
+              <div className={`absolute inset-0 bg-gradient-to-t ${isDark ? 'from-[#0D1117]/80 via-transparent to-transparent' : 'from-slate-900/80 via-transparent to-transparent'} pointer-events-none`} />
             </div>
 
             <div className={`relative z-10 flex flex-col justify-end h-full p-12 transition-all duration-500 ${animating ? 'opacity-0 translate-x-4' : 'opacity-100 translate-x-0'}`} style={{ minHeight: '480px' }}>

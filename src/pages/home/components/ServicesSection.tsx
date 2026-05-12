@@ -3,36 +3,20 @@ import { Link } from 'react-router-dom';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import { useThemeContext } from '@/context/ThemeContext';
 
-const scopeItems = [
-  {
-    title: 'Gedung Komersial & Perkantoran',
-    desc: 'Pembangunan gedung komersial, perkantoran, dan pusat perbelanjaan dengan standar konstruksi internasional.',
-    icon: 'ri-building-2-line',
-  },
-  {
-    title: 'Hunian & Residensial',
-    desc: 'Konstruksi hunian premium, apartemen, dan perumahan dengan kualitas material terbaik dan pengerjaan presisi.',
-    icon: 'ri-home-4-line',
-  },
-  {
-    title: 'Fasilitas Publik & Institusi',
-    desc: 'Pembangunan fasilitas publik, rumah sakit, sekolah, dan gedung pemerintahan sesuai standar yang berlaku.',
-    icon: 'ri-hospital-line',
-  },
-  {
-    title: 'Proyek Khusus & Mixed-Use',
-    desc: 'Penanganan proyek dengan kompleksitas tinggi, termasuk mixed-use development dan bangunan dengan desain arsitektur unik.',
-    icon: 'ri-layout-masonry-line',
-  },
+const scopeItemsBase = [
+  { key: 'service_card_1', icon: 'ri-building-2-line', defaultTitle: 'Gedung Komersial & Perkantoran', defaultDesc: 'Pembangunan gedung komersial, perkantoran, dan pusat perbelanjaan dengan standar konstruksi internasional.' },
+  { key: 'service_card_2', icon: 'ri-home-4-line', defaultTitle: 'Hunian & Residensial', defaultDesc: 'Konstruksi hunian premium, apartemen, dan perumahan dengan kualitas material terbaik dan pengerjaan presisi.' },
+  { key: 'service_card_3', icon: 'ri-hospital-line', defaultTitle: 'Fasilitas Publik & Institusi', defaultDesc: 'Pembangunan fasilitas publik, rumah sakit, sekolah, dan gedung pemerintahan sesuai standar yang berlaku.' },
+  { key: 'service_card_4', icon: 'ri-layout-masonry-line', defaultTitle: 'Proyek Khusus & Mixed-Use', defaultDesc: 'Penanganan proyek dengan kompleksitas tinggi, termasuk mixed-use development dan bangunan dengan desain arsitektur unik.' },
 ];
 
-const whyItems = [
-  'Tim Berpengalaman dari PT. Waringin Mega',
-  'Manajemen Proyek Terstruktur & Transparan',
-  'Komitmen Kualitas & Ketepatan Waktu',
-  'Dukungan Penuh Tenaga, Peralatan & Keuangan',
-  'Rekam Jejak Proyek yang Terbukti',
-  'Komunikasi Aktif dengan Klien',
+const whyItemsBase = [
+  { key: 'service_why_1', text: 'Tim Berpengalaman dari PT. Waringin Mega' },
+  { key: 'service_why_2', text: 'Manajemen Proyek Terstruktur & Transparan' },
+  { key: 'service_why_3', text: 'Komitmen Kualitas & Ketepatan Waktu' },
+  { key: 'service_why_4', text: 'Dukungan Penuh Tenaga, Peralatan & Keuangan' },
+  { key: 'service_why_5', text: 'Rekam Jejak Proyek yang Terbukti' },
+  { key: 'service_why_6', text: 'Komunikasi Aktif dengan Klien' },
 ];
 
 export default function ServicesSection() {
@@ -41,6 +25,17 @@ export default function ServicesSection() {
   const { isDark } = useThemeContext();
   const servicesTitle = theme.services_title || 'Layanan Kami';
   const servicesDesc = theme.services_desc || 'Kami menyediakan solusi konstruksi komprehensif dengan teknologi terdepan untuk memenuhi setiap kebutuhan proyek Anda.';
+
+  const scopeItems = scopeItemsBase.map((item) => ({
+    ...item,
+    title: theme[`${item.key}_title` as keyof typeof theme] || item.defaultTitle,
+    desc: theme[`${item.key}_desc` as keyof typeof theme] || item.defaultDesc,
+  }));
+
+  const whyItems = whyItemsBase.map((item) => ({
+    ...item,
+    text: theme[`${item.key}_text` as keyof typeof theme] || item.text,
+  }));
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -70,7 +65,7 @@ export default function ServicesSection() {
       id="layanan"
       data-preview-id="services-section"
       data-preview-label="Layanan Kami"
-      data-editable-fields="services_title,services_desc"
+      data-editable-fields="services_title,services_desc,service_card_1_title,service_card_1_desc,service_card_2_title,service_card_2_desc,service_card_3_title,service_card_3_desc,service_card_4_title,service_card_4_desc,service_why_1_text,service_why_2_text,service_why_3_text,service_why_4_text,service_why_5_text,service_why_6_text"
       data-edit-field="services"
     >
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
@@ -161,7 +156,10 @@ export default function ServicesSection() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {scopeItems.map((scope, idx) => (
               <div
-                key={scope.title}
+                key={scope.key}
+                data-preview-id={scope.key}
+                data-preview-label={scope.title}
+                data-editable-fields={`${scope.key}_title,${scope.key}_desc`}
                 className={`reveal-item relative overflow-hidden group cursor-default p-6 rounded-xl border ${isDark ? 'border-slate-700/50 bg-gradient-to-br from-[#0D1628] to-[#0B1424] hover:border-sky-400/30' : 'border-blue-200 bg-white hover:border-blue-400'} transition-all duration-300`}
                 style={{
                   opacity: 0,
@@ -204,7 +202,10 @@ export default function ServicesSection() {
             <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
               {whyItems.map((item, idx) => (
                 <div
-                  key={item}
+                  key={item.key}
+                  data-preview-id={item.key}
+                  data-preview-label={item.text}
+                  data-editable-fields={`${item.key}_text`}
                   className={`reveal-item flex items-center gap-3 p-4 rounded-xl border ${isDark ? 'border-sky-400/8 bg-transparent hover:bg-sky-400/5' : 'border-blue-100 bg-transparent hover:bg-blue-50'} transition-all duration-300 cursor-default`}
                   style={{
                     opacity: 0,
@@ -216,7 +217,7 @@ export default function ServicesSection() {
                   <div className={`w-7 h-7 flex items-center justify-center rounded-full ${isDark ? 'bg-sky-400/15' : 'bg-blue-100'}`}>
                     <i className={`ri-check-line text-xs ${isDark ? 'text-sky-400' : 'text-blue-600'}`} />
                   </div>
-                  <span className={`font-body text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{item}</span>
+                  <span className={`font-body text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{item.text}</span>
                 </div>
               ))}
             </div>
