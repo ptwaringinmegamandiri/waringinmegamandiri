@@ -67,7 +67,7 @@ export default function HeroSection() {
                 className="text-xs tracking-[0.15em] uppercase font-body"
                 style={{ color: heroSubtitleColor }}
               >
-                BUILT TO PERFECTION
+                BUILD TO PERFECTION
               </span>
             </div>
 

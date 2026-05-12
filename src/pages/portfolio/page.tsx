@@ -10,7 +10,6 @@ import { Project, BuildingType } from '@/mocks/projects';
 import { useProjects } from '@/hooks/useProjects';
 import { useLegacyProjects } from '@/hooks/useLegacyProjects';
 import { useSiteTheme } from '@/context/SiteThemeContext';
-import type { LegacyProjectRow } from '@/lib/supabase';
 
 const DEFAULT_PORTFOLIO_BG = 'https://readdy.ai/api/search-image?query=dark%20moody%20construction%20site%20at%20dusk%20with%20massive%20concrete%20building%20skeleton%20under%20construction%2C%20tower%20crane%20silhouette%20against%20stormy%20dark%20charcoal%20sky%2C%20warm%20amber%20industrial%20floodlights%20illuminating%20steel%20scaffolding%2C%20dust%20and%20fog%20in%20the%20air%2C%20cinematic%20wide%20angle%20shot%2C%20ultra%20realistic%20photography%2C%20gritty%20industrial%20atmosphere%2C%20deep%20shadows%2C%20no%20blue%20tones&width=1920&height=500&seq=wmm-portfolio-dark-v1&orientation=landscape';
 
@@ -366,22 +365,6 @@ export default function PortfolioPage() {
               </div>
             )}
 
-            {/* Legacy Projects Table */}
-            <div className="mt-14 pt-10 border-t border-sky-400/10">
-              <div className="mb-6">
-                <span className="font-syne font-bold text-lg block text-white">
-                  Daftar Proyek
-                </span>
-              </div>
-              {legacyLoading ? (
-                <div className="flex items-center justify-center py-10">
-                  <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                </div>
-              ) : (
-                <LegacyTable projects={legacyProjects} />
-              )}
-            </div>
-
             {filtered.length === 0 && (
               <div className="text-center py-20">
                 <i className="ri-folder-open-line text-5xl mb-4 block text-slate-700" />
@@ -391,6 +374,25 @@ export default function PortfolioPage() {
                 </button>
               </div>
             )}
+
+            {/* Daftar Proyek Sejarah (Legacy Table) */}
+            <div className="mt-16 pt-10 border-t border-sky-400/10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1 h-5 rounded-full bg-sky-400" />
+                <h3 className="font-syne font-bold text-lg text-slate-300">
+                  Daftar Proyek
+                </h3>
+              </div>
+              {legacyLoading ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="rounded-xl animate-pulse bg-slate-800/50 h-12" />
+                  ))}
+                </div>
+              ) : (
+                <LegacyTable projects={legacyProjects} />
+              )}
+            </div>
 
             {/* CTA */}
             <div className="text-center mt-16 pt-12 border-t border-sky-400/10">

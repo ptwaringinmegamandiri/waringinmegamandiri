@@ -58,7 +58,7 @@ const translations = {
   'service.5.f2': 'Warehouses & Logistics',
   'service.5.f3': 'Industrial Estates',
   'service.5.f4': 'Clean Room Facility',
-  'service.6.title': 'MEP Engineering',
+  'service.6.title': 'Service & Maintenance',
   'service.6.description': 'Design and installation of Mechanical, Electrical & Plumbing (MEP) systems with the latest smart building technology.',
   'service.6.f1': 'HVAC Systems',
   'service.6.f2': 'Electrical Installation',
@@ -293,7 +293,7 @@ const translations = {
   'badge.bumn': 'State-Owned Partner',
 
   // Hero slogan
-  'hero.slogan': 'BUILT TO PERFECTION',
+  'hero.slogan': 'BUILD TO PERFECTION',
 
   // Kontak sub labels
   'kontak.addressSub': 'View on Google Maps',

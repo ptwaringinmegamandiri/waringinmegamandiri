@@ -11,7 +11,7 @@ const scopeItemsBase = [
 ];
 
 const whyItemsBase = [
-  { key: 'service_why_1', text: 'Tim Berpengalaman dari PT. Waringin Mega' },
+  { key: 'service_why_1', text: 'Tim Berpengalaman dari PT. Waringin Megah' },
   { key: 'service_why_2', text: 'Manajemen Proyek Terstruktur & Transparan' },
   { key: 'service_why_3', text: 'Komitmen Kualitas & Ketepatan Waktu' },
   { key: 'service_why_4', text: 'Dukungan Penuh Tenaga, Peralatan & Keuangan' },
@@ -116,7 +116,7 @@ export default function ServicesSection() {
               </h3>
 
               <p className={`font-body text-sm leading-relaxed mb-8 ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
-                PT. Waringin Mega Mandiri hadir sebagai General Contractor profesional yang berpengalaman dalam pelaksanaan proyek konstruksi skala menengah hingga besar. Didukung oleh tim berpengalaman dari PT. Waringin Mega, kami menghadirkan hasil pekerjaan berkualitas terbaik untuk setiap klien.
+                PT. Waringin Mega Mandiri hadir sebagai General Contractor profesional yang berpengalaman dalam pelaksanaan proyek konstruksi skala menengah hingga besar. Didukung oleh tim berpengalaman dari PT. Waringin Megah, kami menghadirkan hasil pekerjaan berkualitas terbaik untuk setiap klien.
               </p>
 
               <div className={`hidden lg:flex gap-8 mb-8 pb-8 border-b ${isDark ? 'border-slate-700/50' : 'border-blue-100'}`}>
@@ -195,7 +195,7 @@ export default function ServicesSection() {
                 Mengapa Memilih <span className="text-amber-400">WMM?</span>
               </h4>
               <p className={`font-body text-sm mt-3 leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
-                Kami hadir dengan dukungan penuh dari PT. Waringin Mega untuk memastikan setiap proyek berjalan optimal.
+                Kami hadir dengan dukungan penuh dari PT. Waringin Megah untuk memastikan setiap proyek berjalan optimal.
               </p>
             </div>
 
@@ -217,7 +217,7 @@ export default function ServicesSection() {
                   <div className={`w-7 h-7 flex items-center justify-center rounded-full ${isDark ? 'bg-sky-400/15' : 'bg-blue-100'}`}>
                     <i className={`ri-check-line text-xs ${isDark ? 'text-sky-400' : 'text-blue-600'}`} />
                   </div>
-                  <span className={`font-body text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{item.text}</span>
+                  <span className={`font-body text-sm font-medium ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{item.text.replace('PT. Waringin Mega', 'PT. Waringin Megah').replace('PT. Waringin Megahh', 'PT. Waringin Megah')}</span>
                 </div>
               ))}
             </div>

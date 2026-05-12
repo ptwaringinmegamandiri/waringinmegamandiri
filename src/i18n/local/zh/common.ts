@@ -58,7 +58,7 @@ const translations = {
   'service.5.f2': '仓储与物流',
   'service.5.f3': '工业园区',
   'service.5.f4': '洁净室设施',
-  'service.6.title': 'MEP工程',
+  'service.6.title': '服务与维护',
   'service.6.description': '机械、电气和管道（MEP）系统的设计与安装，采用最新智能建筑技术。',
   'service.6.f1': '暖通空调系统',
   'service.6.f2': '电气安装',

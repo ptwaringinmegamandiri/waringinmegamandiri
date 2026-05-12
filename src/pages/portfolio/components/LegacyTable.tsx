@@ -86,10 +86,6 @@ export default function LegacyTable({ projects }: LegacyTableProps) {
             </select>
             <i className={`ri-arrow-down-s-line text-sm pointer-events-none ${isDark ? 'text-slate-600' : 'text-slate-400'}`} />
           </div>
-
-          <span className={`font-body text-xs shrink-0 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-            {filtered.length} proyek
-          </span>
         </div>
       </div>
 
@@ -104,9 +100,6 @@ export default function LegacyTable({ projects }: LegacyTableProps) {
               <div className="flex items-start justify-between gap-3 mb-2">
                 <span className={`inline-block font-body text-xs font-bold px-2.5 py-1 rounded-md shrink-0 ${yearBadge}`}>
                   {project.year}
-                </span>
-                <span className={`font-syne font-bold text-xs shrink-0 ${cardValue}`}>
-                  {project.value}
                 </span>
               </div>
 
@@ -139,7 +132,7 @@ export default function LegacyTable({ projects }: LegacyTableProps) {
       {/* ========== DESKTOP: Table (hidden sm:block) ========== */}
       <div className={`hidden sm:block rounded-xl overflow-hidden ${wrapperBg}`}>
         <div className="overflow-x-auto overflow-y-auto max-h-[480px]">
-          <table className="w-full min-w-[700px] border-collapse">
+          <table className="w-full min-w-[600px] border-collapse">
             <thead className={`sticky top-0 z-10 ${headerBg} backdrop-blur-sm`}>
               <tr className={`border-b ${borderColor}`}>
                 <th className={`px-4 py-3 text-left font-syne font-bold text-xs uppercase tracking-wider ${headerText}`}>
@@ -150,9 +143,6 @@ export default function LegacyTable({ projects }: LegacyTableProps) {
                 </th>
                 <th className={`px-4 py-3 text-left font-syne font-bold text-xs uppercase tracking-wider ${headerText}`}>
                   Klien
-                </th>
-                <th className={`px-4 py-3 text-left font-syne font-bold text-xs uppercase tracking-wider ${headerText}`}>
-                  Nilai Proyek
                 </th>
                 <th className={`px-4 py-3 text-left font-syne font-bold text-xs uppercase tracking-wider ${headerText}`}>
                   Kategori
@@ -176,9 +166,6 @@ export default function LegacyTable({ projects }: LegacyTableProps) {
                   <td className={`px-4 py-3.5 font-body text-xs ${rowTextSecondary}`}>
                     {project.client}
                   </td>
-                  <td className={`px-4 py-3.5 font-syne font-bold text-xs whitespace-nowrap ${cardValue}`}>
-                    {project.value}
-                  </td>
                   <td className="px-4 py-3.5 whitespace-nowrap">
                     <span className={`inline-block font-body text-xs font-medium px-2.5 py-1 rounded-md ${categoryBadge}`}>
                       {project.category}
@@ -189,7 +176,7 @@ export default function LegacyTable({ projects }: LegacyTableProps) {
 
               {filtered.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-4 py-16 text-center">
+                  <td colSpan={4} className="px-4 py-16 text-center">
                     <i className={`ri-inbox-line text-4xl mb-3 block ${emptyIcon}`} />
                     <p className={`font-body text-sm ${emptyText}`}>
                       Tidak ada proyek yang sesuai filter.

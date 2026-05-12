@@ -119,8 +119,7 @@ export default function ProjectCard({ project, onSelect }: ProjectCardProps) {
         </div>
 
         {/* Bottom bar */}
-        <div className={`mt-auto pt-3 border-t flex items-center justify-between gap-2 ${dividerColor}`}>
-          <span className={`font-syne font-bold text-xs truncate ${valueColor}`}>{project.value}</span>
+        <div className={`mt-auto pt-3 border-t flex items-center justify-end gap-2 ${dividerColor}`}>
           <span className={`font-body text-xs truncate text-right ${clientColor}`}>{project.client}</span>
         </div>
       </div>

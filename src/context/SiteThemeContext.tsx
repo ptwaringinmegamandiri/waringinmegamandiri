@@ -40,7 +40,7 @@ const DEFAULT_THEME: SiteThemeConfig = {
   navbar_logo_width: '140',
   navbar_logo_height: '50',
   // Footer
-  footer_tagline: 'Built to Perfection — PT Waringin Mega Mandiri',
+  footer_tagline: 'Build To Perfection — PT Waringin Mega Mandiri',
   footer_copyright: 'PT Waringin Mega Mandiri. Hak Cipta Dilindungi.',
   footer_logo_url: '',
   footer_logo_width: '120',

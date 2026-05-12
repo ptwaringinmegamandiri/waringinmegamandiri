@@ -4,7 +4,7 @@ import { useThemeContext } from '@/context/ThemeContext';
 export default function StatsBar() {
   const { theme } = useSiteTheme();
   const { isDark } = useThemeContext();
-  const statsText = theme.stats_text || '35+ tahun pengalaman di bidang konstruksi';
+  const statsText = (theme.stats_text || '35+ tahun pengalaman di bidang konstruksi').replace('BUILT TO PERFECTION', 'BUILD TO PERFECTION');
 
   return (
     <section

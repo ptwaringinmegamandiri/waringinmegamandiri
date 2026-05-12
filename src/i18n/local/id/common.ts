@@ -53,6 +53,9 @@ const translations = {
   'service.gc.stat3.label': 'Tahun Berdiri',
   'service.gc.cta': 'Konsultasi Proyek',
 
+  // Service items (footer compatibility)
+  'service.6.title': 'Service & Maintenance',
+
   // Featured Projects
   'featured.showcase': 'Proyek Berjalan',
   'featured.proyek': 'Proyek',
@@ -291,7 +294,7 @@ const translations = {
   'sbu.41019': '41019 – Konstruksi Tempat Ibadah',
 
   // Slogan
-  'hero.slogan': 'BUILT TO PERFECTION',
+  'hero.slogan': 'BUILD TO PERFECTION',
 
   // ProjectModal hardcoded labels
   'project.tahunLabel': 'Tahun',

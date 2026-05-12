@@ -311,7 +311,7 @@ const FIELD_LABELS: Record<string, { label: string; type: InlineEditField['type'
   navbar_text_color: { label: 'Warna Teks Navbar', type: 'color' },
   navbar_brand_size: { label: 'Ukuran Teks Brand (px)', type: 'fontsize', min: 12, max: 32, placeholder: '20' },
   // Footer
-  footer_tagline: { label: 'Tagline Footer', type: 'text', maxLength: 100, placeholder: 'Built to Perfection — PT WMM' },
+  footer_tagline: { label: 'Tagline Footer', type: 'text', maxLength: 100, placeholder: 'Build To Perfection — PT WMM' },
   footer_copyright: { label: 'Teks Copyright Footer', type: 'text', maxLength: 100, placeholder: 'PT WMM. Hak Cipta Dilindungi.' },
   footer_text_color: { label: 'Warna Teks Footer', type: 'color' },
   footer_text_size: { label: 'Ukuran Teks Footer (px)', type: 'fontsize', min: 10, max: 20, placeholder: '14' },

@@ -65,7 +65,6 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
     ...(project.buildingArea ? [{ icon: 'ri-layout-line', label: t('project.luasBangunan'), value: project.buildingArea }] : []),
     ...(project.unitCount ? [{ icon: 'ri-home-line', label: t('project.jumlahUnit'), value: project.unitCount }] : []),
     { icon: 'ri-user-line', label: t('project.klien'), value: project.client },
-    { icon: 'ri-money-dollar-circle-line', label: t('project.nilai'), value: project.value },
     { icon: 'ri-checkbox-circle-line', label: t('project.status'), value: isCompleted ? t('project.statusSelesai') : t('project.statusOngoing') },
   ];
 
