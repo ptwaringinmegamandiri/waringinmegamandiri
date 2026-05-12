@@ -15,6 +15,11 @@ const categoryColors: Record<string, string> = {
   Properti: 'text-sky-400 bg-sky-400/10 border-sky-400/20',
   Kesehatan: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
   Hospitality: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
+  Industri: 'text-orange-400 bg-orange-400/10 border-orange-400/20',
+  Pendidikan: 'text-purple-400 bg-purple-400/10 border-purple-400/20',
+  'Pemerintahan / BUMN': 'text-rose-400 bg-rose-400/10 border-rose-400/20',
+  Infrastruktur: 'text-teal-400 bg-teal-400/10 border-teal-400/20',
+  Lainnya: 'text-slate-400 bg-slate-400/10 border-slate-400/20',
 };
 
 export default function ClientsSection() {
@@ -30,6 +35,7 @@ export default function ClientsSection() {
     fullName: theme[`${c.key}_fullName` as keyof typeof theme] || c.fullName,
     desc: theme[`${c.key}_desc` as keyof typeof theme] || c.desc,
     projects: Number(theme[`${c.key}_projects` as keyof typeof theme]) || c.projects,
+    category: theme[`${c.key}_category` as keyof typeof theme] || c.category,
   }));
 
   useEffect(() => {
@@ -60,7 +66,7 @@ export default function ClientsSection() {
       id="klien-mitra"
       data-preview-id="clients-section"
       data-preview-label="Klien & Mitra"
-      data-editable-fields="clients_title,clients_desc,client_card_1_name,client_card_1_fullName,client_card_1_desc,client_card_1_projects,client_card_2_name,client_card_2_fullName,client_card_2_desc,client_card_2_projects,client_card_3_name,client_card_3_fullName,client_card_3_desc,client_card_3_projects,client_card_4_name,client_card_4_fullName,client_card_4_desc,client_card_4_projects,client_card_5_name,client_card_5_fullName,client_card_5_desc,client_card_5_projects,client_card_6_name,client_card_6_fullName,client_card_6_desc,client_card_6_projects"
+      data-editable-fields="clients_title,clients_desc,client_card_1_name,client_card_1_fullName,client_card_1_desc,client_card_1_projects,client_card_1_category,client_card_2_name,client_card_2_fullName,client_card_2_desc,client_card_2_projects,client_card_2_category,client_card_3_name,client_card_3_fullName,client_card_3_desc,client_card_3_projects,client_card_3_category,client_card_4_name,client_card_4_fullName,client_card_4_desc,client_card_4_projects,client_card_4_category,client_card_5_name,client_card_5_fullName,client_card_5_desc,client_card_5_projects,client_card_5_category,client_card_6_name,client_card_6_fullName,client_card_6_desc,client_card_6_projects,client_card_6_category"
       data-edit-field="clients"
     >
       <div className="absolute inset-0 grid-pattern opacity-10 pointer-events-none" />
@@ -95,7 +101,7 @@ export default function ClientsSection() {
                 key={client.key}
                 data-preview-id={client.key}
                 data-preview-label={client.name}
-                data-editable-fields={`${client.key}_name,${client.key}_fullName,${client.key}_desc,${client.key}_projects`}
+                data-editable-fields={`${client.key}_name,${client.key}_fullName,${client.key}_desc,${client.key}_projects,${client.key}_category`}
                 className={`reveal-client relative overflow-hidden group cursor-default p-6 rounded-xl border ${isDark ? 'border-slate-700/50 bg-gradient-to-br from-[#0D1628] to-[#0B1424] hover:border-sky-400/30' : 'border-blue-200 bg-white hover:border-blue-400'} transition-all duration-300`}
                 style={{
                   opacity: 0,

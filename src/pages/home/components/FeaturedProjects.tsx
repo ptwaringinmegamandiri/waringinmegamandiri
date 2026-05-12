@@ -96,7 +96,7 @@ export default function FeaturedProjects() {
                 <span className={`${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
                 <span className={`text-xs font-body ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{project.year}</span>
                 <span className={`${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
-                <span className={`text-xs font-body font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{project.value}</span>
+                <span className={`text-xs font-body font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{project.workPackage}</span>
                 <span className={`${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
                 <span className={`text-xs font-body inline-flex items-center gap-1 ${project.status === 'Selesai' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-sky-400' : 'text-blue-600')}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${project.status === 'Selesai' ? (isDark ? 'bg-emerald-400' : 'bg-emerald-500') : (isDark ? 'bg-sky-400' : 'bg-blue-500')}`} />
@@ -143,7 +143,6 @@ export default function FeaturedProjects() {
                 <div className="flex flex-wrap items-center gap-4 mb-4 text-sm font-body">
                   <span className={`flex items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-200'}`}><i className={`ri-map-pin-line ${isDark ? 'text-sky-400' : 'text-blue-400'}`} />{project.location}</span>
                   <span className={`flex items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-200'}`}><i className={`ri-calendar-line ${isDark ? 'text-sky-400' : 'text-blue-400'}`} />{project.year}</span>
-                  <span className={`flex items-center gap-1.5 ${isDark ? 'text-slate-300' : 'text-slate-200'}`}><i className={`ri-money-dollar-circle-line ${isDark ? 'text-amber-400' : 'text-amber-400'}`} />{project.value}</span>
                   <span className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${isDark ? 'bg-emerald-400/10 text-emerald-400 border-emerald-400/20' : 'bg-emerald-100 text-emerald-700 border-emerald-300'}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${isDark ? 'bg-emerald-400' : 'bg-emerald-600'}`} />
                     {project.status === 'Selesai' ? 'Selesai' : project.status}
