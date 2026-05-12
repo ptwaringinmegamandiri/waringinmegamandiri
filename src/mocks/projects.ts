@@ -4,6 +4,7 @@ export type BuildingType =
   | 'Ruko'
   | 'Kantor'
   | 'Perumahan'
+  | 'Perumahan Cluster'
   | 'Pasar'
   | 'Mall'
   | 'Rumah Sakit'
@@ -942,7 +943,7 @@ export const projects: Project[] = [
   {
     id: 53,
     name: 'Cluster Hickory Podomoro Golf View Cimanggis',
-    buildingType: 'Perumahan',
+    buildingType: 'Perumahan Cluster',
     location: 'Cimanggis, Depok',
     year: 2019,
     status: 'Selesai',
@@ -961,7 +962,7 @@ export const projects: Project[] = [
   {
     id: 54,
     name: 'Cluster Iroko Podomoro Golf View Cimanggis',
-    buildingType: 'Perumahan',
+    buildingType: 'Perumahan Cluster',
     location: 'Cimanggis, Depok',
     year: 2020,
     status: 'Selesai',
@@ -1064,7 +1065,7 @@ export const projects: Project[] = [
   {
     id: 60,
     name: 'Cluster Juniper 2 Podomoro Golf View Cimanggis',
-    buildingType: 'Perumahan',
+    buildingType: 'Perumahan Cluster',
     location: 'Cimanggis, Depok',
     year: 2021,
     status: 'Selesai',
@@ -1134,7 +1135,7 @@ export const projects: Project[] = [
   {
     id: 64,
     name: 'Cluster Arshana Podomoro Park Bandung',
-    buildingType: 'Perumahan',
+    buildingType: 'Perumahan Cluster',
     location: 'Bandung, Jawa Barat',
     year: 2022,
     status: 'Selesai',
@@ -1206,7 +1207,7 @@ export const projects: Project[] = [
   {
     id: 68,
     name: 'Show Unit Cluster Lazuli Suvarna Sutra Cikupa',
-    buildingType: 'Perumahan',
+    buildingType: 'Perumahan Cluster',
     location: 'Cikupa, Tangerang',
     year: 2023,
     status: 'Selesai',
@@ -1241,7 +1242,7 @@ export const projects: Project[] = [
   {
     id: 70,
     name: 'Cluster Khaya Podomoro Golf View Cimanggis',
-    buildingType: 'Perumahan',
+    buildingType: 'Perumahan Cluster',
     location: 'Cimanggis, Depok',
     year: 2023,
     status: 'Ongoing',

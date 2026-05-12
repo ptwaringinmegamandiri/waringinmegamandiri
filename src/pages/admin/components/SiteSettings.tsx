@@ -6,9 +6,21 @@ interface SettingField {
   key: string;
   label: string;
   icon: string;
-  type?: 'text' | 'url' | 'tel' | 'email' | 'textarea';
+  type?: 'text' | 'url' | 'tel' | 'email' | 'textarea' | 'number' | 'select';
   placeholder?: string;
+  options?: string[];
 }
+
+const CLIENT_CATEGORIES = [
+  'Properti',
+  'Kesehatan',
+  'Hospitality',
+  'Industri',
+  'Pendidikan',
+  'Pemerintahan / BUMN',
+  'Infrastruktur',
+  'Lainnya',
+];
 
 const SETTING_GROUPS: { title: string; icon: string; fields: SettingField[] }[] = [
   {
@@ -48,6 +60,42 @@ const SETTING_GROUPS: { title: string; icon: string; fields: SettingField[] }[] 
       { key: 'linkedin', label: 'LinkedIn URL', icon: 'ri-linkedin-box-line', type: 'url', placeholder: 'https://linkedin.com/company/...' },
       { key: 'facebook', label: 'Facebook URL', icon: 'ri-facebook-line', type: 'url', placeholder: 'https://facebook.com/...' },
       { key: 'youtube', label: 'YouTube URL', icon: 'ri-youtube-line', type: 'url', placeholder: 'https://youtube.com/@...' },
+    ],
+  },
+  {
+    title: 'Klien & Mitra',
+    icon: 'ri-building-4-line',
+    fields: [
+      { key: 'client_card_1_name', label: 'Klien 1 — Nama Singkat', icon: 'ri-user-line', type: 'text', placeholder: 'APL Group' },
+      { key: 'client_card_1_fullName', label: 'Klien 1 — Nama Lengkap', icon: 'ri-user-line', type: 'text', placeholder: 'APL Group (PT Astakona Megatama)' },
+      { key: 'client_card_1_desc', label: 'Klien 1 — Deskripsi', icon: 'ri-file-text-line', type: 'textarea', placeholder: 'Pengembang properti komersial & residensial skala nasional' },
+      { key: 'client_card_1_projects', label: 'Klien 1 — Jumlah Proyek', icon: 'ri-building-line', type: 'number', placeholder: '3' },
+      { key: 'client_card_1_category', label: 'Klien 1 — Kategori', icon: 'ri-price-tag-3-line', type: 'select', options: CLIENT_CATEGORIES },
+      { key: 'client_card_2_name', label: 'Klien 2 — Nama Singkat', icon: 'ri-user-line', type: 'text', placeholder: 'Astra Land' },
+      { key: 'client_card_2_fullName', label: 'Klien 2 — Nama Lengkap', icon: 'ri-user-line', type: 'text', placeholder: 'Astra Land Indonesia' },
+      { key: 'client_card_2_desc', label: 'Klien 2 — Deskripsi', icon: 'ri-file-text-line', type: 'textarea', placeholder: 'Anak perusahaan Astra International di bidang properti premium' },
+      { key: 'client_card_2_projects', label: 'Klien 2 — Jumlah Proyek', icon: 'ri-building-line', type: 'number', placeholder: '5' },
+      { key: 'client_card_2_category', label: 'Klien 2 — Kategori', icon: 'ri-price-tag-3-line', type: 'select', options: CLIENT_CATEGORIES },
+      { key: 'client_card_3_name', label: 'Klien 3 — Nama Singkat', icon: 'ri-user-line', type: 'text', placeholder: 'ASG Group' },
+      { key: 'client_card_3_fullName', label: 'Klien 3 — Nama Lengkap', icon: 'ri-user-line', type: 'text', placeholder: 'ASG Group' },
+      { key: 'client_card_3_desc', label: 'Klien 3 — Deskripsi', icon: 'ri-file-text-line', type: 'textarea', placeholder: 'Pengembang kawasan perumahan dan komersial terpadu' },
+      { key: 'client_card_3_projects', label: 'Klien 3 — Jumlah Proyek', icon: 'ri-building-line', type: 'number', placeholder: '4' },
+      { key: 'client_card_3_category', label: 'Klien 3 — Kategori', icon: 'ri-price-tag-3-line', type: 'select', options: CLIENT_CATEGORIES },
+      { key: 'client_card_4_name', label: 'Klien 4 — Nama Singkat', icon: 'ri-user-line', type: 'text', placeholder: 'Yayasan Charitas' },
+      { key: 'client_card_4_fullName', label: 'Klien 4 — Nama Lengkap', icon: 'ri-user-line', type: 'text', placeholder: 'Yayasan Rumah Sakit Charitas' },
+      { key: 'client_card_4_desc', label: 'Klien 4 — Deskripsi', icon: 'ri-file-text-line', type: 'textarea', placeholder: 'Institusi kesehatan terkemuka di Sumatera Selatan' },
+      { key: 'client_card_4_projects', label: 'Klien 4 — Jumlah Proyek', icon: 'ri-building-line', type: 'number', placeholder: '2' },
+      { key: 'client_card_4_category', label: 'Klien 4 — Kategori', icon: 'ri-price-tag-3-line', type: 'select', options: CLIENT_CATEGORIES },
+      { key: 'client_card_5_name', label: 'Klien 5 — Nama Singkat', icon: 'ri-user-line', type: 'text', placeholder: 'PT Sabang Raya' },
+      { key: 'client_card_5_fullName', label: 'Klien 5 — Nama Lengkap', icon: 'ri-user-line', type: 'text', placeholder: 'PT Sabang Raya Investama' },
+      { key: 'client_card_5_desc', label: 'Klien 5 — Deskripsi', icon: 'ri-file-text-line', type: 'textarea', placeholder: 'Perusahaan investasi & hospitality di kawasan Batam' },
+      { key: 'client_card_5_projects', label: 'Klien 5 — Jumlah Proyek', icon: 'ri-building-line', type: 'number', placeholder: '1' },
+      { key: 'client_card_5_category', label: 'Klien 5 — Kategori', icon: 'ri-price-tag-3-line', type: 'select', options: CLIENT_CATEGORIES },
+      { key: 'client_card_6_name', label: 'Klien 6 — Nama Singkat', icon: 'ri-user-line', type: 'text', placeholder: 'Hilton Garden Inn' },
+      { key: 'client_card_6_fullName', label: 'Klien 6 — Nama Lengkap', icon: 'ri-user-line', type: 'text', placeholder: 'Hilton Garden Inn Batam' },
+      { key: 'client_card_6_desc', label: 'Klien 6 — Deskripsi', icon: 'ri-file-text-line', type: 'textarea', placeholder: 'Brand hotel internasional kelas dunia di Indonesia' },
+      { key: 'client_card_6_projects', label: 'Klien 6 — Jumlah Proyek', icon: 'ri-building-line', type: 'number', placeholder: '1' },
+      { key: 'client_card_6_category', label: 'Klien 6 — Kategori', icon: 'ri-price-tag-3-line', type: 'select', options: CLIENT_CATEGORIES },
     ],
   },
 ];
@@ -177,6 +225,26 @@ export default function SiteSettings() {
                       onChange={(e) => handleChange(field.key, e.target.value)}
                       placeholder={field.placeholder}
                       className="w-full bg-[#070C17] border border-slate-700 hover:border-slate-600 focus:border-amber-400/60 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-colors resize-none"
+                    />
+                  ) : field.type === 'select' ? (
+                    <select
+                      value={settings[field.key] || ''}
+                      onChange={(e) => handleChange(field.key, e.target.value)}
+                      className="w-full bg-[#070C17] border border-slate-700 hover:border-slate-600 focus:border-amber-400/60 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-colors appearance-none"
+                    >
+                      <option value="" className="bg-[#070C17] text-slate-500">Pilih kategori...</option>
+                      {field.options?.map((opt) => (
+                        <option key={opt} value={opt} className="bg-[#070C17] text-white">{opt}</option>
+                      ))}
+                    </select>
+                  ) : field.type === 'number' ? (
+                    <input
+                      type="number"
+                      min={0}
+                      value={settings[field.key] || ''}
+                      onChange={(e) => handleChange(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      className="w-full bg-[#070C17] border border-slate-700 hover:border-slate-600 focus:border-amber-400/60 rounded-xl px-4 py-3 text-sm text-white placeholder-slate-600 focus:outline-none transition-colors"
                     />
                   ) : (
                     <input

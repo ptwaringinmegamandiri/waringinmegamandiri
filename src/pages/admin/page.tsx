@@ -23,7 +23,7 @@ type ViewMode = 'list' | 'add' | 'edit';
 
 const BUILDING_TYPE_LABELS: Record<string, string> = {
   Hotel: 'Hotel', Apartemen: 'Apartemen', Ruko: 'Ruko', Kantor: 'Kantor',
-  Perumahan: 'Perumahan', Pasar: 'Pasar', Mall: 'Mall', 'Rumah Sakit': 'Rumah Sakit',
+  Perumahan: 'Perumahan', 'Perumahan Cluster': 'Perumahan Cluster', Pasar: 'Pasar', Mall: 'Mall', 'Rumah Sakit': 'Rumah Sakit',
   Sekolah: 'Sekolah', Kampus: 'Kampus', Gudang: 'Gudang', Pabrik: 'Pabrik',
   'Rumah Ibadah': 'Rumah Ibadah', 'Marketing Gallery': 'Marketing Gallery',
   'Club House': 'Club House', Infrastruktur: 'Infrastruktur', Lainnya: 'Lainnya',

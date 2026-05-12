@@ -3,7 +3,7 @@ import { supabase, ProjectRow } from '@/lib/supabase';
 import ImageUploader from './ImageUploader';
 
 const BUILDING_TYPES = [
-  'Hotel','Apartemen','Ruko','Kantor','Perumahan','Pasar','Mall',
+  'Hotel','Apartemen','Ruko','Kantor','Perumahan','Perumahan Cluster','Pasar','Mall',
   'Rumah Sakit','Sekolah','Kampus','Gudang','Pabrik','Rumah Ibadah',
   'Marketing Gallery','Club House','Infrastruktur','Lainnya',
 ];

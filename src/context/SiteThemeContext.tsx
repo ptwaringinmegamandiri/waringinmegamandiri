@@ -121,6 +121,13 @@ const ALL_THEME_KEYS = [
   'section_title_color','section_title_size','body_text_color','body_text_size',
   'cta_title_color','cta_title_size','cta_desc_color','cta_desc_size',
   'navbar_text_color','navbar_brand_size','footer_text_color','footer_text_size',
+  // Client cards (6 clients × 5 fields)
+  'client_card_1_name','client_card_1_fullName','client_card_1_desc','client_card_1_projects','client_card_1_category',
+  'client_card_2_name','client_card_2_fullName','client_card_2_desc','client_card_2_projects','client_card_2_category',
+  'client_card_3_name','client_card_3_fullName','client_card_3_desc','client_card_3_projects','client_card_3_category',
+  'client_card_4_name','client_card_4_fullName','client_card_4_desc','client_card_4_projects','client_card_4_category',
+  'client_card_5_name','client_card_5_fullName','client_card_5_desc','client_card_5_projects','client_card_5_category',
+  'client_card_6_name','client_card_6_fullName','client_card_6_desc','client_card_6_projects','client_card_6_category',
 ];
 
 const ALL_SECTION_KEYS = ['hero','stats','services','projects','clients','cta'];

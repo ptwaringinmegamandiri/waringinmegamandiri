@@ -21,6 +21,7 @@ const BUILDING_TYPE_LABELS: Record<string, string> = {
   Ruko: 'Ruko',
   Kantor: 'Kantor',
   Perumahan: 'Perumahan',
+  'Perumahan Cluster': 'Perumahan Cluster',
   Pasar: 'Pasar',
   Mall: 'Mall / Pusat Belanja',
   'Rumah Sakit': 'Rumah Sakit',
