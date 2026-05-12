@@ -24,24 +24,36 @@ interface InlineEditPopupProps {
   onSaved: () => void;
 }
 
+/* Map HTML data-editable-fields key → actual DB key in site_settings */
+const KEY_MAP: Record<string, string> = {
+  tagline: 'hero_tagline',
+  title: 'hero_title',
+  subtitle: 'hero_subtitle',
+  cta_primary_text: 'cta_primary_text',
+  cta_secondary_text: 'cta_secondary_text',
+};
+
+/* Display labels for known keys */
 const FIELD_LABELS: Record<string, { label: string; type: 'text' | 'textarea' | 'url'; maxLength?: number; placeholder?: string }> = {
-  tagline: { label: 'Tagline', type: 'text', maxLength: 120, placeholder: 'Tagline kecil di atas judul' },
-  title: { label: 'Judul Hero', type: 'textarea', maxLength: 200, placeholder: 'Gunakan \n untuk baris baru' },
-  subtitle: { label: 'Deskripsi', type: 'textarea', maxLength: 500, placeholder: 'Deskripsi singkat' },
-  cta_primary_text: { label: 'Tombol CTA Utama', type: 'text', maxLength: 40, placeholder: 'Teks tombol utama' },
-  cta_secondary_text: { label: 'Tombol CTA Sekunder', type: 'text', maxLength: 40, placeholder: 'Teks tombol sekunder' },
+  hero_tagline: { label: 'Tagline', type: 'text', maxLength: 120, placeholder: 'Tagline kecil di atas judul' },
+  hero_title: { label: 'Judul Hero', type: 'textarea', maxLength: 200, placeholder: 'Gunakan \\n untuk baris baru' },
+  hero_subtitle: { label: 'Deskripsi Hero', type: 'textarea', maxLength: 500, placeholder: 'Deskripsi singkat hero' },
+  hero_cta_primary_text: { label: 'Tombol CTA Primary Hero', type: 'text', maxLength: 40, placeholder: 'Teks tombol utama hero' },
+  hero_cta_secondary_text: { label: 'Tombol CTA Secondary Hero', type: 'text', maxLength: 40, placeholder: 'Teks tombol sekunder hero' },
   stats_text: { label: 'Teks Stats', type: 'text', maxLength: 120, placeholder: 'Misal: 35+ tahun pengalaman...' },
   services_title: { label: 'Judul Layanan', type: 'text', maxLength: 80, placeholder: 'Misal: Layanan Kami' },
   services_desc: { label: 'Deskripsi Layanan', type: 'textarea', maxLength: 500, placeholder: 'Deskripsi singkat layanan' },
   projects_title: { label: 'Judul Proyek', type: 'text', maxLength: 80, placeholder: 'Misal: Proyek Ongoing' },
   clients_title: { label: 'Judul Klien', type: 'text', maxLength: 120, placeholder: 'Misal: Dipercaya oleh Perusahaan Terkemuka' },
   clients_desc: { label: 'Deskripsi Klien', type: 'textarea', maxLength: 500, placeholder: 'Deskripsi mitra/klien' },
-  cta_title: { label: 'Judul CTA', type: 'textarea', maxLength: 200, placeholder: 'Gunakan \n untuk baris baru' },
+  cta_title: { label: 'Judul CTA', type: 'textarea', maxLength: 200, placeholder: 'Gunakan \\n untuk baris baru' },
   cta_desc: { label: 'Deskripsi CTA', type: 'textarea', maxLength: 500, placeholder: 'Deskripsi ajakan' },
+  cta_primary_text: { label: 'Tombol CTA Primary', type: 'text', maxLength: 40, placeholder: 'Teks tombol CTA primary' },
+  cta_secondary_text: { label: 'Tombol CTA Secondary', type: 'text', maxLength: 40, placeholder: 'Teks tombol CTA sekunder' },
 };
 
-export default function InlineEditPopup({ data, themeValues, onClose, onSaved }: InlineEditPopupProps) {
-  const [values, setValues] = useState<Record<string, string>>();
+export default function InlineEditPopup({ data, themeValues = {}, onClose, onSaved }: InlineEditPopupProps) {
+  const [values, setValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -50,7 +62,9 @@ export default function InlineEditPopup({ data, themeValues, onClose, onSaved }:
     if (!data) return;
     const initial: Record<string, string> = {};
     data.fields.forEach((f) => {
-      initial[f.key] = themeValues[f.key] || f.value || '';
+      // Map HTML key to DB key for lookup, then back to original key for display
+      const dbKey = KEY_MAP[f.key] || f.key;
+      initial[f.key] = themeValues[dbKey] || '';
     });
     setValues(initial);
     setSavedCount(0);
@@ -82,12 +96,19 @@ export default function InlineEditPopup({ data, themeValues, onClose, onSaved }:
     if (!data || saving) return;
     setSaving(true);
 
+    // Map each field's key to its DB key for saving
+    const dbFields = data.fields.map(f => ({
+      ...f,
+      dbKey: KEY_MAP[f.key] || f.key,
+    }));
+
     // Get all existing keys to avoid duplicate inserts
-    const { data: existing } = await supabase.from('site_settings').select('key').in('key', data.fields.map(f => f.key));
+    const allDbKeys = dbFields.map(f => f.dbKey);
+    const { data: existing } = await supabase.from('site_settings').select('key').in('key', allDbKeys);
     const existingKeys = new Set((existing || []).map((r: { key: string }) => r.key));
 
-    const toUpdate = data.fields.filter(f => existingKeys.has(f.key));
-    const toInsert = data.fields.filter(f => !existingKeys.has(f.key));
+    const toUpdate = dbFields.filter(f => existingKeys.has(f.dbKey));
+    const toInsert = dbFields.filter(f => !existingKeys.has(f.dbKey));
 
     let ok = 0;
 
@@ -96,7 +117,7 @@ export default function InlineEditPopup({ data, themeValues, onClose, onSaved }:
       const { error } = await supabase
         .from('site_settings')
         .update({ value: values[f.key] || '' })
-        .eq('key', f.key);
+        .eq('key', f.dbKey);
       if (!error) ok++;
     }
 
@@ -104,7 +125,7 @@ export default function InlineEditPopup({ data, themeValues, onClose, onSaved }:
     for (const f of toInsert) {
       const { error } = await supabase
         .from('site_settings')
-        .insert({ key: f.key, value: values[f.key] || '' });
+        .insert({ key: f.dbKey, value: values[f.key] || '' });
       if (!error) ok++;
     }
 
@@ -151,7 +172,9 @@ export default function InlineEditPopup({ data, themeValues, onClose, onSaved }:
         {/* Fields */}
         <div className="flex-1 overflow-y-auto p-5 space-y-4">
           {data.fields.map((field) => {
-            const meta = FIELD_LABELS[field.key] || { label: field.key, type: 'text' as const };
+            // Lookup by DB key first, then fallback to original key
+            const dbKey = KEY_MAP[field.key] || field.key;
+            const meta = FIELD_LABELS[dbKey] || FIELD_LABELS[field.key] || { label: field.key, type: 'text' as const };
             const isTextarea = meta.type === 'textarea';
             return (
               <div key={field.key}>

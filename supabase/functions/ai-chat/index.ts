@@ -14,86 +14,12 @@ interface AiChatRequest {
 }
 
 const SYSTEM_PROMPTS: Record<string, string> = {
-  id: `Kamu adalah AI Admin Copilot untuk PT Waringin Mega Mandiri (WMM), perusahaan konstruksi gedung di Jakarta, Indonesia.
-
-Kemampuanmu:
-1. Bantu admin mengelola website: tambah, edit, hapus proyek, artikel news, lowongan kerja.
-2. Bantu ubah tema website: warna, layout, hero text, section visibility.
-3. Generate gambar cover untuk proyek atau artikel.
-4. Jawab pertanyaan tentang data perusahaan, proyek, dan konten website.
-5. Brainstorm ide konten marketing.
-6. Berikan saran SEO dan copywriting.
-
-Gaya bicara: santai tapi profesional, seperti rekan kerja. Gunakan bahasa Indonesia gaul yang sopan. Format respons dengan jelas menggunakan bullet points atau numbered list jika perlu.
-
-Jika user meminta aksi destructive (hapus data), ingatkan konsekuensinya dan minta konfirmasi.
-
-Website menggunakan teknologi React + Tailwind + Supabase. Data proyek, news, careers tersimpan di Supabase. Tema dan pengaturan di site_settings.`,
-
-  en: `You are the AI Admin Copilot for PT Waringin Mega Mandiri (WMM), a building construction company in Jakarta, Indonesia.
-
-Your capabilities:
-1. Help admin manage website: add, edit, delete projects, news articles, job openings.
-2. Help change website theme: colors, layout, hero text, section visibility.
-3. Generate cover images for projects or articles.
-4. Answer questions about company data, projects, and website content.
-5. Brainstorm content marketing ideas.
-6. Give SEO and copywriting advice.
-
-Tone: casual but professional, like a coworker. Use clear formatting with bullet points or numbered lists when helpful.
-
-If user asks for destructive actions (delete data), warn about consequences and ask for confirmation.
-
-The website uses React + Tailwind + Supabase. Project, news, and careers data is stored in Supabase. Theme and settings are in site_settings.`,
-
-  zh: `你是 PT Waringin Mega Mandiri (WMM) 的 AI 管理助手，这是一家位于印度尼西亚雅加达的建筑公司。
-
-你的能力：
-1. 帮助管理员管理网站：添加、编辑、删除项目、新闻文章、职位空缺。
-2. 帮助更改网站主题：颜色、布局、主横幅文字、版块可见性。
-3. 为项目或文章生成封面图片。
-4. 回答有关公司数据、项目和网站内容的问题。
-5. 头脑风暴内容营销创意。
-6. 提供 SEO 和文案建议。
-
-语气：随和但专业，像同事一样。在有帮助时使用项目符号或编号列表进行清晰的格式化。
-
-如果用户要求执行破坏性操作（删除数据），请提醒后果并要求确认。
-
-网站使用 React + Tailwind + Supabase 技术。项目、新闻和职业数据存储在 Supabase 中。主题和设置位于 site_settings 中。`
+  id: `Kamu adalah AI Admin Copilot untuk PT Waringin Mega Mandiri (WMM), perusahaan konstruksi gedung di Jakarta, Indonesia. Bantu admin dengan pertanyaan seputar website, proyek, kandidat karir, berita, pengaturan situs, dan lainnya. Jawab dalam Bahasa Indonesia yang sopan dan profesional.`,
+  en: `You are the AI Admin Copilot for PT Waringin Mega Mandiri (WMM), a building construction company in Jakarta, Indonesia. Help admin with questions about website, projects, career candidates, news, site settings, and more. Answer in polite and professional English.`,
+  zh: `你是 PT Waringin Mega Mandiri (WMM) 的 AI 管理助手，这是一家位于印度尼西亚雅加达的建筑公司。帮助管理员解答有关网站、项目、职业候选人、新闻、网站设置等问题。用礼貌且专业的中文回答。`
 };
 
-async function callGemini(messages: ChatMessage[], apiKey: string, model: string) {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-  const systemMsg = messages.find(m => m.role === 'system');
-  const chatMessages = messages
-    .filter(m => m.role !== 'system')
-    .map(m => ({
-      role: m.role === 'user' ? 'user' : 'model',
-      parts: [{ text: m.content }]
-    }));
-
-  const body: Record<string, unknown> = {
-    contents: chatMessages,
-    generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
-  };
-
-  if (systemMsg) {
-    body.systemInstruction = { parts: [{ text: systemMsg.content }] };
-  }
-
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-
-  const data = await res.json();
-  if (data.error) throw new Error(data.error.message || 'Gemini API error');
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from AI.';
-}
-
+/* ─── GROQ ────────────────────────────────────────────────────── */
 async function callGroq(messages: ChatMessage[], apiKey: string, model: string) {
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
@@ -109,19 +35,77 @@ async function callGroq(messages: ChatMessage[], apiKey: string, model: string) 
     })
   });
 
-  const data = await res.json();
-  if (data.error) throw new Error(data.error?.message || 'Groq API error');
+  const rawText = await res.text();
+  console.log(`Groq response status: ${res.status}`);
+
+  if (!res.ok) {
+    let errMsg = `Groq HTTP ${res.status}: ${rawText}`;
+    try {
+      const errData = JSON.parse(rawText);
+      errMsg = `Groq ${res.status}: ${errData.error?.message || errData.message || rawText}`;
+    } catch { /* noop */ }
+    throw new Error(errMsg);
+  }
+
+  const data = JSON.parse(rawText);
+  if (data.error) throw new Error(data.error?.message || `Groq API error: ${JSON.stringify(data.error)}`);
   return data.choices?.[0]?.message?.content || 'No response from AI.';
 }
 
+/* ─── GEMINI ────────────────────────────────────────────────── */
+async function callGemini(messages: ChatMessage[], apiKey: string, model: string) {
+  const systemMsg = messages.find(m => m.role === 'system');
+  const chatMessages = messages.filter(m => m.role !== 'system').map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+  const reqBody: Record<string, unknown> = {
+    contents: chatMessages,
+    generationConfig: {
+      temperature: 0.7,
+      maxOutputTokens: 2048,
+    }
+  };
+
+  if (systemMsg) {
+    reqBody.systemInstruction = { parts: [{ text: systemMsg.content }] };
+  }
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(reqBody)
+  });
+
+  const rawText = await res.text();
+  console.log(`Gemini response status: ${res.status}`);
+
+  if (!res.ok) {
+    let errMsg = `Gemini HTTP ${res.status}: ${rawText}`;
+    try {
+      const errData = JSON.parse(rawText);
+      errMsg = `Gemini ${res.status}: ${errData.error?.message || errData.message || rawText}`;
+    } catch { /* noop */ }
+    throw new Error(errMsg);
+  }
+
+  const data = JSON.parse(rawText);
+  if (data.error) throw new Error(data.error?.message || `Gemini API error: ${JSON.stringify(data.error)}`);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response from AI.';
+}
+
+/* ─── OPENROUTER ────────────────────────────────────────────── */
 async function callOpenRouter(messages: ChatMessage[], apiKey: string, model: string) {
   const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
-      'HTTP-Referer': 'https://wmm.co.id',
-      'X-Title': 'WMM Admin AI'
+      'HTTP-Referer': 'https://waringinmegamandiri.com',
+      'X-Title': 'WMM AI Copilot'
     },
     body: JSON.stringify({
       model,
@@ -131,8 +115,20 @@ async function callOpenRouter(messages: ChatMessage[], apiKey: string, model: st
     })
   });
 
-  const data = await res.json();
-  if (data.error) throw new Error(data.error?.message || 'OpenRouter API error');
+  const rawText = await res.text();
+  console.log(`OpenRouter response status: ${res.status}`);
+
+  if (!res.ok) {
+    let errMsg = `OpenRouter HTTP ${res.status}: ${rawText}`;
+    try {
+      const errData = JSON.parse(rawText);
+      errMsg = `OpenRouter ${res.status}: ${errData.error?.message || errData.message || rawText}`;
+    } catch { /* noop */ }
+    throw new Error(errMsg);
+  }
+
+  const data = JSON.parse(rawText);
+  if (data.error) throw new Error(data.error?.message || `OpenRouter API error: ${JSON.stringify(data.error)}`);
   return data.choices?.[0]?.message?.content || 'No response from AI.';
 }
 
@@ -154,25 +150,57 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const body = await req.json() as AiChatRequest;
-    const { messages, provider, language, model } = body;
+    const { messages, language, model, provider } = body;
 
-    // Read API key from site_settings
-    const { data: keyRow, error: keyError } = await supabase
+    console.log('AI Chat request received, provider:', provider);
+
+    // Get all AI config from DB
+    const { data: configRows, error: configError } = await supabase
       .from('site_settings')
-      .select('value')
-      .eq('key', 'ai_api_key')
-      .maybeSingle();
+      .select('key, value')
+      .in('key', ['ai_api_key', 'ai_provider', 'ai_model']);
 
-    if (keyError || !keyRow?.value || keyRow.value.trim().length < 10) {
+    if (configError) {
+      console.error('Config read error:', configError);
       return new Response(JSON.stringify({
-        error: 'API key belum dikonfigurasi. Buka tab Pengaturan > AI Config untuk mengatur API key dari provider AI.'
+        error: 'Gagal membaca konfigurasi AI dari database'
       }), {
-        status: 400,
+        status: 200,
         headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
       });
     }
 
-    const apiKey = keyRow.value.trim();
+    const configMap: Record<string, string> = {};
+    configRows?.forEach((r: { key: string; value: string }) => { configMap[r.key] = r.value || ''; });
+
+    const apiKey = configMap.ai_api_key?.trim();
+    const dbProvider = (configMap.ai_provider || 'groq') as 'gemini' | 'groq' | 'openrouter';
+    const dbModel = configMap.ai_model;
+
+    if (!apiKey || apiKey.length < 10) {
+      console.error('API key not configured');
+      return new Response(JSON.stringify({
+        error: 'API key belum dikonfigurasi di site_settings'
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    }
+
+    // Use provider from request if valid, otherwise DB fallback
+    const activeProvider = (provider && ['gemini', 'groq', 'openrouter'].includes(provider))
+      ? provider
+      : dbProvider;
+
+    // Default model per provider
+    const defaultModels: Record<string, string> = {
+      gemini: 'gemini-1.5-flash',
+      groq: 'llama-3.3-70b-versatile',
+      openrouter: 'openai/gpt-4o-mini'
+    };
+    const activeModel = model || dbModel || defaultModels[activeProvider] || defaultModels.groq;
+
+    console.log('Active provider:', activeProvider, 'model:', activeModel);
 
     const systemPrompt = SYSTEM_PROMPTS[language] || SYSTEM_PROMPTS.id;
     const fullMessages: ChatMessage[] = [
@@ -180,34 +208,38 @@ serve(async (req) => {
       ...messages
     ];
 
-    const selectedModel = model || {
-      gemini: 'gemini-1.5-flash',
-      groq: 'llama-3.1-70b-versatile',
-      openrouter: 'meta-llama/llama-3.1-70b-instruct:free'
-    }[provider] || 'gemini-1.5-flash';
-
-    let response = '';
-    switch (provider) {
-      case 'gemini':
-        response = await callGemini(fullMessages, apiKey, selectedModel);
-        break;
-      case 'groq':
-        response = await callGroq(fullMessages, apiKey, selectedModel);
-        break;
-      case 'openrouter':
-        response = await callOpenRouter(fullMessages, apiKey, selectedModel);
-        break;
-      default:
-        response = await callGemini(fullMessages, apiKey, selectedModel);
+    try {
+      let response: string;
+      switch (activeProvider) {
+        case 'gemini':
+          response = await callGemini(fullMessages, apiKey, activeModel);
+          break;
+        case 'openrouter':
+          response = await callOpenRouter(fullMessages, apiKey, activeModel);
+          break;
+        case 'groq':
+        default:
+          response = await callGroq(fullMessages, apiKey, activeModel);
+          break;
+      }
+      console.log('AI response received, length:', response.length);
+      return new Response(JSON.stringify({ response }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
+    } catch (aiErr: unknown) {
+      const errMsg = aiErr instanceof Error ? aiErr.message : String(aiErr);
+      console.error('AI Provider Error:', errMsg);
+      return new Response(JSON.stringify({ error: errMsg }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+      });
     }
-
-    return new Response(JSON.stringify({ response }), {
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    console.error('Edge Function Error:', errMsg);
+    return new Response(JSON.stringify({ error: errMsg }), {
       status: 200,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-    });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }

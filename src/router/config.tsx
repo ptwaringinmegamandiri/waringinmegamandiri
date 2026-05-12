@@ -6,6 +6,7 @@ import KarirPage from '@/pages/karir/page';
 import NewsPage from '@/pages/news/page';
 import KontakPage from '@/pages/kontak/page';
 import AdminPage from '@/pages/admin/page';
+import LoginPage from '@/pages/login/page';
 import PreviewPage from '@/pages/preview/page';
 import NotFound from '@/pages/NotFound';
 
@@ -33,6 +34,10 @@ const routes: RouteObject[] = [
   {
     path: '/kontak',
     element: <KontakPage />,
+  },
+  {
+    path: '/login',
+    element: <LoginPage />,
   },
   {
     path: '/admin',

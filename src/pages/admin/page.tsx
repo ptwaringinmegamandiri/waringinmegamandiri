@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { supabase, ProjectRow, NewsRow, CareerRow, LegacyProjectRow } from '@/lib/supabase';
 import ProjectForm from './components/ProjectForm';
 import NewsForm from './components/NewsForm';
@@ -42,7 +43,10 @@ const TABS: { key: ActiveTab; label: string; icon: string }[] = [
 ];
 
 export default function AdminPage() {
+  const navigate = useNavigate();
   const { theme, sections, refresh } = useSiteTheme();
+  const [authUser, setAuthUser] = useState<null | { email?: string }>(null);
+  const [authLoading, setAuthLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ActiveTab>('projects');
   const [view, setView] = useState<ViewMode>('list');
   const [toast, setToast] = useState('');
@@ -92,6 +96,54 @@ export default function AdminPage() {
   const showToast = (msg: string) => {
     setToast(msg);
     setTimeout(() => setToast(''), 4000);
+  };
+
+  // Auth check
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Check dev mode auth first
+      const devAuth = localStorage.getItem('wmm_dev_auth');
+      if (devAuth) {
+        try {
+          const parsed = JSON.parse(devAuth);
+          if (parsed.email && parsed.timestamp) {
+            setAuthUser({ email: parsed.email });
+            setAuthLoading(false);
+            return;
+          }
+        } catch {
+          localStorage.removeItem('wmm_dev_auth');
+        }
+      }
+
+      const { data } = await supabase.auth.getSession();
+      if (data?.session?.user) {
+        setAuthUser({ email: data.session.user.email || '' });
+      } else {
+        navigate('/login');
+      }
+      setAuthLoading(false);
+    };
+    checkAuth();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setAuthUser({ email: session.user.email || '' });
+      } else {
+        // Don't redirect if dev mode
+        if (!localStorage.getItem('wmm_dev_auth')) {
+          navigate('/login');
+        }
+      }
+    });
+
+    return () => { listener.subscription.unsubscribe(); };
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    localStorage.removeItem('wmm_dev_auth');
+    await supabase.auth.signOut();
+    navigate('/login');
   };
 
   // Fetch functions
@@ -553,6 +605,14 @@ export default function AdminPage() {
 
   return (
     <div className="h-screen w-screen bg-[#080C14] text-white flex flex-col overflow-hidden">
+      {/* Auth Loading Screen */}
+      {authLoading && (
+        <div className="fixed inset-0 z-[70] bg-[#080C14] flex flex-col items-center justify-center gap-4">
+          <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-500 text-xs">Memeriksa sesi...</p>
+        </div>
+      )}
+
       {/* Toast */}
       {toast && (
         <div className="fixed top-4 right-4 z-[60] bg-amber-400 text-black text-xs font-bold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-lg animate-fade-in">
@@ -617,7 +677,7 @@ export default function AdminPage() {
       {/* Inline Edit Popup */}
       <InlineEditPopup
         data={inlineEditData}
-        themeValues={theme as Record<string, string>}
+        themeValues={(theme || {}) as Record<string, string>}
         onClose={() => setInlineEditData(null)}
         onSaved={() => {
           showToast('Perubahan tersimpan! Preview diperbarui.');
@@ -664,6 +724,18 @@ export default function AdminPage() {
 
         {/* Right actions */}
         <div className="flex items-center gap-2 ml-4 shrink-0">
+          {authUser?.email && (
+            <div className="flex items-center gap-2 mr-2">
+              <span className="text-slate-500 text-[10px] hidden sm:block">{authUser.email}</span>
+              <button
+                onClick={handleLogout}
+                className="w-6 h-6 flex items-center justify-center rounded hover:bg-red-500/20 text-slate-400 hover:text-red-400 cursor-pointer transition-colors"
+                title="Logout"
+              >
+                <i className="ri-logout-box-r-line text-xs" />
+              </button>
+            </div>
+          )}
           {view === 'list' && activeTab !== 'highlight' && activeTab !== 'settings' && activeTab !== 'applications' && activeTab !== 'theme' && (
             <button onClick={handleAdd} className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-[11px] px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap flex items-center gap-1 transition-colors">
               <i className="ri-add-line" />{getAddLabel()}
@@ -728,6 +800,8 @@ export default function AdminPage() {
                   editField: payload.editField,
                   fields: payload.editableFields.map((key) => ({ key, label: key, value: theme[key as keyof typeof theme] || '' })),
                 });
+                // When inline editing happens, we need to refresh theme data for the popup
+                refresh();
               }}
               onToggleEditMode={() => setPreviewEditMode(!previewEditMode)}
             />
@@ -774,6 +848,19 @@ export default function AdminPage() {
                 onProjectAdded={fetchProjects}
                 onNewsAdded={fetchNews}
                 onCareerAdded={fetchCareers}
+                onThemeUpdated={() => {
+                  refresh();
+                  // Trigger preview iframe refresh
+                  setTimeout(() => {
+                    const iframe = document.querySelector('iframe[title="Website Preview"]') as HTMLIFrameElement | null;
+                    if (iframe?.contentWindow) {
+                      iframe.contentWindow.postMessage(
+                        { type: 'WMM_THEME_UPDATE', theme: theme, sections: sections },
+                        '*'
+                      );
+                    }
+                  }, 300);
+                }}
                 compact={!chatExpanded}
               />
             </div>

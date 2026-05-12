@@ -55,13 +55,19 @@ export function useAiChat() {
         },
       });
 
-      if (res.error) throw new Error(res.error.message);
+      if (res.error) {
+        console.error('Edge Function Error:', res.error);
+        console.error('Edge Function Status:', res.error.status);
+        console.error('Edge Function Context:', res.error.context);
+        throw new Error(`[${res.error.status || 'unknown'}] ${res.error.message || res.error}`);
+      }
       const data = res.data as { response?: string; error?: string };
       if (data.error) throw new Error(data.error);
       setLoading(false);
       return data.response || 'AI tidak memberikan respons.';
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Terjadi kesalahan';
+      console.error('AI Chat Error Detail:', msg);
       setLoading(false);
       setError(msg);
       return `Maaf, AI sedang tidak tersedia: ${msg}. Coba lagi nanti atau periksa API key di Pengaturan > AI Config.`;

@@ -34,7 +34,7 @@ export default function HeroSection() {
     <section className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden"
       data-preview-id="hero-section"
       data-preview-label="Hero Section"
-      data-editable-fields="tagline,title,subtitle,cta_primary_text,cta_secondary_text"
+      data-editable-fields="hero_tagline,hero_title,hero_subtitle,hero_cta_primary_text,hero_cta_secondary_text"
       data-edit-field="hero"
     >
       {/* Background Image */}

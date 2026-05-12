@@ -6,6 +6,7 @@ interface AiCopilotPanelProps {
   onProjectAdded?: () => void;
   onNewsAdded?: () => void;
   onCareerAdded?: () => void;
+  onThemeUpdated?: () => void;
   compact?: boolean;
 }
 
@@ -50,7 +51,7 @@ function getRandom<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
-export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAdded, compact }: AiCopilotPanelProps) {
+export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAdded, onThemeUpdated, compact }: AiCopilotPanelProps) {
   const [messages, setMessages] = useState<CopilotMessage[]>([
     {
       role: 'assistant',
@@ -111,6 +112,9 @@ export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAd
         if (pendingIntent.type === 'add_project') onProjectAdded?.();
         if (pendingIntent.type === 'add_news') onNewsAdded?.();
         if (pendingIntent.type === 'add_career') onCareerAdded?.();
+        if (['update_setting','update_theme_color','update_hero_content','update_sections','generate_hero_image'].includes(pendingIntent.type)) {
+          onThemeUpdated?.();
+        }
       }
       setPendingIntent(null);
       setLoading(false);
@@ -135,6 +139,9 @@ export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAd
           if (followUp.followUpFor.type === 'add_project') onProjectAdded?.();
           if (followUp.followUpFor.type === 'add_news') onNewsAdded?.();
           if (followUp.followUpFor.type === 'add_career') onCareerAdded?.();
+          if (['update_setting','update_theme_color','update_hero_content','update_sections','generate_hero_image'].includes(followUp.followUpFor.type)) {
+            onThemeUpdated?.();
+          }
         }
         setFollowUpIntent(null);
         setLoading(false);
@@ -176,6 +183,9 @@ export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAd
         if (intent.type === 'add_project') onProjectAdded?.();
         if (intent.type === 'add_news') onNewsAdded?.();
         if (intent.type === 'add_career') onCareerAdded?.();
+        if (['update_setting','update_theme_color','update_hero_content','update_sections','generate_hero_image'].includes(intent.type)) {
+          onThemeUpdated?.();
+        }
       }
       setLoading(false);
       return;
