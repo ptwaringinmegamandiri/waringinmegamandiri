@@ -28,7 +28,7 @@ export default function Footer() {
   const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
   const brandSize = parseInt(theme.navbar_brand_size || '16', 10);
   const brandColor = theme.navbar_brand_color || '#FFFFFF';
-  const subBrandColor = theme.navbar_sub_brand_color || '#38BDF8';
+  const subBrandColor = theme.navbar_sub_brand_color || '#2563EB';
 
   const footerTagline = theme.footer_tagline || t('footer.desc');
   const footerCopyright = theme.footer_copyright || t('footer.copyright');

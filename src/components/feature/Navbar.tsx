@@ -28,7 +28,7 @@ export default function Navbar() {
   const navTextColor = theme.navbar_text_color || '#FFFFFF';
   const brandSize = parseInt(theme.navbar_brand_size || '16', 10);
   const brandColor = theme.navbar_brand_color || '#FFFFFF';
-  const subBrandColor = theme.navbar_sub_brand_color || '#38BDF8';
+  const subBrandColor = theme.navbar_sub_brand_color || '#2563EB';
 
   const navLinks = [
     { label: t('nav.beranda'), path: '/' },

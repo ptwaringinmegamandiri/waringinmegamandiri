@@ -174,9 +174,10 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
     onChange?.();
   };
 
-  const updateColor = (key: 'accent_color' | 'secondary_color' | 'navbar_brand_color' | 'navbar_sub_brand_color', value: string) => {
-    setTheme({ ...theme, [key]: value });
-    upsertSetting(key, value);
+  const updateColor = async (key: 'accent_color' | 'secondary_color' | 'navbar_brand_color' | 'navbar_sub_brand_color', value: string) => {
+    const next = { ...theme, [key]: value };
+    setTheme(next);
+    await upsertSetting(key, value);
     refresh();
     onChange?.();
     showToast('Warna langsung berubah!');
@@ -649,11 +650,11 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
           <div className="flex items-center gap-2">
             <input
               type="color"
-              value={theme.navbar_sub_brand_color || '#38BDF8'}
+              value={theme.navbar_sub_brand_color || '#2563EB'}
               onChange={(e) => updateColor('navbar_sub_brand_color', e.target.value)}
               className="w-8 h-8 rounded-full cursor-pointer border-0 p-0 bg-transparent"
             />
-            <span className="text-slate-400 text-xs">{theme.navbar_sub_brand_color || '#38BDF8'}</span>
+            <span className="text-slate-400 text-xs">{theme.navbar_sub_brand_color || '#2563EB'}</span>
           </div>
         </div>
       </div>
