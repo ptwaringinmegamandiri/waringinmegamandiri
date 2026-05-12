@@ -65,33 +65,36 @@ export default function LegacyProjectForm({ project, onSaved, onCancel }: Legacy
     }
     setSaving(true);
     try {
+      const payload = {
+        year: Number(form.year),
+        name: form.name.trim(),
+        client: form.client.trim(),
+        value: form.value.trim(),
+        category: form.category,
+      };
+      console.log('Legacy project payload:', payload, 'Mode:', project ? 'UPDATE' : 'INSERT');
+
       if (project) {
-        const { error: upErr } = await supabase
+        const { data, error: upErr } = await supabase
           .from('legacy_projects')
-          .update({
-            year: Number(form.year),
-            name: form.name,
-            client: form.client,
-            value: form.value,
-            category: form.category,
-          })
-          .eq('id', project.id);
-        if (upErr) throw upErr;
+          .update(payload)
+          .eq('id', project.id)
+          .select();
+        console.log('Update response:', { data, error: upErr });
+        if (upErr) throw new Error(`[UPDATE] ${upErr.message} (code: ${upErr.code})`);
       } else {
-        const { error: insErr } = await supabase
+        const { data, error: insErr } = await supabase
           .from('legacy_projects')
-          .insert({
-            year: Number(form.year),
-            name: form.name,
-            client: form.client,
-            value: form.value,
-            category: form.category,
-          });
-        if (insErr) throw insErr;
+          .insert(payload)
+          .select();
+        console.log('Insert response:', { data, error: insErr });
+        if (insErr) throw new Error(`[INSERT] ${insErr.message} (code: ${insErr.code})`);
       }
       onSaved();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Terjadi kesalahan.');
+      const msg = err instanceof Error ? err.message : 'Terjadi kesalahan tak dikenal.';
+      console.error('Legacy project save error:', err);
+      setError(msg);
     } finally {
       setSaving(false);
     }

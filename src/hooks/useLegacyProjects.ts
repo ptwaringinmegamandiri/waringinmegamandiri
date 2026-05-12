@@ -12,6 +12,9 @@ export function useLegacyProjects() {
       .select('*')
       .order('year', { ascending: false })
       .order('id', { ascending: false });
+    if (error) {
+      console.error('useLegacyProjects fetch error:', error);
+    }
     if (!error && data) setProjects(data as LegacyProjectRow[]);
     setLoading(false);
   }, []);
