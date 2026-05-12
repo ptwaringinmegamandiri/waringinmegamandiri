@@ -110,26 +110,33 @@ export interface SiteThemeConfig {
   about_profile_text?: string;
   about_vision?: string;
   about_mission?: string;
+  about_bg_url?: string;
   // Karir page
   karir_title?: string;
   karir_subtitle?: string;
   karir_cta_title?: string;
   karir_cta_desc?: string;
+  karir_bg_url?: string;
   // News page
   news_title?: string;
   news_subtitle?: string;
   news_newsletter_title?: string;
   news_newsletter_desc?: string;
+  news_bg_url?: string;
   // Portfolio page
   portfolio_title?: string;
   portfolio_subtitle?: string;
   portfolio_cta_text?: string;
+  portfolio_bg_url?: string;
   // Kontak page
   kontak_title?: string;
   kontak_subtitle?: string;
   kontak_cta_text?: string;
+  kontak_bg_url?: string;
   // Navbar
   navbar_brand_text?: string;
+  navbar_brand_color?: string;
+  navbar_sub_brand_color?: string;
   navbar_cta_text?: string;
   navbar_logo_url?: string;
   navbar_logo_width?: string;
@@ -140,6 +147,8 @@ export interface SiteThemeConfig {
   footer_logo_url?: string;
   footer_logo_width?: string;
   footer_logo_height?: string;
+  // Global assets
+  favicon_url?: string;
   // Styling
   hero_title_color?: string;
   hero_subtitle_color?: string;

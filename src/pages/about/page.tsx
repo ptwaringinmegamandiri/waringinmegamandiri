@@ -22,6 +22,7 @@ export default function AboutPage() {
             title={theme.about_title || t('about.heroTitle')}
             subtitle={theme.about_subtitle || t('about.heroSubtitle')}
             breadcrumb={t('about.breadcrumb')}
+            bgImageUrl={theme.about_bg_url}
           />
         </div>
         <div data-preview-id="about-profile" data-preview-label="Company Profile" data-editable-fields="about_profile_text">

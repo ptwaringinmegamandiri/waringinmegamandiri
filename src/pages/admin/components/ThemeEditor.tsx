@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useSiteTheme } from '@/context/SiteThemeContext';
-import { useThemeContext } from '@/context/ThemeContext';
 
 interface ThemeEditorProps {
   onChange?: () => void;
@@ -28,16 +27,51 @@ const SECTIONS = [
   { key: 'cta', label: 'CTA Section', icon: 'ri-megaphone-line' },
 ] as const;
 
+const PAGE_BGS = [
+  { key: 'about_bg_url' as const, label: 'About / Tentang Kami', defaultPrompt: 'dark moody construction site at dusk with massive concrete building skeleton under construction, tower crane silhouette against stormy dark charcoal sky, warm amber industrial floodlights, cinematic wide angle' },
+  { key: 'karir_bg_url' as const, label: 'Karir / Careers', defaultPrompt: 'dark cinematic construction workers team meeting on site, engineers in hard hats and safety vests, industrial building site at dusk, dramatic orange floodlights, steel structure scaffolding background' },
+  { key: 'kontak_bg_url' as const, label: 'Kontak / Contact', defaultPrompt: 'dark moody construction site at dusk with massive concrete building under construction, tower crane silhouette, warm amber industrial floodlights, steel scaffolding and rebar, cinematic wide angle' },
+  { key: 'news_bg_url' as const, label: 'Berita / News', defaultPrompt: 'dark modern cityscape at night with construction cranes and skyscrapers under construction, dramatic moody atmosphere with warm amber lighting, cinematic urban photography' },
+  { key: 'portfolio_bg_url' as const, label: 'Portofolio', defaultPrompt: 'dark moody construction site at dusk with massive concrete building skeleton under construction, tower crane silhouette against stormy sky, warm amber floodlights, cinematic wide angle' },
+] as const;
+
 function boolToStr(v: boolean | undefined): string {
   return v === false ? 'false' : 'true';
 }
 
+function useImageUpload() {
+  const [uploading, setUploading] = useState(false);
+
+  const upload = async (file: File, folder: string) => {
+    setUploading(true);
+    try {
+      const ext = file.name.split('.').pop();
+      const path = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from('site-assets').upload(path, file, {
+        cacheControl: '3600',
+        upsert: true,
+      });
+      if (error) throw error;
+      const { data } = supabase.storage.from('site-assets').getPublicUrl(path);
+      setUploading(false);
+      return data.publicUrl;
+    } catch {
+      setUploading(false);
+      return null;
+    }
+  };
+
+  return { upload, uploading };
+}
+
 export default function ThemeEditor({ onChange }: ThemeEditorProps) {
   const { theme, sections, refresh, setTheme, setSections } = useSiteTheme();
-  const { toggleTheme } = useThemeContext();
   const [toast, setToast] = useState('');
   const [saving, setSaving] = useState(false);
-  const [generating, setGenerating] = useState(false);
+  const [generating, setGenerating] = useState<string | null>(null);
+  const { upload, uploading } = useImageUpload();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [pendingUploadKey, setPendingUploadKey] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToast(msg);
@@ -55,9 +89,11 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
 
   const handleSaveAll = async () => {
     setSaving(true);
+    // Core
     await upsertSetting('accent_color', theme.accent_color || '#3B82F6');
     await upsertSetting('secondary_color', theme.secondary_color || '#93C5FD');
     await upsertSetting('theme_mode', theme.theme_mode || 'dark');
+    // Hero
     await upsertSetting('hero_title', theme.hero_title || '');
     await upsertSetting('hero_subtitle', theme.hero_subtitle || '');
     await upsertSetting('hero_tagline', theme.hero_tagline || '');
@@ -66,6 +102,22 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
     await upsertSetting('hero_cta_secondary_text', theme.hero_cta_secondary_text || '');
     await upsertSetting('hero_cta_secondary_url', theme.hero_cta_secondary_url || '');
     await upsertSetting('hero_image_url', theme.hero_image_url || '');
+    // Page backgrounds
+    for (const pg of PAGE_BGS) {
+      await upsertSetting(pg.key, theme[pg.key] || '');
+    }
+    // Global assets
+    await upsertSetting('favicon_url', theme.favicon_url || '');
+    await upsertSetting('navbar_logo_url', theme.navbar_logo_url || '');
+    await upsertSetting('footer_logo_url', theme.footer_logo_url || '');
+    // Navbar & Footer sizes
+    await upsertSetting('navbar_logo_width', theme.navbar_logo_width || '140');
+    await upsertSetting('navbar_logo_height', theme.navbar_logo_height || '50');
+    await upsertSetting('footer_logo_width', theme.footer_logo_width || '120');
+    await upsertSetting('footer_logo_height', theme.footer_logo_height || '40');
+    // Brand colors
+    await upsertSetting('navbar_brand_color', theme.navbar_brand_color || '');
+    await upsertSetting('navbar_sub_brand_color', theme.navbar_sub_brand_color || '');
 
     for (const s of SECTIONS) {
       await upsertSetting(s.key, boolToStr(sections[s.key]));
@@ -77,16 +129,37 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
     onChange?.();
   };
 
-  const handleGenerateHeroImage = async (prompt: string) => {
-    setGenerating(true);
+  const handleGenerateImage = async (key: string, prompt: string, width = 1920, height = 700) => {
+    setGenerating(key);
     const safePrompt = encodeURIComponent(prompt);
     const seq = Date.now() + Math.floor(Math.random() * 1000);
-    const imageUrl = `https://readdy.ai/api/search-image?query=$%7BsafePrompt%7D&width=1920&height=1080&seq=${seq}&orientation=landscape`;
-    await upsertSetting('hero_image_url', imageUrl);
-    setTheme({ ...theme, hero_image_url: imageUrl });
-    setGenerating(false);
-    showToast('Gambar hero baru berhasil di-generate dan langsung tersimpan!');
+    const imageUrl = `https://readdy.ai/api/search-image?query=${safePrompt}&width=${width}&height=${height}&seq=${seq}&orientation=landscape`;
+    await upsertSetting(key, imageUrl);
+    setTheme({ ...theme, [key]: imageUrl });
+    setGenerating(null);
+    showToast(`Gambar ${key.replace('_bg_url', '')} baru berhasil di-generate!`);
     onChange?.();
+  };
+
+  const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !pendingUploadKey) return;
+    const url = await upload(file, 'backgrounds');
+    if (url) {
+      setTheme({ ...theme, [pendingUploadKey]: url });
+      upsertSetting(pendingUploadKey, url);
+      showToast('Gambar berhasil di-upload!');
+      onChange?.();
+    } else {
+      showToast('Upload gagal, coba lagi.');
+    }
+    setPendingUploadKey(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const triggerUpload = (key: string) => {
+    setPendingUploadKey(key);
+    fileInputRef.current?.click();
   };
 
   const updateHeroField = (field: keyof typeof theme, value: string) => {
@@ -101,27 +174,25 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
     onChange?.();
   };
 
-  const updateColor = (key: 'accent_color' | 'secondary_color', value: string) => {
+  const updateColor = (key: 'accent_color' | 'secondary_color' | 'navbar_brand_color' | 'navbar_sub_brand_color', value: string) => {
     setTheme({ ...theme, [key]: value });
     upsertSetting(key, value);
     refresh();
     onChange?.();
-    showToast(`${key === 'accent_color' ? 'Accent' : 'Secondary'} langsung berubah!`);
-  };
-
-  const handleToggleMode = (mode: 'dark' | 'light') => {
-    setTheme({ ...theme, theme_mode: mode });
-    upsertSetting('theme_mode', mode);
-    if ((theme.theme_mode || 'dark') !== mode) {
-      toggleTheme();
-    }
-    refresh();
-    onChange?.();
-    showToast(`Mode ${mode} langsung berubah!`);
+    showToast('Warna langsung berubah!');
   };
 
   return (
     <div className="space-y-6">
+      {/* Hidden file input for uploads */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={handleFileSelect}
+      />
+
       {toast && (
         <div className="fixed top-6 right-6 z-50 bg-green-500 text-white text-sm font-bold px-5 py-3 rounded-xl flex items-center gap-2 shadow-lg">
           <i className="ri-checkbox-circle-line text-base" />{toast}
@@ -176,22 +247,35 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
                 <span className="text-slate-600 text-xs">Belum ada gambar hero</span>
               )}
             </div>
-            <div className="p-3 bg-slate-900 flex items-center justify-between">
-              <span className="text-slate-500 text-xs truncate max-w-[70%]">{theme.hero_image_url || 'Gambar default'}</span>
-              <button
-                onClick={() => {
-                  const prompt = window.prompt('Deskripsikan gambar hero yang mau dibuat (misal: modern construction site Jakarta, golden hour, wide angle):');
-                  if (prompt) handleGenerateHeroImage(prompt);
-                }}
-                disabled={generating}
-                className="flex items-center gap-1.5 bg-sky-400/10 hover:bg-sky-400/20 border border-sky-400/20 text-sky-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
-              >
-                {generating ? (
-                  <><div className="w-3 h-3 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" /> Generating...</>
-                ) : (
-                  <><i className="ri-magic-line" /> Generate Gambar</>
-                )}
-              </button>
+            <div className="p-3 bg-slate-900 flex items-center justify-between gap-3">
+              <span className="text-slate-500 text-xs truncate max-w-[50%]">{theme.hero_image_url || 'Gambar default'}</span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => triggerUpload('hero_image_url')}
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 bg-sky-400/10 hover:bg-sky-400/20 border border-sky-400/20 text-sky-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
+                >
+                  {uploading && pendingUploadKey === 'hero_image_url' ? (
+                    <><div className="w-3 h-3 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" /> Uploading...</>
+                  ) : (
+                    <><i className="ri-upload-cloud-2-line" /> Upload</>
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    const prompt = window.prompt('Deskripsikan gambar hero yang mau dibuat (misal: modern construction site Jakarta, golden hour, wide angle):');
+                    if (prompt) handleGenerateImage('hero_image_url', prompt, 1920, 1080);
+                  }}
+                  disabled={!!generating}
+                  className="flex items-center gap-1.5 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/20 text-amber-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
+                >
+                  {generating === 'hero_image_url' ? (
+                    <><div className="w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" /> Generating...</>
+                  ) : (
+                    <><i className="ri-magic-line" /> Generate</>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -204,7 +288,6 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
               placeholder="PT WARINGIN MEGA MANDIRI — BERDIRI SEJAK 2022"
               className="w-full bg-[#070C17] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-400/60 transition-colors"
             />
-            <p className="text-slate-600 text-[10px] mt-1">Gunakan AI Copilot dengan perintah: "Ubah tagline hero jadi ..."</p>
           </div>
 
           <div>
@@ -216,7 +299,6 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
               placeholder="Baris 1\nBaris 2\nBaris 3 (warna accent)"
               className="w-full bg-[#070C17] border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-amber-400/60 transition-colors resize-none"
             />
-            <p className="text-slate-600 text-[10px] mt-1">Baris terakhir otomatis pakai warna accent. Gunakan AI Copilot: "Ubah judul hero jadi ..."</p>
           </div>
 
           <div>
@@ -255,6 +337,241 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
         </div>
       </div>
 
+      {/* Page Backgrounds */}
+      <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
+        <h3 className="font-bold text-sm text-white mb-1 flex items-center gap-2">
+          <i className="ri-gallery-line text-amber-400" /> Background Halaman
+        </h3>
+        <p className="text-slate-500 text-xs mb-4">Atur gambar background untuk setiap halaman. Kosongkan untuk pakai default.</p>
+
+        <div className="space-y-4">
+          {PAGE_BGS.map((pg) => (
+            <div key={pg.key} className="rounded-xl border border-slate-700 overflow-hidden">
+              <div className="h-36 w-full bg-slate-800 relative">
+                {(theme[pg.key] as string | undefined) ? (
+                  <img src={theme[pg.key] as string} alt={pg.label} className="w-full h-full object-cover object-top" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-slate-600 text-xs">Default background</span>
+                  </div>
+                )}
+              </div>
+              <div className="p-3 bg-slate-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <span className="text-white text-xs font-semibold block">{pg.label}</span>
+                  <span className="text-slate-600 text-[10px] truncate block max-w-[200px]">{theme[pg.key] || 'Default'}</span>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => triggerUpload(pg.key)}
+                    disabled={uploading}
+                    className="flex items-center gap-1.5 bg-sky-400/10 hover:bg-sky-400/20 border border-sky-400/20 text-sky-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
+                  >
+                    {uploading && pendingUploadKey === pg.key ? (
+                      <><div className="w-3 h-3 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" /> Upload...</>
+                    ) : (
+                      <><i className="ri-upload-cloud-2-line" /> Upload</>
+                    )}
+                  </button>
+                  <button
+                    onClick={() => handleGenerateImage(pg.key, pg.defaultPrompt, 1920, 700)}
+                    disabled={!!generating}
+                    className="flex items-center gap-1.5 bg-amber-400/10 hover:bg-amber-400/20 border border-amber-400/20 text-amber-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
+                  >
+                    {generating === pg.key ? (
+                      <><div className="w-3 h-3 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" /> Generate...</>
+                    ) : (
+                      <><i className="ri-magic-line" /> Generate</>
+                    )}
+                  </button>
+                  {(theme[pg.key] as string | undefined) && (
+                    <button
+                      onClick={() => {
+                        setTheme({ ...theme, [pg.key]: '' });
+                        upsertSetting(pg.key, '');
+                        showToast('Background direset ke default');
+                      }}
+                      className="text-slate-500 hover:text-red-400 text-xs px-2 py-1.5 cursor-pointer whitespace-nowrap transition-colors"
+                      title="Reset ke default"
+                    >
+                      <i className="ri-close-line" />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Global Assets: Logo + Favicon */}
+      <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
+        <h3 className="font-bold text-sm text-white mb-1 flex items-center gap-2">
+          <i className="ri-vip-diamond-line text-amber-400" /> Logo & Favicon
+        </h3>
+        <p className="text-slate-500 text-xs mb-4">Atur favicon, logo navbar, dan logo footer</p>
+
+        <div className="space-y-4">
+          {/* Favicon */}
+          <div className="rounded-xl border border-slate-700 p-4">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 rounded-xl bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden border border-slate-700">
+                {theme.favicon_url ? (
+                  <img src={theme.favicon_url} alt="Favicon" className="w-full h-full object-contain" />
+                ) : (
+                  <i className="ri-image-line text-slate-600 text-xl" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-white text-xs font-semibold block">Favicon</span>
+                <span className="text-slate-600 text-[10px] truncate block">{theme.favicon_url || 'Default SVG'}</span>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => triggerUpload('favicon_url')}
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 bg-sky-400/10 hover:bg-sky-400/20 border border-sky-400/20 text-sky-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
+                >
+                  {uploading && pendingUploadKey === 'favicon_url' ? (
+                    <><div className="w-3 h-3 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" /> Upload...</>
+                  ) : (
+                    <><i className="ri-upload-cloud-2-line" /> Upload</>
+                  )}
+                </button>
+                {theme.favicon_url && (
+                  <button
+                    onClick={() => { setTheme({ ...theme, favicon_url: '' }); upsertSetting('favicon_url', ''); showToast('Favicon direset'); }}
+                    className="text-slate-500 hover:text-red-400 text-xs px-2 py-1.5 cursor-pointer transition-colors"
+                  >
+                    <i className="ri-close-line" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Navbar Logo */}
+          <div className="rounded-xl border border-slate-700 p-4">
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-16 rounded-xl bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden border border-slate-700">
+                {theme.navbar_logo_url ? (
+                  <img src={theme.navbar_logo_url} alt="Navbar Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <i className="ri-image-line text-slate-600 text-xl" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-white text-xs font-semibold block">Logo Navbar</span>
+                <span className="text-slate-600 text-[10px] truncate block">{theme.navbar_logo_url || 'Default text logo'}</span>
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-slate-500 text-[10px]">W</span>
+                    <input
+                      type="text"
+                      value={theme.navbar_logo_width || '140'}
+                      onChange={(e) => { setTheme({ ...theme, navbar_logo_width: e.target.value }); upsertSetting('navbar_logo_width', e.target.value); }}
+                      className="w-12 bg-[#070C17] border border-slate-700 rounded px-2 py-0.5 text-[10px] text-white text-center focus:outline-none focus:border-amber-400/60"
+                    />
+                    <span className="text-slate-500 text-[10px]">px</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-slate-500 text-[10px]">H</span>
+                    <input
+                      type="text"
+                      value={theme.navbar_logo_height || '50'}
+                      onChange={(e) => { setTheme({ ...theme, navbar_logo_height: e.target.value }); upsertSetting('navbar_logo_height', e.target.value); }}
+                      className="w-12 bg-[#070C17] border border-slate-700 rounded px-2 py-0.5 text-[10px] text-white text-center focus:outline-none focus:border-amber-400/60"
+                    />
+                    <span className="text-slate-500 text-[10px]">px</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => triggerUpload('navbar_logo_url')}
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 bg-sky-400/10 hover:bg-sky-400/20 border border-sky-400/20 text-sky-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
+                >
+                  {uploading && pendingUploadKey === 'navbar_logo_url' ? (
+                    <><div className="w-3 h-3 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" /> Upload...</>
+                  ) : (
+                    <><i className="ri-upload-cloud-2-line" /> Upload</>
+                  )}
+                </button>
+                {theme.navbar_logo_url && (
+                  <button
+                    onClick={() => { setTheme({ ...theme, navbar_logo_url: '' }); upsertSetting('navbar_logo_url', ''); showToast('Logo navbar direset'); }}
+                    className="text-slate-500 hover:text-red-400 text-xs px-2 py-1.5 cursor-pointer transition-colors"
+                  >
+                    <i className="ri-close-line" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Logo */}
+          <div className="rounded-xl border border-slate-700 p-4">
+            <div className="flex items-center gap-4">
+              <div className="w-24 h-16 rounded-xl bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden border border-slate-700">
+                {theme.footer_logo_url ? (
+                  <img src={theme.footer_logo_url} alt="Footer Logo" className="w-full h-full object-contain" />
+                ) : (
+                  <i className="ri-image-line text-slate-600 text-xl" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <span className="text-white text-xs font-semibold block">Logo Footer</span>
+                <span className="text-slate-600 text-[10px] truncate block">{theme.footer_logo_url || 'Default text logo'}</span>
+                <div className="flex items-center gap-3 mt-2">
+                  <div className="flex items-center gap-1">
+                    <span className="text-slate-500 text-[10px]">W</span>
+                    <input
+                      type="text"
+                      value={theme.footer_logo_width || '120'}
+                      onChange={(e) => { setTheme({ ...theme, footer_logo_width: e.target.value }); upsertSetting('footer_logo_width', e.target.value); }}
+                      className="w-12 bg-[#070C17] border border-slate-700 rounded px-2 py-0.5 text-[10px] text-white text-center focus:outline-none focus:border-amber-400/60"
+                    />
+                    <span className="text-slate-500 text-[10px]">px</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="text-slate-500 text-[10px]">H</span>
+                    <input
+                      type="text"
+                      value={theme.footer_logo_height || '40'}
+                      onChange={(e) => { setTheme({ ...theme, footer_logo_height: e.target.value }); upsertSetting('footer_logo_height', e.target.value); }}
+                      className="w-12 bg-[#070C17] border border-slate-700 rounded px-2 py-0.5 text-[10px] text-white text-center focus:outline-none focus:border-amber-400/60"
+                    />
+                    <span className="text-slate-500 text-[10px]">px</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => triggerUpload('footer_logo_url')}
+                  disabled={uploading}
+                  className="flex items-center gap-1.5 bg-sky-400/10 hover:bg-sky-400/20 border border-sky-400/20 text-sky-400 text-xs px-3 py-1.5 rounded-lg cursor-pointer whitespace-nowrap transition-colors disabled:opacity-50"
+                >
+                  {uploading && pendingUploadKey === 'footer_logo_url' ? (
+                    <><div className="w-3 h-3 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" /> Upload...</>
+                  ) : (
+                    <><i className="ri-upload-cloud-2-line" /> Upload</>
+                  )}
+                </button>
+                {theme.footer_logo_url && (
+                  <button
+                    onClick={() => { setTheme({ ...theme, footer_logo_url: '' }); upsertSetting('footer_logo_url', ''); showToast('Logo footer direset'); }}
+                    className="text-slate-500 hover:text-red-400 text-xs px-2 py-1.5 cursor-pointer transition-colors"
+                  >
+                    <i className="ri-close-line" />
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Colors */}
       <div className="bg-[#0D1117] border border-slate-800 rounded-2xl p-6">
         <h3 className="font-bold text-sm text-white mb-1 flex items-center gap-2">
@@ -288,7 +605,7 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
           </div>
         </div>
 
-        <div>
+        <div className="mb-4">
           <label className="text-slate-500 text-xs mb-2 block">Secondary Color (judul terakhir hero, tagline)</label>
           <div className="flex flex-wrap gap-2 mb-2">
             {PRESET_SECONDARY.map((c) => (
@@ -314,26 +631,29 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
           </div>
         </div>
 
-        {/* Theme mode toggle */}
-        <div className="mt-4 flex items-center gap-3">
-          <label className="text-slate-500 text-xs">Mode:</label>
-          <div className="flex rounded-lg overflow-hidden border border-slate-700">
-            <button
-              onClick={() => handleToggleMode('dark')}
-              className={`px-4 py-1.5 text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
-                (theme.theme_mode || 'dark') === 'dark' ? 'bg-amber-400 text-black' : 'bg-slate-800 text-slate-400 hover:text-white'
-              }`}
-            >
-              <i className="ri-moon-line mr-1" /> Dark
-            </button>
-            <button
-              onClick={() => handleToggleMode('light')}
-              className={`px-4 py-1.5 text-xs font-semibold cursor-pointer transition-colors whitespace-nowrap ${
-                (theme.theme_mode || 'dark') === 'light' ? 'bg-amber-400 text-black' : 'bg-slate-800 text-slate-400 hover:text-white'
-              }`}
-            >
-              <i className="ri-sun-line mr-1" /> Light
-            </button>
+        <div className="mb-4">
+          <label className="text-slate-500 text-xs mb-2 block">Warna Tulisan &quot;WARINGIN&quot; (Brand)</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={theme.navbar_brand_color || '#FFFFFF'}
+              onChange={(e) => updateColor('navbar_brand_color', e.target.value)}
+              className="w-8 h-8 rounded-full cursor-pointer border-0 p-0 bg-transparent"
+            />
+            <span className="text-slate-400 text-xs">{theme.navbar_brand_color || '#FFFFFF'}</span>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-slate-500 text-xs mb-2 block">Warna Tulisan &quot;MEGA MANDIRI&quot; (Sub Brand)</label>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={theme.navbar_sub_brand_color || '#38BDF8'}
+              onChange={(e) => updateColor('navbar_sub_brand_color', e.target.value)}
+              className="w-8 h-8 rounded-full cursor-pointer border-0 p-0 bg-transparent"
+            />
+            <span className="text-slate-400 text-xs">{theme.navbar_sub_brand_color || '#38BDF8'}</span>
           </div>
         </div>
       </div>

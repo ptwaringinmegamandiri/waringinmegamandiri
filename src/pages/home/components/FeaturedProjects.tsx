@@ -88,14 +88,16 @@ export default function FeaturedProjects() {
               </div>
             </div>
             <div className={`p-6 transition-all duration-500 ${animating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'} ${isDark ? 'bg-[#0D1117]' : 'bg-white'}`}>
-              <div className="flex items-center gap-2 mb-2">
-                <i className={`ri-map-pin-line text-xs ${isDark ? 'text-sky-400' : 'text-blue-600'}`} />
-                <span className={`text-xs font-body ${isDark ? 'text-sky-400' : 'text-blue-600'}`}>{project.location}</span>
-                <span className={`mx-1 ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 mb-2">
+                <span className={`inline-flex items-center gap-1.5 text-xs font-body ${isDark ? 'text-sky-400' : 'text-blue-600'}`}>
+                  <i className={`ri-map-pin-line text-xs`} />
+                  {project.location}
+                </span>
+                <span className={`${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
                 <span className={`text-xs font-body ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{project.year}</span>
-                <span className={`mx-1 ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
+                <span className={`${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
                 <span className={`text-xs font-body font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{project.value}</span>
-                <span className={`mx-1 ${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
+                <span className={`${isDark ? 'text-slate-600' : 'text-slate-300'}`}>·</span>
                 <span className={`text-xs font-body inline-flex items-center gap-1 ${project.status === 'Selesai' ? (isDark ? 'text-emerald-400' : 'text-emerald-600') : (isDark ? 'text-sky-400' : 'text-blue-600')}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${project.status === 'Selesai' ? (isDark ? 'bg-emerald-400' : 'bg-emerald-500') : (isDark ? 'bg-sky-400' : 'bg-blue-500')}`} />
                   {project.status === 'Selesai' ? 'Selesai' : project.status}

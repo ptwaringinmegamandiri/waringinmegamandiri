@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useThemeContext } from '@/context/ThemeContext';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 
 const certifications = [
@@ -20,81 +19,102 @@ const sbuItems = [
 
 export default function Footer() {
   const { t } = useTranslation();
-  const { isDark } = useThemeContext();
   const { theme } = useSiteTheme();
 
-  const footerLogoUrl = theme.footer_logo_url || '';
-  const footerTagline = theme.footer_tagline || t('footer.desc');
-  const footerCopyright = theme.footer_copyright || '© 2024 PT WARINGIN MEGA MANDIRI · ALL RIGHTS RESERVED';
+  const brandText = theme.navbar_brand_text || 'WARINGIN';
+  const ctaText = theme.navbar_cta_text || t('nav.hubungiKami');
+  const navbarLogoUrl = theme.navbar_logo_url || '';
+  const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
+  const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
+  const brandSize = parseInt(theme.navbar_brand_size || '16', 10);
+  const brandColor = theme.navbar_brand_color || '#FFFFFF';
+  const subBrandColor = theme.navbar_sub_brand_color || '#38BDF8';
 
-  // Footer dimensions + colors
-  const footerLogoWidth = parseInt(theme.footer_logo_width || '120', 10);
-  const footerLogoHeight = parseInt(theme.footer_logo_height || '40', 10);
-  const footerTextColor = theme.footer_text_color || (isDark ? '#94A3B8' : '#475569');
+  const footerTagline = theme.footer_tagline || t('footer.desc');
+  const footerCopyright = theme.footer_copyright || t('footer.copyright');
+
+  const footerTextColor = theme.footer_text_color || '#94A3B8';
   const footerTextSize = parseInt(theme.footer_text_size || '14', 10);
 
-  // Kontak dari theme
   const kontakAddress = theme.address || 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210';
   const kontakPhone = theme.phone || '+62 21 5738001';
   const kontakEmail = theme.email || 'info@waringinmegamandiri.com';
 
-  // Social dari theme
   const socials = [
     { icon: 'ri-instagram-line', href: theme.instagram || '#', label: 'Instagram' },
     { icon: 'ri-linkedin-box-line', href: theme.linkedin || '#', label: 'LinkedIn' },
     { icon: 'ri-facebook-line', href: theme.facebook || '#', label: 'Facebook' },
     { icon: 'ri-youtube-line', href: theme.youtube || '#', label: 'YouTube' },
-  ].filter(s => s.href !== '#');
+  ].filter((s) => s.href !== '#');
 
   const perusahaanLinks = [
-    { label: 'Beranda', path: '/' },
-    { label: 'Tentang Kami', path: '/tentang-kami' },
-    { label: 'Portofolio', path: '/portofolio' },
-    { label: 'News', path: '/news' },
-    { label: 'Karir', path: '/karir' },
-    { label: 'Kontak', path: '/kontak' },
+    { label: t('nav.beranda'), path: '/' },
+    { label: t('nav.tentangKami'), path: '/tentang-kami' },
+    { label: t('nav.portofolio'), path: '/portofolio' },
+    { label: t('nav.news'), path: '/news' },
+    { label: t('nav.karir'), path: '/karir' },
+    { label: t('nav.kontak'), path: '/kontak' },
   ];
 
   const layananLinks = [
-    'General Contractor',
-    'Struktur & Arsitektur',
-    'MEP Engineering',
-    'Plumbing & Sanitasi',
-    'Renovasi & Rehabilitasi',
+    t('service.gc.scope1.title'),
+    t('service.gc.scope2.title'),
+    t('service.gc.scope3.title'),
+    t('service.gc.scope4.title'),
+    t('service.6.title'),
   ];
 
   return (
     <footer
-      className={`relative overflow-hidden transition-colors duration-300 ${isDark ? 'bg-[#050A14]' : 'bg-slate-50'}`}
+      className="relative overflow-hidden transition-colors duration-300 bg-[#050A14]"
       data-preview-id="footer"
-      data-editable-fields="footer_logo_url,footer_tagline,footer_copyright,footer_logo_width,footer_logo_height,footer_text_color,footer_text_size,address,phone,email,instagram,linkedin,facebook,youtube"
+      data-editable-fields="footer_tagline,footer_copyright,footer_logo_width,footer_logo_height,footer_text_color,footer_text_size,address,phone,email,instagram,linkedin,facebook,youtube"
     >
       {/* Top accent line */}
-      <div className="h-px w-full" style={{ background: isDark ? 'linear-gradient(90deg, transparent, rgba(56,189,248,0.4), rgba(56,189,248,0.15), transparent)' : 'linear-gradient(90deg, transparent, rgba(14,165,233,0.35), rgba(14,165,233,0.12), transparent)' }} />
+      <div
+        className="h-px w-full"
+        style={{
+          background: 'linear-gradient(90deg, transparent, rgba(56,189,248,0.4), rgba(56,189,248,0.15), transparent)',
+        }}
+      />
 
       {/* Subtle grid */}
-      <div className={`absolute inset-0 grid-pattern-sm pointer-events-none ${isDark ? 'opacity-20' : 'opacity-[0.07]'}`} />
+      <div className="absolute inset-0 grid-pattern-sm pointer-events-none opacity-20" />
 
       {/* Main content */}
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-14 pb-8">
-
         {/* Top section: Brand + Nav columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 mb-12">
-
           {/* Brand col */}
           <div className="lg:col-span-4">
-            <div className="flex items-center gap-5 mb-5">
-              <div className="overflow-hidden rounded shrink-0" style={{ width: footerLogoWidth, height: footerLogoHeight }}>
+            <div className="flex items-center gap-3 mb-5">
+              <div
+                className="overflow-hidden rounded shrink-0"
+                style={{ width: Math.min(logoWidth, 120), height: Math.min(logoHeight, 40) }}
+              >
                 <img
-                  src={footerLogoUrl || "https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png"}
+                  src={
+                    navbarLogoUrl ||
+                    'https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png'
+                  }
                   alt="PT Waringin Mega Mandiri"
                   className="w-full h-full object-contain"
                 />
               </div>
               <div>
-                <p className={`font-syne font-bold text-lg tracking-wide leading-none ${isDark ? 'text-white' : 'text-slate-900'}`}>WARINGIN</p>
-                <p className={`font-body text-sm tracking-[0.15em] leading-none mt-1.5 font-medium uppercase ${isDark ? 'text-sky-400' : 'text-sky-500'}`}>Mega Mandiri</p>
-                <p className={`font-body text-sm mt-1.5 ${isDark ? 'text-white/60' : 'text-slate-500'}`}>Est. 2022 · Jakarta</p>
+                <p
+                  className="font-syne font-bold text-lg tracking-wide leading-none"
+                  style={{ fontSize: `${brandSize}px`, color: brandColor }}
+                >
+                  {brandText}
+                </p>
+                <p
+                  className="font-body text-sm tracking-[0.15em] leading-none mt-1.5 font-medium uppercase"
+                  style={{ color: subBrandColor }}
+                >
+                  Mega Mandiri
+                </p>
+                <p className="font-body text-sm mt-1.5 text-white/60">Est. 2022 · Jakarta</p>
               </div>
             </div>
 
@@ -108,9 +128,12 @@ export default function Footer() {
             {/* Certifications inline */}
             <div className="flex flex-wrap gap-2 mb-5">
               {certifications.map((c) => (
-                <div key={c.label} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border ${isDark ? 'border-sky-400/15 bg-sky-400/5' : 'border-sky-500/15 bg-sky-500/5'}`}>
-                  <i className={`${c.icon} text-xs ${isDark ? 'text-sky-400' : 'text-sky-500'}`} />
-                  <span className={`font-body text-xs font-semibold ${isDark ? 'text-white' : 'text-slate-800'}`}>{c.label}</span>
+                <div
+                  key={c.label}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-sky-400/15 bg-sky-400/5"
+                >
+                  <i className={`${c.icon} text-xs text-sky-400`} />
+                  <span className="font-body text-xs font-semibold text-white">{c.label}</span>
                 </div>
               ))}
             </div>
@@ -123,7 +146,7 @@ export default function Footer() {
                   href={s.href}
                   rel="nofollow noreferrer"
                   aria-label={s.label}
-                  className={`w-8 h-8 flex items-center justify-center border rounded-lg transition-all duration-300 cursor-pointer ${isDark ? 'border-slate-700 text-slate-500 hover:text-sky-400 hover:border-sky-400/40' : 'border-slate-300 text-slate-500 hover:text-sky-500 hover:border-sky-500/40'}`}
+                  className="w-8 h-8 flex items-center justify-center border rounded-lg transition-all duration-300 cursor-pointer border-slate-700 text-slate-500 hover:text-sky-400 hover:border-sky-400/40"
                 >
                   <i className={`${s.icon} text-sm`} />
                 </a>
@@ -133,14 +156,17 @@ export default function Footer() {
 
           {/* Perusahaan */}
           <div className="lg:col-span-2">
-            <h4 className={`font-syne font-bold text-xs tracking-widest uppercase mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              PERUSAHAAN
+            <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
+              {t('footer.perusahaan')}
             </h4>
             <ul className="space-y-2.5">
               {perusahaanLinks.map((item) => (
                 <li key={item.path}>
-                  <Link to={item.path} className={`text-sm transition-colors duration-300 font-body flex items-center gap-1.5 group ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>
-                    <span className={`w-0 group-hover:w-2 h-px transition-all duration-300 shrink-0 ${isDark ? 'bg-sky-400' : 'bg-sky-500'}`} />
+                  <Link
+                    to={item.path}
+                    className="text-sm transition-colors duration-300 font-body flex items-center gap-1.5 group text-slate-500 hover:text-sky-400"
+                  >
+                    <span className="w-0 group-hover:w-2 h-px transition-all duration-300 shrink-0 bg-sky-400" />
                     {item.label}
                   </Link>
                 </li>
@@ -150,14 +176,14 @@ export default function Footer() {
 
           {/* Layanan */}
           <div className="lg:col-span-3">
-            <h4 className={`font-syne font-bold text-xs tracking-widest uppercase mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              LAYANAN
+            <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
+              {t('footer.layanan')}
             </h4>
             <ul className="space-y-2.5">
               {layananLinks.map((item) => (
                 <li key={item}>
-                  <span className={`text-sm font-body flex items-center gap-1.5 group cursor-default transition-colors ${isDark ? 'text-slate-500 hover:text-slate-400' : 'text-slate-600 hover:text-slate-800'}`}>
-                    <i className={`ri-checkbox-blank-circle-fill text-[5px] shrink-0 ${isDark ? 'text-sky-400/40' : 'text-sky-500/40'}`} />
+                  <span className="text-sm font-body flex items-center gap-1.5 group cursor-default transition-colors text-slate-500 hover:text-slate-400">
+                    <i className="ri-checkbox-blank-circle-fill text-[5px] shrink-0 text-sky-400/40" />
                     {item}
                   </span>
                 </li>
@@ -167,29 +193,37 @@ export default function Footer() {
 
           {/* Kontak */}
           <div className="lg:col-span-3">
-            <h4 className={`font-syne font-bold text-xs tracking-widest uppercase mb-4 ${isDark ? 'text-white' : 'text-slate-900'}`}>
-              KONTAK
+            <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
+              {t('footer.kontak')}
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
-                <div className={`w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 mt-0.5 ${isDark ? 'bg-sky-400/8 border-sky-400/15' : 'bg-sky-500/8 border-sky-500/15'}`}>
-                  <i className={`ri-map-pin-line text-xs ${isDark ? 'text-sky-400' : 'text-sky-500'}`} />
+                <div className="w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 mt-0.5 bg-sky-400/8 border-sky-400/15">
+                  <i className="ri-map-pin-line text-xs text-sky-400" />
                 </div>
-                <span className={`text-sm leading-relaxed font-body transition-colors ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>{kontakAddress}</span>
+                <span className="text-sm leading-relaxed font-body transition-colors text-slate-500 hover:text-sky-400">
+                  {kontakAddress}
+                </span>
               </li>
               <li className="flex items-center gap-3">
-                <div className={`w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 ${isDark ? 'bg-emerald-400/8 border-emerald-400/15' : 'bg-emerald-500/8 border-emerald-500/15'}`}>
-                  <i className={`ri-phone-line text-xs ${isDark ? 'text-emerald-400' : 'text-emerald-500'}`} />
+                <div className="w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 bg-emerald-400/8 border-emerald-400/15">
+                  <i className="ri-phone-line text-xs text-emerald-400" />
                 </div>
-                <a href="tel:+62215738001" className={`text-sm transition-colors cursor-pointer font-body ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>
+                <a
+                  href="tel:+62215738001"
+                  className="text-sm transition-colors cursor-pointer font-body text-slate-500 hover:text-sky-400"
+                >
                   {kontakPhone}
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <div className={`w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 ${isDark ? 'bg-amber-400/8 border-amber-400/15' : 'bg-amber-500/8 border-amber-500/15'}`}>
-                  <i className={`ri-mail-line text-xs ${isDark ? 'text-amber-400' : 'text-amber-500'}`} />
+                <div className="w-7 h-7 flex items-center justify-center rounded-lg border shrink-0 bg-amber-400/8 border-amber-400/15">
+                  <i className="ri-mail-line text-xs text-amber-400" />
                 </div>
-                <a href="mailto:info@waringinmegamandiri.com" className={`text-sm transition-colors cursor-pointer font-body break-all ${isDark ? 'text-slate-500 hover:text-sky-400' : 'text-slate-600 hover:text-sky-500'}`}>
+                <a
+                  href="mailto:info@waringinmegamandiri.com"
+                  className="text-sm transition-colors cursor-pointer font-body break-all text-slate-500 hover:text-sky-400"
+                >
                   {kontakEmail}
                 </a>
               </li>
@@ -198,16 +232,16 @@ export default function Footer() {
             {/* Email CTA */}
             <a
               href="mailto:info@waringinmegamandiri.com"
-              className={`mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border text-xs font-body font-medium transition-all duration-300 cursor-pointer whitespace-nowrap ${isDark ? 'border-sky-400/25 bg-sky-400/5 text-sky-400 hover:bg-sky-400/12 hover:border-sky-400/40' : 'border-sky-500/25 bg-sky-500/5 text-sky-500 hover:bg-sky-500/12 hover:border-sky-500/40'}`}
+              className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border text-xs font-body font-medium transition-all duration-300 cursor-pointer whitespace-nowrap border-sky-400/25 bg-sky-400/5 text-sky-400 hover:bg-sky-400/12 hover:border-sky-400/40"
             >
               <i className="ri-mail-send-line text-sm" />
-              Hubungi Kami
+              {ctaText}
             </a>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className={`border-t pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 ${isDark ? 'border-slate-800/80' : 'border-slate-200'}`}>
+        <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p
             className="font-body tracking-wider"
             style={{ color: footerTextColor, fontSize: `${footerTextSize}px` }}
@@ -215,9 +249,13 @@ export default function Footer() {
             {footerCopyright}
           </p>
           <div className="flex items-center gap-4 text-xs">
-            <span className={`transition-colors cursor-pointer font-body ${isDark ? 'text-slate-700 hover:text-slate-500' : 'text-slate-500 hover:text-slate-800'}`}>{t('footer.privacy')}</span>
-            <span className={isDark ? 'text-slate-800' : 'text-slate-300'}>|</span>
-            <span className={`transition-colors cursor-pointer font-body ${isDark ? 'text-slate-700 hover:text-slate-500' : 'text-slate-500 hover:text-slate-800'}`}>{t('footer.terms')}</span>
+            <span className="transition-colors cursor-pointer font-body text-slate-700 hover:text-slate-500">
+              {t('footer.privacy')}
+            </span>
+            <span className="text-slate-800">|</span>
+            <span className="transition-colors cursor-pointer font-body text-slate-700 hover:text-slate-500">
+              {t('footer.terms')}
+            </span>
           </div>
         </div>
       </div>

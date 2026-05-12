@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useThemeContext } from '@/context/ThemeContext';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 
 const LANGUAGES = [
@@ -11,8 +10,7 @@ const LANGUAGES = [
 ];
 
 export default function Navbar() {
-  const { i18n } = useTranslation();
-  const { toggleTheme, isDark } = useThemeContext();
+  const { t, i18n } = useTranslation();
   const { theme } = useSiteTheme();
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,20 +21,22 @@ export default function Navbar() {
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0];
 
   const brandText = theme.navbar_brand_text || 'WARINGIN';
-  const ctaText = theme.navbar_cta_text || 'Hubungi Kami';
+  const ctaText = theme.navbar_cta_text || t('nav.hubungiKami');
   const navbarLogoUrl = theme.navbar_logo_url || '';
   const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
   const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
-  const navTextColor = theme.navbar_text_color || (isDark ? '#FFFFFF' : '#0F172A');
+  const navTextColor = theme.navbar_text_color || '#FFFFFF';
   const brandSize = parseInt(theme.navbar_brand_size || '16', 10);
+  const brandColor = theme.navbar_brand_color || '#FFFFFF';
+  const subBrandColor = theme.navbar_sub_brand_color || '#38BDF8';
 
   const navLinks = [
-    { label: 'Beranda', path: '/' },
-    { label: 'Tentang Kami', path: '/tentang-kami' },
-    { label: 'Portofolio', path: '/portofolio' },
-    { label: 'News', path: '/news' },
-    { label: 'Karir', path: '/karir' },
-    { label: 'Kontak', path: '/kontak' },
+    { label: t('nav.beranda'), path: '/' },
+    { label: t('nav.tentangKami'), path: '/tentang-kami' },
+    { label: t('nav.portofolio'), path: '/portofolio' },
+    { label: t('nav.news'), path: '/news' },
+    { label: t('nav.karir'), path: '/karir' },
+    { label: t('nav.kontak'), path: '/kontak' },
   ];
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export default function Navbar() {
   };
 
   const scrolledBg = scrolled
-    ? `${isDark ? 'bg-[#070C17]/95 border-sky-400/10' : 'bg-white/92 border-blue-200/50'} backdrop-blur-md border-b`
+    ? 'bg-[#070C17] lg:bg-[#070C17]/95 border-sky-400/10 lg:backdrop-blur-md border-b'
     : 'bg-transparent';
 
   return (
@@ -74,7 +74,7 @@ export default function Navbar() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0"
               data-preview-id="navbar"
-              data-editable-fields="navbar_logo_url,navbar_brand_text,navbar_cta_text,navbar_logo_width,navbar_logo_height,navbar_text_color,navbar_brand_size"
+              data-editable-fields="navbar_logo_url,navbar_brand_text,navbar_cta_text,navbar_logo_width,navbar_logo_height,navbar_text_color,navbar_brand_size,navbar_brand_color,navbar_sub_brand_color"
             >
               <div className="flex items-center justify-center overflow-hidden rounded shrink-0"
                 style={{
@@ -89,13 +89,13 @@ export default function Navbar() {
                 />
               </div>
               <div>
-                <p className={`font-syne font-bold tracking-wide leading-none ${isDark ? 'text-white' : 'text-[#0F172A]'}`}
-                  style={{ fontSize: `${brandSize}px`, color: navTextColor }}
+                <p className="font-syne font-bold tracking-wide leading-none text-white"
+                  style={{ fontSize: `${brandSize}px`, color: brandColor }}
                 >
                   {brandText}
                 </p>
-                <p className="font-body text-sky-400 text-sm tracking-[0.12em] leading-none mt-1.5 font-medium"
-                  style={{ color: navTextColor }}
+                <p className="font-body text-sm tracking-[0.12em] leading-none mt-1.5 font-medium"
+                  style={{ color: subBrandColor }}
                 >
                   MEGA MANDIRI
                 </p>
@@ -112,14 +112,12 @@ export default function Navbar() {
                     to={link.path}
                     className={`font-body font-medium text-sm tracking-wide transition-all duration-300 relative group whitespace-nowrap ${
                       isActive
-                        ? (isDark ? 'text-sky-400' : 'text-blue-600')
-                        : isDark
-                        ? 'text-white/70 hover:text-white'
-                        : 'text-slate-700 hover:text-blue-700'
+                        ? 'text-sky-400'
+                        : 'text-white/70 hover:text-white'
                     }`}
                   >
                     {link.label}
-                    <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${isDark ? 'bg-sky-400' : 'bg-blue-500'} ${isActive ? 'w-full opacity-100' : 'w-0 group-hover:w-full opacity-60'}`} />
+                    <span className={`absolute -bottom-1 left-0 h-px transition-all duration-300 bg-sky-400 ${isActive ? 'w-full opacity-100' : 'w-0 group-hover:w-full opacity-60'}`} />
                   </Link>
                 );
               })}
@@ -131,11 +129,7 @@ export default function Navbar() {
               <div className="relative shrink-0">
                 <button
                   onClick={() => setLangOpen(!langOpen)}
-                  className={`flex items-center gap-1.5 border rounded-lg px-2.5 py-1.5 transition-all duration-300 cursor-pointer whitespace-nowrap ${
-                    isDark
-                      ? 'border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white'
-                      : 'border-slate-300 hover:border-slate-400 bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900'
-                  }`}
+                  className="flex items-center gap-1.5 border rounded-lg px-2.5 py-1.5 transition-all duration-300 cursor-pointer whitespace-nowrap border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white"
                 >
                   <span className="text-sm">{currentLang.flag}</span>
                   <span className="font-body text-xs font-semibold tracking-wide">{currentLang.label}</span>
@@ -163,19 +157,6 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className={`w-8 h-8 flex items-center justify-center rounded-lg border transition-all duration-300 cursor-pointer ${
-                  isDark
-                    ? 'border-white/20 bg-white/5 text-white/70 hover:text-white hover:border-white/40'
-                    : 'border-slate-300 bg-slate-50 text-slate-600 hover:text-slate-900 hover:border-slate-400'
-                }`}
-                title={isDark ? 'Switch to Light' : 'Switch to Dark'}
-              >
-                <i className={isDark ? 'ri-sun-line text-sm' : 'ri-moon-line text-sm'} />
-              </button>
-
               <a
                 href="mailto:info@waringinmegamandiri.com"
                 className="bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap transition-colors"
@@ -188,11 +169,7 @@ export default function Navbar() {
             <div className="flex lg:hidden items-center gap-2">
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                className={`flex items-center gap-1 border rounded-lg px-2.5 py-1.5 transition-all cursor-pointer whitespace-nowrap ${
-                  isDark
-                    ? 'border-white/20 text-white/70 hover:text-white'
-                    : 'border-slate-300 text-slate-600 hover:text-slate-900'
-                }`}
+                className="flex items-center gap-1 border rounded-lg px-2.5 py-1.5 transition-all cursor-pointer whitespace-nowrap border-white/20 text-white/70 hover:text-white"
               >
                 <span className="text-sm">{currentLang.flag}</span>
                 <span className="font-body text-xs font-semibold">{currentLang.label}</span>
@@ -205,9 +182,9 @@ export default function Navbar() {
                 className="w-10 h-10 flex flex-col items-center justify-center gap-[6px] cursor-pointer"
                 aria-label="Toggle menu"
               >
-                <span className={`block w-6 h-[3px] rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? 'rotate-45 translate-y-[9px]' : ''}`} />
-                <span className={`block w-6 h-[3px] rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? 'opacity-0' : ''}`} />
-                <span className={`block w-6 h-[3px] rounded-full transition-all duration-300 ${isDark ? 'bg-white' : 'bg-slate-800'} ${menuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-[9px]' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`} />
               </button>
             </div>
           </div>
@@ -217,19 +194,17 @@ export default function Navbar() {
         {menuOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
-            <div className={`absolute top-0 right-0 w-72 h-full border-l p-8 pt-24 flex flex-col gap-4 ${isDark ? 'bg-[#070C17] border-sky-400/10' : 'bg-[#EAF2FF] border-blue-200/60'}`}>
+            <div className="absolute top-0 right-0 w-72 h-full border-l p-8 pt-24 flex flex-col gap-4 bg-[#070C17] border-sky-400/10">
               {navLinks.map((link) => {
                 const isActive = location.pathname === link.path;
                 return (
-                        <Link
+                  <Link
                     key={link.path}
                     to={link.path}
                     className={`font-body font-medium text-base py-3 border-b transition-colors duration-300 ${
                       isActive
-                        ? (isDark ? 'text-sky-400 border-sky-400/30' : 'text-blue-600 border-blue-300')
-                        : isDark
-                        ? 'text-slate-300 border-sky-400/10'
-                        : 'text-slate-700 border-blue-200/50'
+                        ? 'text-sky-400 border-sky-400/30'
+                        : 'text-slate-300 border-sky-400/10'
                     }`}
                   >
                     {link.label}

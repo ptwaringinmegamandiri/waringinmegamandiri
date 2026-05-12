@@ -6,12 +6,13 @@ import HeroBanner from '@/pages/about/components/HeroBanner';
 import ProjectCard from '@/pages/portfolio/components/ProjectCard';
 import ProjectModal from '@/pages/portfolio/components/ProjectModal';
 import LegacyTable from '@/pages/portfolio/components/LegacyTable';
-import { useThemeContext } from '@/context/ThemeContext';
 import { Project, BuildingType } from '@/mocks/projects';
 import { useProjects } from '@/hooks/useProjects';
 import { useLegacyProjects } from '@/hooks/useLegacyProjects';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import type { LegacyProjectRow } from '@/lib/supabase';
+
+const DEFAULT_PORTFOLIO_BG = 'https://readdy.ai/api/search-image?query=dark%20moody%20construction%20site%20at%20dusk%20with%20massive%20concrete%20building%20skeleton%20under%20construction%2C%20tower%20crane%20silhouette%20against%20stormy%20dark%20charcoal%20sky%2C%20warm%20amber%20industrial%20floodlights%20illuminating%20steel%20scaffolding%2C%20dust%20and%20fog%20in%20the%20air%2C%20cinematic%20wide%20angle%20shot%2C%20ultra%20realistic%20photography%2C%20gritty%20industrial%20atmosphere%2C%20deep%20shadows%2C%20no%20blue%20tones&width=1920&height=500&seq=wmm-portfolio-dark-v1&orientation=landscape';
 
 type StatusFilter = 'Semua' | 'Selesai' | 'Ongoing';
 
@@ -37,7 +38,6 @@ const BUILDING_TYPE_LABELS: Record<string, string> = {
 
 export default function PortfolioPage() {
   const { t } = useTranslation();
-  const { isDark } = useThemeContext();
   const { theme } = useSiteTheme();
   const { projects, featuredProjects, loading: projectsLoading } = useProjects();
   const { projects: legacyProjects, loading: legacyLoading } = useLegacyProjects();
@@ -51,7 +51,9 @@ export default function PortfolioPage() {
   const [dragOffset, setDragOffset] = useState(0);
   const carouselRef = useRef<HTMLDivElement>(null);
 
-  const GRID_COUNT = 9; // 3 rows x 3 cols
+  const bgImage = theme.portfolio_bg_url || DEFAULT_PORTFOLIO_BG;
+
+  const GRID_COUNT = 9;
 
   const getCardsPerSlide = () => {
     if (typeof window === 'undefined') return 3;
@@ -69,9 +71,6 @@ export default function PortfolioPage() {
   }, []);
 
   const CARDS_PER_SLIDE = cardsPerSlide;
-
-  const selesaiCount = projects.filter((p) => p.status === 'Selesai' && p.year >= 2010).length;
-  const ongoingCount = projects.filter((p) => p.status === 'Ongoing' && p.year >= 2010).length;
 
   const availableYears = useMemo(() => {
     const years = [...new Set(projects.filter((p) => p.year >= 2010).map((p) => p.year))].sort((a, b) => b - a);
@@ -161,38 +160,8 @@ export default function PortfolioPage() {
   };
   const translateX = -(carouselIndex * (getCardWidth() + (CARDS_PER_SLIDE === 1 ? 0 : 24))) + dragOffset;
 
-  const sectionBg = isDark ? 'bg-[var(--dark-bg)]' : 'bg-[#F0F6FF]';
-  const filterBarBg = isDark
-    ? 'bg-[#0D1117] border border-slate-800'
-    : 'bg-white border-2 border-blue-100 shadow-sm';
-  const filterTabActive = isDark ? 'bg-white/10 text-white' : 'bg-blue-600 text-white';
-  const filterTabInactive = isDark ? 'text-slate-500 hover:text-slate-300' : 'text-slate-500 hover:text-slate-800';
-  const filterDivider = isDark ? 'bg-slate-800' : 'bg-blue-100';
-  const selectBg = isDark
-    ? 'bg-[#0D1117] border border-slate-800'
-    : 'bg-white border-2 border-blue-100 shadow-sm';
-  const selectIconColor = isDark ? 'text-slate-500' : 'text-blue-500';
-  const selectTextColor = isDark ? 'text-slate-300' : 'text-slate-700';
-  const selectArrowColor = isDark ? 'text-slate-600' : 'text-slate-400';
-  const selectColorScheme = isDark ? 'dark' : 'light';
-  const selectOptionBg = isDark ? '#0D1117' : '#ffffff';
-  const selectOptionColor = isDark ? '#CBD5E1' : '#1e293b';
-  const resetBtnColor = isDark ? 'text-slate-500 hover:text-white' : 'text-slate-400 hover:text-slate-800';
-  const ctaBorderColor = isDark ? 'border-sky-400/10' : 'border-blue-200';
-  const ctaTextColor = isDark ? 'text-slate-400' : 'text-slate-600';
-  const emptyIconColor = isDark ? 'text-slate-700' : 'text-blue-200';
-  const emptyTextColor = isDark ? 'text-slate-600' : 'text-slate-500';
-  const emptyLinkColor = isDark ? 'text-sky-400' : 'text-blue-600';
-  const carouselBtnActive = isDark
-    ? 'bg-sky-400/20 border border-sky-400/40 text-sky-300 hover:bg-sky-400/30'
-    : 'bg-blue-600 text-white hover:bg-blue-700';
-  const carouselBtnDisabled = isDark
-    ? 'bg-slate-800/50 border border-slate-700 text-slate-600 cursor-not-allowed'
-    : 'bg-slate-100 border border-slate-200 text-slate-300 cursor-not-allowed';
-  const carouselDivider = isDark ? 'border-sky-400/10' : 'border-blue-100';
-
   return (
-    <div className={`min-h-screen ${sectionBg}`}>
+    <div className="min-h-screen bg-[var(--dark-bg)]">
       <div data-preview-id="navbar" data-preview-label="Navbar" data-editable-fields="navbar_brand_text,navbar_cta_text">
         <Navbar />
       </div>
@@ -202,6 +171,7 @@ export default function PortfolioPage() {
             title={theme.portfolio_title || t('portfolio.title')}
             subtitle={theme.portfolio_subtitle || t('portfolio.subtitle')}
             breadcrumb={t('portfolio.breadcrumb')}
+            bgImageUrl={bgImage}
           />
         </div>
         <div data-preview-id="portfolio-content" data-preview-label="Projects Grid & Filters">
@@ -214,7 +184,7 @@ export default function PortfolioPage() {
             <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-8">
 
               {/* Status tabs */}
-              <div className={`flex items-center rounded-lg p-1 gap-0.5 ${filterBarBg}`}>
+              <div className="flex items-center rounded-lg p-1 gap-0.5 bg-[#0D1117] border border-slate-800">
                 {(['Semua', 'Ongoing', 'Selesai'] as StatusFilter[]).map((s) => {
                   const isActive = activeStatus === s;
                   const count = s === 'Semua'
@@ -225,14 +195,14 @@ export default function PortfolioPage() {
                       key={s}
                       onClick={() => setActiveStatus(s)}
                       className={`relative font-body text-xs px-4 py-2 rounded-md transition-all duration-200 cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                        isActive ? filterTabActive : filterTabInactive
+                        isActive ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'
                       }`}
                     >
                       {s !== 'Semua' && (
                         <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                           s === 'Ongoing'
-                            ? (isActive ? (isDark ? 'bg-sky-400' : 'bg-white') : (isDark ? 'bg-sky-400 animate-pulse' : 'bg-blue-400 animate-pulse'))
-                            : (isActive ? (isDark ? 'bg-green-400' : 'bg-white') : (isDark ? 'bg-green-400' : 'bg-emerald-500'))
+                            ? (isActive ? 'bg-sky-400' : 'bg-sky-400 animate-pulse')
+                            : (isActive ? 'bg-green-400' : 'bg-green-400')
                         }`} />
                       )}
                       {s} {s === 'Semua' ? '' : `(${count})`}
@@ -242,24 +212,24 @@ export default function PortfolioPage() {
               </div>
 
               {/* Divider */}
-              <div className={`hidden md:block w-px h-8 ${filterDivider}`} />
+              <div className="hidden md:block w-px h-8 bg-slate-800" />
 
               {/* Tipe Bangunan dropdown */}
               <div className="relative">
-                <div className={`flex items-center gap-2 rounded-lg px-4 py-2.5 cursor-pointer ${selectBg}`}>
-                  <i className={`ri-building-2-line text-sm ${selectIconColor}`} />
+                <div className="flex items-center gap-2 rounded-lg px-4 py-2.5 cursor-pointer bg-[#0D1117] border border-slate-800">
+                  <i className="ri-building-2-line text-sm text-slate-500" />
                   <select
                     value={activeBuildingType}
                     onChange={(e) => setActiveBuildingType(e.target.value as BuildingType | 'Semua')}
-                    className={`font-body text-xs cursor-pointer outline-none appearance-none pr-5 min-w-[120px] ${selectTextColor}`}
-                    style={{ colorScheme: selectColorScheme, backgroundColor: 'transparent' }}
+                    className="font-body text-xs cursor-pointer outline-none appearance-none pr-5 min-w-[120px] text-slate-300"
+                    style={{ colorScheme: 'dark', backgroundColor: 'transparent' }}
                   >
-                    <option value="Semua" style={{ backgroundColor: selectOptionBg, color: selectOptionColor }}>Semua Tipe</option>
+                    <option value="Semua" style={{ backgroundColor: '#0D1117', color: '#CBD5E1' }}>Semua Tipe</option>
                     {availableBuildingTypes.map((type) => (
-                      <option key={type} value={type} style={{ backgroundColor: selectOptionBg, color: selectOptionColor }}>{BUILDING_TYPE_LABELS[type] || type}</option>
+                      <option key={type} value={type} style={{ backgroundColor: '#0D1117', color: '#CBD5E1' }}>{BUILDING_TYPE_LABELS[type] || type}</option>
                     ))}
                   </select>
-                  <i className={`ri-arrow-down-s-line text-sm pointer-events-none ${selectArrowColor}`} />
+                  <i className="ri-arrow-down-s-line text-sm pointer-events-none text-slate-600" />
                 </div>
                 {activeBuildingType !== 'Semua' && (
                   <span className="absolute -top-1.5 -right-1.5 w-2 h-2 rounded-full bg-amber-400" />
@@ -268,20 +238,20 @@ export default function PortfolioPage() {
 
               {/* Tahun dropdown */}
               <div className="relative">
-                <div className={`flex items-center gap-2 rounded-lg px-4 py-2.5 cursor-pointer ${selectBg}`}>
-                  <i className={`ri-calendar-line text-sm ${selectIconColor}`} />
+                <div className="flex items-center gap-2 rounded-lg px-4 py-2.5 cursor-pointer bg-[#0D1117] border border-slate-800">
+                  <i className="ri-calendar-line text-sm text-slate-500" />
                   <select
                     value={activeYear}
                     onChange={(e) => setActiveYear(e.target.value === 'Semua' ? 'Semua' : Number(e.target.value))}
-                    className={`font-body text-xs cursor-pointer outline-none appearance-none pr-5 min-w-[100px] ${selectTextColor}`}
-                    style={{ colorScheme: selectColorScheme, backgroundColor: 'transparent' }}
+                    className="font-body text-xs cursor-pointer outline-none appearance-none pr-5 min-w-[100px] text-slate-300"
+                    style={{ colorScheme: 'dark', backgroundColor: 'transparent' }}
                   >
-                    <option value="Semua" style={{ backgroundColor: selectOptionBg, color: selectOptionColor }}>Semua Tahun</option>
+                    <option value="Semua" style={{ backgroundColor: '#0D1117', color: '#CBD5E1' }}>Semua Tahun</option>
                     {availableYears.map((year) => (
-                      <option key={year} value={year} style={{ backgroundColor: selectOptionBg, color: selectOptionColor }}>{year}</option>
+                      <option key={year} value={year} style={{ backgroundColor: '#0D1117', color: '#CBD5E1' }}>{year}</option>
                     ))}
                   </select>
-                  <i className={`ri-arrow-down-s-line text-sm pointer-events-none ${selectArrowColor}`} />
+                  <i className="ri-arrow-down-s-line text-sm pointer-events-none text-slate-600" />
                 </div>
                 {activeYear !== 'Semua' && (
                   <span className="absolute -top-1.5 -right-1.5 w-2 h-2 rounded-full bg-rose-400" />
@@ -292,7 +262,7 @@ export default function PortfolioPage() {
               {hasActiveFilter && (
                 <button
                   onClick={resetFilters}
-                  className={`flex items-center gap-1.5 font-body text-xs transition-colors cursor-pointer whitespace-nowrap ml-auto ${resetBtnColor}`}
+                  className="flex items-center gap-1.5 font-body text-xs transition-colors cursor-pointer whitespace-nowrap ml-auto text-slate-500 hover:text-white"
                 >
                   <i className="ri-close-circle-line text-sm" />
                   Reset
@@ -309,11 +279,11 @@ export default function PortfolioPage() {
 
             {/* Carousel for remaining projects */}
             {carouselProjects.length > 0 && (
-              <div className={`mt-10 pt-8 border-t ${carouselDivider}`}>
+              <div className="mt-10 pt-8 border-t border-sky-400/10">
                 {/* Carousel header */}
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <span className={`font-syne font-bold text-base ${isDark ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <span className="font-syne font-bold text-base text-slate-400">
                       Proyek Lainnya
                     </span>
                     <div className="flex items-center gap-2">
@@ -325,8 +295,8 @@ export default function PortfolioPage() {
                             onClick={() => goTo(i === 0 ? 0 : i === 2 ? totalSlides : Math.floor(totalSlides / 2))}
                             className={`rounded-full transition-all duration-200 cursor-pointer ${
                               i === activeIdx
-                                ? (isDark ? 'bg-sky-400 w-2.5 h-2.5' : 'bg-blue-600 w-2.5 h-2.5')
-                                : (isDark ? 'bg-slate-700 hover:bg-slate-500 w-2 h-2' : 'bg-slate-300 hover:bg-slate-400 w-2 h-2')
+                                ? 'bg-sky-400 w-2.5 h-2.5'
+                                : 'bg-slate-700 hover:bg-slate-500 w-2 h-2'
                             }`}
                           />
                         );
@@ -337,14 +307,14 @@ export default function PortfolioPage() {
                     <button
                       onClick={prevSlide}
                       disabled={carouselIndex === 0}
-                      className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap ${carouselIndex === 0 ? carouselBtnDisabled : carouselBtnActive}`}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap ${carouselIndex === 0 ? 'bg-slate-800/50 border border-slate-700 text-slate-600 cursor-not-allowed' : 'bg-sky-400/20 border border-sky-400/40 text-sky-300 hover:bg-sky-400/30'}`}
                     >
                       <i className="ri-arrow-left-s-line text-base" />
                     </button>
                     <button
                       onClick={nextSlide}
                       disabled={carouselIndex >= totalSlides}
-                      className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap ${carouselIndex >= totalSlides ? carouselBtnDisabled : carouselBtnActive}`}
+                      className={`w-8 h-8 flex items-center justify-center rounded-full transition-all duration-200 cursor-pointer whitespace-nowrap ${carouselIndex >= totalSlides ? 'bg-slate-800/50 border border-slate-700 text-slate-600 cursor-not-allowed' : 'bg-sky-400/20 border border-sky-400/40 text-sky-300 hover:bg-sky-400/30'}`}
                     >
                       <i className="ri-arrow-right-s-line text-base" />
                     </button>
@@ -397,9 +367,9 @@ export default function PortfolioPage() {
             )}
 
             {/* Legacy Projects Table */}
-            <div className={`mt-14 pt-10 border-t ${carouselDivider}`}>
+            <div className="mt-14 pt-10 border-t border-sky-400/10">
               <div className="mb-6">
-                <span className={`font-syne font-bold text-lg block ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                <span className="font-syne font-bold text-lg block text-white">
                   Daftar Proyek
                 </span>
               </div>
@@ -414,17 +384,17 @@ export default function PortfolioPage() {
 
             {filtered.length === 0 && (
               <div className="text-center py-20">
-                <i className={`ri-folder-open-line text-5xl mb-4 block ${emptyIconColor}`} />
-                <p className={`font-body text-base ${emptyTextColor}`}>Tidak ada proyek yang sesuai filter.</p>
-                <button onClick={resetFilters} className={`mt-4 font-body text-sm cursor-pointer hover:underline ${emptyLinkColor}`}>
+                <i className="ri-folder-open-line text-5xl mb-4 block text-slate-700" />
+                <p className="font-body text-base text-slate-600">Tidak ada proyek yang sesuai filter.</p>
+                <button onClick={resetFilters} className="mt-4 font-body text-sm cursor-pointer hover:underline text-sky-400">
                   Reset filter
                 </button>
               </div>
             )}
 
             {/* CTA */}
-            <div className={`text-center mt-16 pt-12 border-t ${ctaBorderColor}`}>
-              <p className={`font-body text-base mb-6 max-w-xl mx-auto ${ctaTextColor}`}>
+            <div className="text-center mt-16 pt-12 border-t border-sky-400/10">
+              <p className="font-body text-base mb-6 max-w-xl mx-auto text-slate-400">
                 {theme.portfolio_cta_text || t('portfolio.konsultasiCta')}
               </p>
               <a
