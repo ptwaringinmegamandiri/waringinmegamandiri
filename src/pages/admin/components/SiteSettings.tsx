@@ -131,9 +131,20 @@ export default function SiteSettings() {
 
   const handleSaveGroup = async (fields: SettingField[]) => {
     setSaving(true);
+    let errors = 0;
     const keys = fields.map((f) => f.key);
     for (const key of keys) {
-      await supabase.from('site_settings').update({ value: settings[key] || '', updated_at: new Date().toISOString() }).eq('key', key);
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert(
+          { key, value: settings[key] || '', updated_at: new Date().toISOString() },
+          { onConflict: 'key' }
+        );
+      if (error) {
+        errors++;
+        // eslint-disable-next-line no-console
+        console.error('Failed to save', key, error);
+      }
     }
     setSavedKeys((prev) => {
       const next = new Set(prev);
@@ -148,17 +159,36 @@ export default function SiteSettings() {
       });
     }, 2500);
     setSaving(false);
-    showToast('Pengaturan berhasil disimpan dan langsung berlaku di website!');
+    if (errors > 0) {
+      showToast(`${errors} field gagal disimpan. Cek console.`);
+    } else {
+      showToast('Pengaturan berhasil disimpan dan langsung berlaku di website!');
+    }
   };
 
   const handleSaveAll = async () => {
     setSaving(true);
+    let errors = 0;
     const allFields = SETTING_GROUPS.flatMap((g) => g.fields);
     for (const field of allFields) {
-      await supabase.from('site_settings').update({ value: settings[field.key] || '', updated_at: new Date().toISOString() }).eq('key', field.key);
+      const { error } = await supabase
+        .from('site_settings')
+        .upsert(
+          { key: field.key, value: settings[field.key] || '', updated_at: new Date().toISOString() },
+          { onConflict: 'key' }
+        );
+      if (error) {
+        errors++;
+        // eslint-disable-next-line no-console
+        console.error('Failed to save', field.key, error);
+      }
     }
     setSaving(false);
-    showToast('Semua pengaturan berhasil disimpan!');
+    if (errors > 0) {
+      showToast(`${errors} field gagal disimpan. Cek console.`);
+    } else {
+      showToast('Semua pengaturan berhasil disimpan!');
+    }
   };
 
   if (loading) {
