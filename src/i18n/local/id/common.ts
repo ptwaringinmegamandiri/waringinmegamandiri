@@ -1,5 +1,5 @@
 const translations = {
-  // === NAVBAR (MENU ATAS) ===
+  // === NAVBAR & MENU ===
   'nav.beranda': 'Beranda',
   'nav.tentangKami': 'Tentang Kami',
   'nav.portofolio': 'Portofolio',
@@ -9,7 +9,7 @@ const translations = {
   'nav.hubungiKami': 'Hubungi Kami',
   'nav.beranda2': 'Beranda',
 
-  // === HERO SECTION (HALAMAN DEPAN) ===
+  // === HERO SECTION ===
   'hero.label': 'PT Waringin Mega Mandiri — Berdiri Sejak 2022',
   'hero.title1': 'Kontraktor Gedung',
   'hero.title2': 'Terpercaya',
@@ -24,7 +24,7 @@ const translations = {
   'hero.stat.klienKorporat': 'Klien Korporat',
   'hero.slogan': 'BUILD TO PERFECTION',
 
-  // === SERVICES SECTION (LAYANAN) ===
+  // === SERVICES (LAYANAN) ===
   'services.label': 'Apa Yang Kami Lakukan',
   'services.titleHighlight': 'Layanan',
   'services.titleSuffix': 'Kami',
@@ -34,19 +34,18 @@ const translations = {
   'services.keunggulan': 'Keunggulan Kami',
   'services.mengapaWMM': 'Mengapa Memilih',
   'services.dukunganDesc': 'Kami hadir dengan dukungan penuh dari PT. Waringin Megah untuk memastikan setiap proyek berjalan optimal.',
-
-  // === ITEM LAYANAN ===
+  
   'service.gc.title': 'General Contractor',
   'service.gc.tagline': 'Solusi Konstruksi Profesional & Terpercaya',
-  'service.gc.description': 'PT. Waringin Mega Mandiri hadir sebagai General Contractor profesional yang berpengalaman dalam pelaksanaan proyek konstruksi skala menengah hingga besar. Didukung oleh tim berpengalaman dari PT. Waringin Megah, kami menghadirkan hasil pekerjaan berkualitas terbaik untuk setiap klien.',
+  'service.gc.description': 'PT. Waringin Mega Mandiri hadir sebagai General Contractor profesional yang berpengalaman dalam pelaksanaan proyek konstruksi skala menengah hingga besar.',
   'service.gc.scope1.title': 'Gedung Komersial & Perkantoran',
   'service.gc.scope1.desc': 'Pembangunan gedung komersial, perkantoran, dan pusat perbelanjaan dengan standar konstruksi internasional.',
   'service.gc.scope2.title': 'Hunian & Residensial',
   'service.gc.scope2.desc': 'Konstruksi hunian premium, apartemen, dan perumahan dengan kualitas material terbaik dan pengerjaan presisi.',
   'service.gc.scope3.title': 'Fasilitas Publik & Institusi',
-  'service.gc.scope3.desc': 'Pembangunan fasilitas publik, rumah sakit, sekolah, dan gedung pemerintahan sesuai standar yang berlaku.',
-  'service.gc.scope4.title': 'Proyek Khusus & Mixed-Use',
-  'service.gc.scope4.desc': 'Penanganan proyek dengan kompleksitas tinggi, termasuk kawasan Mixed-Use dan desain arsitektur unik.',
+  'service.gc.scope3.desc': 'Pembangunan fasilitas publik, rumah sakit, sekolah, dan gedung pemerintahan.',
+  'service.gc.scope4.title': 'Proyek Khusus & Serbaguna',
+  'service.gc.scope4.desc': 'Penanganan proyek dengan kompleksitas tinggi, termasuk kawasan serbaguna (mixed-use).',
   'service.gc.why1': 'Tim Berpengalaman dari PT. Waringin Megah',
   'service.gc.why2': 'Manajemen Proyek Terstruktur & Transparan',
   'service.gc.why3': 'Komitmen Kualitas & Ketepatan Waktu',
@@ -60,9 +59,9 @@ const translations = {
   'service.gc.stat3.val': '2022',
   'service.gc.stat3.label': 'Tahun Berdiri',
   'service.gc.cta': 'Konsultasi Proyek',
-  'service.6.title': 'Service & Maintenance',
+  'service.6.title': 'Layanan & Pemeliharaan',
 
-  // === ABOUT PAGE (TENTANG KAMI) ===
+  // === TENTANG KAMI (ABOUT PAGE) ===
   'about.title': 'Tentang Kami',
   'about.subtitle': 'Mengenal lebih dekat PT Waringin Mega Mandiri — perusahaan konstruksi yang membangun Indonesia dengan teknologi dan integritas.',
   'about.breadcrumb': 'Tentang Kami',
@@ -72,7 +71,6 @@ const translations = {
   'about.perjalanan': 'Perjalanan Kami',
   'about.historyMilestone': 'Riwayat & Pencapaian',
 
-  // === PROFIL PERUSAHAAN ===
   'profile.label': 'Profil Perusahaan',
   'profile.title': 'PT Waringin',
   'profile.highlight': 'Mega Mandiri',
@@ -84,17 +82,6 @@ const translations = {
   'profile.tenaga': 'Tim Profesional Berpengalaman',
   'profile.proyek': 'Proyek Berkualitas Tinggi',
   'profile.standar': 'Didukung PT. Waringin Megah',
-
-  // === VISI & MISI ===
-  'vm.label': 'Arah & Tujuan',
-  'vm.title': 'Visi &',
-  'vm.highlight': 'Misi',
-  'vm.visi': 'Visi',
-  'vm.misi': 'Misi',
-  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
-  'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
-  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
-  'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
 
   // === NILAI PERUSAHAAN (VALUES) ===
   'values.label': 'Fondasi Kami',
@@ -131,7 +118,7 @@ const translations = {
   'karir.badge': 'Bergabung Bersama Kami',
   'karir.title1': 'Bangun Karir di',
   'karir.title2': 'PT Waringin Mega Mandiri',
-  'karir.subtitle': 'Bergabunglah dengan tim profesional kami dan jadilah bagian dari proyek-proyek konstruksi terbaik di Indonesia.',
+  'karir.subtitle': 'Bergabunglah dengan tim profesional kami dan jadilah bagian dari proyek-proyek konstruksi terbaik di Indonesia. Kami menghargai talenta, mendorong inovasi, dan berkomitmen pada pertumbuhan karir Anda.',
   'karir.mengapa': 'Mengapa Bergabung dengan WMM?',
   'karir.komunitas': 'Kami bukan sekadar tempat kerja — kami adalah komunitas profesional yang tumbuh bersama.',
   'karir.lowongan': 'Lowongan Tersedia',
@@ -139,7 +126,7 @@ const translations = {
   'karir.semua': 'Semua',
   'karir.tidakAda': 'Belum ada lowongan saat ini.',
   'karir.tidakCocok': 'Tidak Menemukan Posisi yang Cocok?',
-  'karir.kirimSpontan': 'Kirimkan CV Anda secara spontan.',
+  'karir.kirimSpontan': 'Kirimkan CV Anda secara spontan ke email kami. Kami selalu mencari talenta terbaik.',
   'karir.kirimBtn': 'Kirim Lamaran Spontan',
   'karir.deskripsiPekerjaan': 'Deskripsi Pekerjaan',
   'karir.keuntungan': 'Keuntungan & Benefit',
@@ -147,39 +134,14 @@ const translations = {
   'karir.lamarSekarang': 'Lamar Sekarang',
   'karir.tanyaWA': 'Tanya via WhatsApp',
   'karir.deadline': 'Batas Waktu',
+  'karir.dept.manajemen': 'Manajemen Proyek',
+  'karir.dept.teknologi': 'Teknologi & Inovasi',
+  'karir.dept.engineering': 'Engineering',
+  'karir.dept.estimasi': 'Estimasi & Biaya',
+  'karir.dept.hse': 'Kesehatan, Keselamatan & Lingkungan',
+  'karir.dept.desain': 'Desain & Drafting',
 
-  // === NEWS / BERITA ===
-  'news.badge': 'Berita & Wawasan',
-  'news.title1': 'Berita &',
-  'news.title2': 'Update',
-  'news.subtitle': 'Informasi terkini tentang proyek, teknologi konstruksi, dan perkembangan terbaru PT Waringin Mega Mandiri.',
-  'news.artikelPilihan': 'Artikel Pilihan',
-  'news.semua': 'Semua',
-  'news.artikel': 'artikel',
-  'news.tidakAda': 'Tidak ada artikel di kategori ini.',
-  'news.newsletterTitle': 'Berlangganan Newsletter',
-  'news.newsletterSubtitle': 'Dapatkan berita dan update proyek terbaru WMM langsung di inbox Anda.',
-  'news.placeholder': 'email@contoh.com',
-  'news.subscribe': 'Langganan',
-  'news.subscribed': 'Berhasil berlangganan!',
-
-  // === TIM MANAJEMEN ===
-  'team.label': 'Para Pemimpin Kami',
-  'team.title': 'Tim',
-  'team.highlight': 'Manajemen',
-  'team.subtitle': 'Dipimpin oleh para profesional berpengalaman dengan rekam jejak proyek konstruksi skala nasional dan internasional.',
-  'team.pendiri': 'Pendiri Perusahaan',
-  'team.direksi': 'Dewan Direksi',
-  'team.orang': 'orang',
-  'team.pos.pemegang': 'Pemegang Saham',
-  'team.pos.komisaris': 'Komisaris Utama',
-  'team.pos.direktur': 'Direktur Utama',
-  'team.desc.1': 'Pengembang berdomisili di Surabaya. Bersama Ir. Yohanes Sucipto mendirikan PT. Waringin Megah pada tahun 1987.',
-  'team.desc.2': 'Alumnus Fakultas Teknik Sipil Universitas Kristen Petra Surabaya tahun 1985. Bersama Eddy Susanto mendirikan PT. Waringin Megah.',
-  'team.desc.3': 'Lulusan Teknik Sipil ITS Surabaya tahun 1989. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Komisaris Utama PT. Waringin Mega Mandiri.',
-  'team.desc.4': 'Lulusan Teknik Sipil Universitas Kristen Maranatha Bandung tahun 1994. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Direktur Utama PT. Waringin Mega Mandiri.',
-
-  // === KONTAK (PAGE) ===
+  // === KONTAK (PAGE & INFO) ===
   'kontak.heroBadge': 'Hubungi Kami',
   'kontak.heroTitle1': 'Mari',
   'kontak.heroTitle2': 'Berdiskusi',
@@ -215,7 +177,9 @@ const translations = {
   'kontak.company': 'Perusahaan / Institusi',
   'kontak.companyPlaceholder': 'Nama perusahaan Anda (opsional)',
   'kontak.projectType': 'Jenis Proyek',
+  'kontak.projectTypePlaceholder': 'Pilih jenis proyek',
   'kontak.budget': 'Estimasi Anggaran',
+  'kontak.budgetPlaceholder': 'Pilih kisaran anggaran',
   'kontak.message': 'Pesan / Deskripsi Proyek',
   'kontak.messagePlaceholder': 'Ceritakan kebutuhan proyek Anda secara singkat...',
   'kontak.submit': 'Kirim Pesan',
@@ -224,7 +188,7 @@ const translations = {
   'kontak.successMsg': 'Terima kasih! Tim kami akan menghubungi Anda dalam 1x24 jam kerja.',
   'kontak.mapTitle': 'Lokasi Kami',
   'kontak.ctaTitle': 'Atau Hubungi Langsung via WhatsApp',
-  'kontak.ctaSubtitle': 'Dapatkan respons lebih cepat melalui WhatsApp.',
+  'kontak.ctaSubtitle': 'Dapatkan respons lebih cepat melalui WhatsApp. Tim kami siap membantu Anda.',
   'kontak.ctaBtn': 'Chat via WhatsApp',
   'kontak.required': 'Wajib diisi',
   'kontak.charLimit': 'Maks 500 karakter',
@@ -232,11 +196,33 @@ const translations = {
   'kontak.socialMedia': 'Media Sosial',
   'kontak.kembali': 'Kembali',
 
+  // === TIM MANAJEMEN ===
+  'team.label': 'Para Pemimpin Kami',
+  'team.title': 'Tim',
+  'team.highlight': 'Manajemen',
+  'team.subtitle': 'Dipimpin oleh para profesional berpengalaman dengan rekam jejak proyek konstruksi skala nasional dan internasional.',
+  'team.pendiri': 'Pendiri Perusahaan',
+  'team.direksi': 'Dewan Direksi',
+  'team.orang': 'orang',
+  'team.pos.pemegang': 'Pemegang Saham',
+  'team.pos.komisaris': 'Komisaris Utama',
+  'team.pos.direktur': 'Direktur Utama',
+  'team.desc.1': 'Pengembang berdomisili di Surabaya. Bersama Ir. Yohanes Sucipto mendirikan PT. Waringin Megah pada tahun 1987.',
+  'team.desc.2': 'Alumnus Fakultas Teknik Sipil Universitas Kristen Petra Surabaya tahun 1985. Bersama Eddy Susanto mendirikan PT. Waringin Megah.',
+  'team.desc.3': 'Lulusan Teknik Sipil ITS Surabaya tahun 1989. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Komisaris Utama PT. Waringin Mega Mandiri.',
+  'team.desc.4': 'Lulusan Teknik Sipil Universitas Kristen Maranatha Bandung tahun 1994. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Direktur Utama PT. Waringin Mega Mandiri.',
+
+  // === VISI & MISI ===
+  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
+  'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
+  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
+  'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
+
   // === FOOTER ===
-  'footer.desc': 'Perusahaan Jasa Konstruksi/General Contractor anak perusahaan PT. Waringin Megah, berkomitmen melayani pelanggan dengan hasil pekerjaan berkualitas terbaik.',
-  'footer.layanan': 'LAYANAN',
   'footer.perusahaan': 'PERUSAHAAN',
+  'footer.layanan': 'LAYANAN',
   'footer.kontak': 'KONTAK',
+  'footer.desc': 'Perusahaan Jasa Konstruksi/General Contractor anak perusahaan PT. Waringin Megah, berkomitmen melayani pelanggan dengan hasil pekerjaan berkualitas terbaik.',
   'footer.copyright': '© 2024 PT WARINGIN MEGA MANDIRI. HAK CIPTA DILINDUNGI.',
   'footer.privacy': 'Kebijakan Privasi',
   'footer.terms': 'Syarat & Ketentuan',
@@ -253,6 +239,12 @@ const translations = {
   'project.tutup': 'Tutup',
   'project.statusSelesai': 'Selesai',
   'project.statusOngoing': 'Sedang Berjalan',
+  'project.tahunLabel': 'Tahun',
+  'project.tipeBangunan': 'Tipe Bangunan',
+  'project.paketPekerjaan': 'Paket Pekerjaan',
+  'project.lantai': 'Lantai',
+  'project.luasBangunan': 'Luas Bangunan',
+  'project.jumlahUnit': 'Jumlah Unit',
   'featured.showcase': 'Proyek Berjalan',
   'featured.proyek': 'Proyek',
   'featured.unggulan': 'Sedang Berjalan',
@@ -260,7 +252,7 @@ const translations = {
   'featured.detailProyek': 'Detail Proyek',
   'featured.selesai': 'Selesai',
 
-  // === LAIN-LAIN ===
+  // === LAIN-LAIN / BADGES ===
   'badge.lpjk': 'Tersertifikasi LPJK',
   'badge.iso': 'ISO 9001:2015',
   'badge.sbu': 'Sertifikasi SBU',
