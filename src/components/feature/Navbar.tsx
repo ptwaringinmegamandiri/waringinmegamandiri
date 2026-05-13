@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useSiteTheme } from '@/context/SiteThemeContext';
@@ -17,13 +17,15 @@ export default function Navbar() {
   const [langOpen, setLangOpen] = useState(false);
   const [isMobileView, setIsMobileView] = useState(false);
   const location = useLocation();
+  const langMenuRef = useRef<HTMLDivElement>(null);
 
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0];
 
   const ctaText = theme.navbar_cta_text || t('nav.hubungiKami');
   const navbarLogoUrl = theme.navbar_logo_url || '';
-  const logoWidth = parseInt(theme.navbar_logo_width || '180', 10); // Saya naikkan sedikit biar pas
+  const logoWidth = parseInt(theme.navbar_logo_width || '180', 10);
   const logoHeight = parseInt(theme.navbar_logo_height || '60', 10);
+  
   const scrolledBg = scrolled
     ? 'bg-[#070C17] lg:bg-[#070C17]/95 border-sky-400/10 lg:backdrop-blur-md border-b'
     : 'bg-transparent';
@@ -44,11 +46,22 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobileView(window.innerWidth < 768);
+    const checkMobile = () => setIsMobileView(window.innerWidth < 1024);
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
+
+  // Klik di luar untuk menutup dropdown bahasa
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [langMenuRef]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -62,14 +75,12 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolledBg}`}>
+      <nav className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${scrolledBg}`}>
         <div className="mx-auto px-4 md:px-6 lg:px-8 xl:px-10 max-w-[1400px]">
           <div className="flex items-center justify-between h-20 md:h-24 gap-4">
-            {/* Logo - Tulisan Samping Sudah Dihapus */}
-            <Link to="/" className="flex items-center group shrink-0"
-              data-preview-id="navbar"
-              data-editable-fields="navbar_logo_url,navbar_cta_text,navbar_logo_width,navbar_logo_height"
-            >
+            
+            {/* Logo */}
+            <Link to="/" className="flex items-center group shrink-0">
               <div className="flex items-center justify-center overflow-hidden rounded shrink-0"
                 style={{
                   width: isMobileView ? Math.min(logoWidth, 120) : logoWidth,
@@ -93,9 +104,7 @@ export default function Navbar() {
                     key={link.path}
                     to={link.path}
                     className={`font-body font-medium text-sm tracking-wide transition-all duration-300 relative group whitespace-nowrap ${
-                      isActive
-                        ? 'text-sky-400'
-                        : 'text-white/70 hover:text-white'
+                      isActive ? 'text-sky-400' : 'text-white/70 hover:text-white'
                     }`}
                   >
                     {link.label}
@@ -105,94 +114,67 @@ export default function Navbar() {
               })}
             </div>
 
-            {/* Right side: Lang + CTA */}
-            <div className="hidden lg:flex items-center gap-3">
-              <div className="relative shrink-0">
+            {/* Language Switcher & CTA */}
+            <div className="flex items-center gap-3">
+              <div className="relative shrink-0" ref={langMenuRef}>
                 <button
                   onClick={() => setLangOpen(!langOpen)}
-                  className="flex items-center gap-1.5 border rounded-lg px-2.5 py-1.5 transition-all duration-300 cursor-pointer whitespace-nowrap border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white"
+                  className="flex items-center gap-1.5 border rounded-lg px-2.5 py-1.5 transition-all duration-300 cursor-pointer border-white/20 hover:border-white/40 bg-white/5 hover:bg-white/10 text-white"
                 >
                   <span className="text-sm">{currentLang.flag}</span>
-                  <span className="font-body text-xs font-semibold tracking-wide">{currentLang.label}</span>
+                  <span className="font-body text-xs font-semibold uppercase">{currentLang.label}</span>
+                  <i className={`ri-arrow-down-s-line transition-transform ${langOpen ? 'rotate-180' : ''}`} />
                 </button>
+
+                {/* Dropdown Bahasa (Muncul di Laptop & HP) */}
                 {langOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-32 border border-slate-700/50 bg-[#0D1628] rounded-xl overflow-hidden z-50">
+                  <div className="absolute top-full right-0 mt-2 w-32 border border-white/10 bg-[#0D1628] rounded-xl overflow-hidden z-[110] shadow-2xl">
                     {LANGUAGES.map((lang) => (
                       <button
                         key={lang.code}
                         onClick={() => changeLanguage(lang.code)}
-                        className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-body transition-colors duration-200 cursor-pointer whitespace-nowrap ${
+                        className={`w-full flex items-center gap-2.5 px-4 py-2.5 text-sm font-body transition-colors cursor-pointer ${
                           i18n.language === lang.code
-                            ? 'bg-sky-400/15 text-sky-300 font-semibold'
-                            : 'text-slate-300 hover:bg-sky-400/8 hover:text-white'
+                            ? 'bg-sky-400/15 text-sky-300'
+                            : 'text-slate-300 hover:bg-white/5 hover:text-white'
                         }`}
                       >
                         <span>{lang.flag}</span>
                         <span>{lang.label}</span>
-                        {i18n.language === lang.code && (
-                          <i className="ri-check-line text-sky-500 ml-auto text-xs" />
-                        )}
                       </button>
                     ))}
                   </div>
                 )}
               </div>
 
-              <a
-                href="mailto:info@waringinmegamandiri.com"
-                className="bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs px-4 py-2 rounded-lg cursor-pointer whitespace-nowrap transition-colors"
-              >
+              <a href="mailto:info@waringinmegamandiri.com" className="hidden lg:block bg-sky-500 hover:bg-sky-400 text-white font-bold text-xs px-4 py-2 rounded-lg transition-colors">
                 {ctaText}
               </a>
-            </div>
 
-            {/* Mobile Menu */}
-            <div className="flex lg:hidden items-center gap-2">
-              <button
-                onClick={() => setLangOpen(!langOpen)}
-                className="flex items-center gap-1 border rounded-lg px-2.5 py-1.5 transition-all cursor-pointer whitespace-nowrap border-white/20 text-white/70 hover:text-white"
-              >
-                <span className="text-sm">{currentLang.flag}</span>
-                <span className="font-body text-xs font-semibold">{currentLang.label}</span>
-              </button>
+              {/* Hamburger Menu Mobile */}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="w-10 h-10 flex flex-col items-center justify-center gap-[6px] cursor-pointer"
-                aria-label="Toggle menu"
+                className="lg:hidden w-10 h-10 flex flex-col items-center justify-center gap-[6px] cursor-pointer"
               >
-                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-[9px]' : ''}`} />
-                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
-                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all ${menuOpen ? 'rotate-45 translate-y-[9px]' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all ${menuOpen ? 'opacity-0' : ''}`} />
+                <span className={`block w-6 h-[3px] rounded-full bg-white transition-all ${menuOpen ? '-rotate-45 -translate-y-[9px]' : ''}`} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu Panel */}
+        {/* Panel Menu Mobile */}
         {menuOpen && (
-          <div className="fixed inset-0 z-40 lg:hidden">
+          <div className="fixed inset-0 z-[90] lg:hidden">
             <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMenuOpen(false)} />
-            <div className="absolute top-0 right-0 w-72 h-full border-l p-8 pt-24 flex flex-col gap-4 bg-[#070C17] border-sky-400/10">
-              {navLinks.map((link) => {
-                const isActive = location.pathname === link.path;
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`font-body font-medium text-base py-3 border-b transition-colors duration-300 ${
-                      isActive
-                        ? 'text-sky-400 border-sky-400/30'
-                        : 'text-slate-300 border-sky-400/10'
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
-                );
-              })}
-              <a
-                href="mailto:info@waringinmegamandiri.com"
-                className="bg-sky-500 hover:bg-sky-400 text-white font-bold text-sm px-5 py-3 rounded-lg text-center mt-4 cursor-pointer"
-              >
+            <div className="absolute top-0 right-0 w-72 h-full border-l p-8 pt-24 flex flex-col gap-4 bg-[#070C17] border-white/10">
+              {navLinks.map((link) => (
+                <Link key={link.path} to={link.path} className="text-white text-lg font-body border-b border-white/5 pb-3">
+                  {link.label}
+                </Link>
+              ))}
+              <a href="mailto:info@waringinmegamandiri.com" className="bg-sky-500 text-white text-center py-3 rounded-lg font-bold mt-4">
                 {ctaText}
               </a>
             </div>
