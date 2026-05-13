@@ -7,9 +7,8 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    lng: 'id',
     fallbackLng: 'id',
-    debug: false,
+    debug: true,
     resources: messages,
     interpolation: {
       escapeValue: false,
