@@ -33,11 +33,7 @@ export const teamMembers: TeamMember[] = [
     id: 4,
     name: 'Johan Kurniawan',
     position: 'Direktur Utama',
-<<<<<<< HEAD
-    description: 'Lulusan Teknik Sipil Universitas Kristen Maranatha Bandung tahun 1994. ',
-=======
     description: 'Lulusan Teknik Sipil Universitas Kristen Maranatha Bandung tahun 1994. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Direktur Utama PT. Waringin Mega Mandiri dengan dedikasi penuh.',
->>>>>>> 9222321a6a01245cbe05ea9e392667ac60ccca3f
     image: 'https://static.readdy.ai/image/19e5c28a928905456492b1bd20d85494/1617131f2f12ff4a26b6e253e5faebc0.png',
   },
 ];
