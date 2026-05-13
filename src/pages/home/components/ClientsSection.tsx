@@ -7,8 +7,8 @@ const clientsBase = [
   { key: 'client_card_2', name: 'Astra Land', fullName: 'Astra Land Indonesia', desc: 'Anak perusahaan Astra International di bidang properti premium', icon: 'ri-community-line', projects: 5, category: 'Properti' },
   { key: 'client_card_3', name: 'ASG Group', fullName: 'ASG Group', desc: 'Pengembang kawasan perumahan dan komersial terpadu', icon: 'ri-home-8-line', projects: 4, category: 'Properti' },
   { key: 'client_card_4', name: 'Yayasan Charitas', fullName: 'Yayasan Rumah Sakit Charitas', desc: 'Institusi kesehatan terkemuka di Sumatera Selatan', icon: 'ri-hospital-line', projects: 2, category: 'Kesehatan' },
-  { key: 'client_card_5', name: 'PT Sabang Raya', fullName: 'PT Sabang Raya Investama', desc: 'Perusahaan investasi & hospitality di kawasan Batam', icon: 'ri-hotel-line', projects: 1, category: 'Hospitality' },
-  { key: 'client_card_6', name: 'Hilton Garden Inn', fullName: 'Hilton Garden Inn Batam', desc: 'Brand hotel internasional kelas dunia di Indonesia', icon: 'ri-building-2-line', projects: 1, category: 'Hospitality' },
+  { key: 'client_card_5', name: 'PT Sabang Raya', fullName: 'PT Sabang Raya Investama', desc: 'Perusahaan investasi & hospitality di kawasan Batam', icon: 'ri-hotel-line', projects: 1, category: 'Properti' },
+  { key: 'client_card_6', name: 'Hilton Garden Inn', fullName: 'Hilton Garden Inn Batam', desc: 'Brand hotel internasional kelas dunia di Indonesia', icon: 'ri-building-2-line', projects: 1, category: 'Properti' },
 ];
 
 const categoryColors: Record<string, string> = {
