@@ -27,6 +27,11 @@ const translations = {
   'services.titleHighlight': 'Layanan',
   'services.titleSuffix': 'Kami',
   'services.subtitle': 'Kami menyediakan solusi konstruksi komprehensif dengan teknologi terdepan untuk memenuhi setiap kebutuhan proyek Anda.',
+  'services.lingkupPekerjaan': 'Lingkup Pekerjaan',
+  'services.lingkupSubtitle': 'Bidang konstruksi yang kami tangani secara profesional',
+  'services.keunggulan': 'Keunggulan Kami',
+  'services.mengapaWMM': 'Mengapa Memilih',
+  'services.dukunganDesc': 'Kami hadir dengan dukungan penuh dari PT. Waringin Megah untuk memastikan setiap proyek berjalan optimal.',
 
   // Service Items
   'service.gc.title': 'General Contractor',
@@ -38,8 +43,8 @@ const translations = {
   'service.gc.scope2.desc': 'Konstruksi hunian premium, apartemen, dan perumahan dengan kualitas material terbaik dan pengerjaan presisi.',
   'service.gc.scope3.title': 'Fasilitas Publik & Institusi',
   'service.gc.scope3.desc': 'Pembangunan fasilitas publik, rumah sakit, sekolah, dan gedung pemerintahan sesuai standar yang berlaku.',
-  'service.gc.scope4.title': 'Proyek Khusus & Mixed-Use',
-  'service.gc.scope4.desc': 'Penanganan proyek dengan kompleksitas tinggi, termasuk mixed-use development dan bangunan dengan desain arsitektur unik.',
+  'service.gc.scope4.title': 'Proyek Khusus & Serbaguna',
+  'service.gc.scope4.desc': 'Penanganan proyek dengan kompleksitas tinggi, termasuk kawasan serbaguna (mixed-use) dan desain arsitektur unik.',
   'service.gc.why1': 'Tim Berpengalaman dari PT. Waringin Megah',
   'service.gc.why2': 'Manajemen Proyek Terstruktur & Transparan',
   'service.gc.why3': 'Komitmen Kualitas & Ketepatan Waktu',
@@ -53,12 +58,12 @@ const translations = {
   'service.gc.stat3.val': '2022',
   'service.gc.stat3.label': 'Tahun Berdiri',
   'service.gc.cta': 'Konsultasi Proyek',
-  'service.6.title': 'Service & Maintenance',
+  'service.6.title': 'Layanan & Pemeliharaan',
 
   // Featured Projects
   'featured.showcase': 'Proyek Berjalan',
   'featured.proyek': 'Proyek',
-  'featured.unggulan': 'Ongoing',
+  'featured.unggulan': 'Sedang Berjalan',
   'featured.lihatSemua': 'Lihat Semua Proyek',
   'featured.detailProyek': 'Detail Proyek',
   'featured.selesai': 'Selesai',
@@ -69,21 +74,25 @@ const translations = {
   'cta.title2': 'Bersama Kami?',
   'cta.subtitle': 'Konsultasikan kebutuhan konstruksi Anda bersama tim profesional kami. Dapatkan estimasi biaya gratis dan solusi terbaik untuk proyek Anda.',
   'cta.konsultasi': 'Konsultasi Gratis',
-  'cta.telepon': '+62 21 5270 1234',
+  'cta.telepon': '+62 21 5738 001',
 
   // About Page
   'about.title': 'Tentang Kami',
   'about.subtitle': 'Mengenal lebih dekat PT Waringin Mega Mandiri — perusahaan konstruksi yang membangun Indonesia dengan teknologi dan integritas.',
   'about.breadcrumb': 'Tentang Kami',
   'about.beranda': 'Beranda',
+  'about.fondasi': 'Fondasi Kami',
+  'about.nilaiPerusahaan': 'Nilai Perusahaan',
+  'about.perjalanan': 'Perjalanan Kami',
+  'about.historyMilestone': 'Riwayat & Pencapaian',
 
   // Company Profile
   'profile.label': 'Profil Perusahaan',
   'profile.title': 'PT Waringin',
   'profile.highlight': 'Mega Mandiri',
   'profile.founded': 'Didirikan',
-  'profile.p1': 'PT. Waringin Mega Mandiri adalah perusahaan Jasa Konstruksi/Kontraktor yang merupakan anak perusahaan dari PT. Waringin Megah yang berlokasi di Jakarta.',
-  'profile.p2': 'PT. Waringin Mega Mandiri didirikan pada tahun 2022 dengan tujuan untuk mengerjakan proyek-proyek yang selama ini dikelola oleh Tim Manajemen PT. Waringin Megah divisi Jakarta.',
+  'profile.p1': 'PT. Waringin Mega Mandiri adalah perusahaan Jasa Konstruksi/General Contractor yang merupakan anak perusahaan dari PT. Waringin Megah yang berlokasi di Jakarta.',
+  'profile.p2': 'PT. Waringin Mega Mandiri didirikan pada tahun 2022 dengan tujuan untuk mengerjakan proyek-proyek yang selama ini dikelola oleh Tim Manajemen PT. Waringin Megah divisi Jakarta, sedangkan PT. Waringin Megah bertindak sebagai perusahaan induk yang mendukung baik tenaga, peralatan maupun keuangan.',
   'profile.p3': 'Tim Manajemen PT. Waringin Mega Mandiri selalu bertekad untuk melayani dan memuaskan semua pelanggan dengan memberikan hasil pekerjaan dengan kualitas yang terbaik.',
   'profile.kota': 'Beroperasi di Jakarta',
   'profile.tenaga': 'Tim Profesional Berpengalaman',
@@ -122,9 +131,9 @@ const translations = {
   'portfolio.gedung': 'Gedung',
   'portfolio.infrastruktur': 'Infrastruktur',
   'portfolio.renovasi': 'Renovasi',
-  'portfolio.industrial': 'Industrial',
+  'portfolio.industrial': 'Industri',
   'portfolio.statusSelesai': 'Selesai',
-  'portfolio.statusOngoing': 'Ongoing',
+  'portfolio.statusOngoing': 'Sedang Berjalan',
   'portfolio.menampilkan': 'Menampilkan',
   'portfolio.proyek': 'proyek',
   'portfolio.dalamKategori': 'dalam kategori',
@@ -136,13 +145,13 @@ const translations = {
   'karir.badge': 'Bergabung Bersama Kami',
   'karir.title1': 'Bangun Karir di',
   'karir.title2': 'PT Waringin Mega Mandiri',
-  'karir.subtitle': 'Bergabunglah dengan tim profesional kami dan jadilah bagian dari proyek-proyek konstruksi terbaik di Indonesia.',
+  'karir.subtitle': 'Bergabunglah dengan tim profesional kami dan jadilah bagian dari proyek-proyek konstruksi terbaik di Indonesia. Kami menghargai talenta, mendorong inovasi, dan berkomitmen pada pertumbuhan karir Anda.',
   'karir.mengapa': 'Mengapa Bergabung dengan WMM?',
   'karir.komunitas': 'Kami bukan sekadar tempat kerja — kami adalah komunitas profesional yang tumbuh bersama.',
   'karir.lowongan': 'Lowongan Tersedia',
   'karir.posisiTerbuka': 'posisi terbuka — temukan yang sesuai dengan keahlian Anda',
   'karir.semua': 'Semua',
-  'karir.tidakAda': 'Belum ada lowongan di departemen ini saat ini.',
+  'karir.tidakAda': 'Belum ada lowongan saat ini.',
   'karir.tidakCocok': 'Tidak Menemukan Posisi yang Cocok?',
   'karir.kirimSpontan': 'Kirimkan CV Anda secara spontan. Kami selalu mencari talenta terbaik dan akan menghubungi Anda saat ada posisi yang sesuai.',
   'karir.kirimBtn': 'Kirim Lamaran Spontan',
@@ -151,12 +160,12 @@ const translations = {
   'karir.kualifikasi': 'Kualifikasi & Persyaratan',
   'karir.lamarSekarang': 'Lamar Sekarang',
   'karir.tanyaWA': 'Tanya via WhatsApp',
-  'karir.deadline': 'Deadline',
+  'karir.deadline': 'Batas Waktu',
 
   // News Page
   'news.badge': 'Berita & Wawasan',
   'news.title1': 'Berita &',
-  'news.title2': 'Updates',
+  'news.title2': 'Update',
   'news.subtitle': 'Informasi terkini tentang proyek, teknologi konstruksi, dan perkembangan terbaru PT Waringin Mega Mandiri.',
   'news.artikelPilihan': 'Artikel Pilihan',
   'news.semua': 'Semua',
@@ -165,14 +174,8 @@ const translations = {
   'news.newsletterTitle': 'Berlangganan Newsletter',
   'news.newsletterSubtitle': 'Dapatkan berita dan update proyek terbaru WMM langsung di inbox Anda.',
   'news.placeholder': 'email@contoh.com',
-  'news.subscribe': 'Subscribe',
-  'news.subscribed': 'Berhasil berlangganan! Terima kasih.',
-
-  // About Misc
-  'about.fondasi': 'Fondasi Kami',
-  'about.nilaiPerusahaan': 'Nilai Perusahaan',
-  'about.perjalanan': 'Perjalanan Kami',
-  'about.historyMilestone': 'History & Milestone',
+  'news.subscribe': 'Langganan',
+  'news.subscribed': 'Berhasil berlangganan!',
 
   // Project Card / Modal
   'project.lihatDetail': 'Lihat Detail',
@@ -185,7 +188,7 @@ const translations = {
   'project.diskusi': 'Diskusi Proyek Serupa',
   'project.tutup': 'Tutup',
   'project.statusSelesai': 'Selesai',
-  'project.statusOngoing': 'Ongoing',
+  'project.statusOngoing': 'Sedang Berjalan',
 
   // Kontak Misc
   'kontak.sertifikasi': 'Sertifikasi & Legalitas',
@@ -278,6 +281,7 @@ const translations = {
   'sbu.41015': '41015 – Konstruksi Gedung Kesehatan',
   'sbu.41017': '41017 – Konstruksi Gedung Penginapan',
   'sbu.41019': '41019 – Konstruksi Tempat Ibadah',
+  'nav.beranda2': 'Beranda',
 };
 
 export default translations;
