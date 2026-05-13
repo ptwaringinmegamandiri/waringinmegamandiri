@@ -1,132 +1,74 @@
-const translations = {
-  // === NAVIGASI & MENU ===
-  'nav.beranda': 'Beranda',
-  'nav.beranda2': 'Beranda',
-  'nav.tentangKami': 'Tentang Kami',
-  'nav.portofolio': 'Portofolio',
-  'nav.news': 'Berita',
-  'nav.karir': 'Karir',
-  'nav.kontak': 'Kontak',
-  'nav.hubungiKami': 'Hubungi Kami',
+import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { useSiteTheme } from '@/context/SiteThemeContext';
 
-  // === HERO SECTION (PALING ATAS) ===
-  'hero.label': 'PT Waringin Mega Mandiri — Berdiri Sejak 2022',
-  'hero.title1': 'Kontraktor Gedung',
-  'hero.title2': 'Terpercaya',
-  'hero.title3': 'Skala Nasional',
-  'hero.subtitle': 'PT Waringin Mega Mandiri adalah anak perusahaan yang tergabung dalam Waringin Group dan telah membangun ruko, pabrik, gudang, hotel, apartemen, restoran, sekolah, kantor, bangunan bertingkat, rumah tinggal hingga kawasan industri.',
-  'hero.lihatPortofolio': 'Lihat Portofolio',
-  'hero.hubungiKami': 'Hubungi Kami',
-  'hero.scroll': 'Gulir',
-  'hero.slogan': 'BUILD TO PERFECTION',
-  'hero.stat.tahunPengalaman': 'Tahun Pengalaman',
-  'hero.stat.proyekSelesai': 'Proyek Selesai',
-  'hero.stat.kepuasanKlien': 'Kepuasan Klien',
-  'hero.stat.klienKorporat': 'Klien Korporat',
+export default function Footer() {
+  const { t } = useTranslation();
+  const { theme } = useSiteTheme();
+  const navbarLogoUrl = theme.navbar_logo_url || '';
+  const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
+  const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
 
-  // === SERVICES (LAYANAN) ===
-  'services.label': 'Apa Yang Kami Lakukan',
-  'services.titleHighlight': 'Layanan',
-  'services.titleSuffix': 'Kami',
-  'services.subtitle': 'Kami menyediakan solusi konstruksi komprehensif dengan teknologi terdepan untuk memenuhi setiap kebutuhan proyek Anda.',
-  'services.lingkupPekerjaan': 'Lingkup Pekerjaan',
-  'services.lingkupSubtitle': 'Bidang konstruksi yang kami tangani secara profesional',
-  'services.keunggulan': 'Keunggulan Kami',
-  'services.mengapaWMM': 'Mengapa Memilih',
-  'services.dukunganDesc': 'Kami hadir dengan dukungan penuh dari PT. Waringin Megah untuk memastikan setiap proyek berjalan optimal.',
-  
-  'service.gc.title': 'General Contractor',
-  'service.gc.tagline': 'Solusi Konstruksi Profesional & Terpercaya',
-  'service.gc.description': 'PT. Waringin Mega Mandiri hadir sebagai General Contractor profesional yang berpengalaman dalam pelaksanaan proyek konstruksi skala menengah hingga besar.',
-  'service.gc.scope1.title': 'Gedung Komersial & Perkantoran',
-  'service.gc.scope2.title': 'Hunian & Residensial',
-  'service.gc.scope3.title': 'Fasilitas Publik & Institusi',
-  'service.gc.scope4.title': 'Proyek Khusus & Serbaguna',
-  'service.6.title': 'Layanan & Pemeliharaan',
-  'service.gc.cta': 'Konsultasi Proyek',
+  const layananLinks = [
+    t('service.gc.scope1.title'),
+    t('service.gc.scope2.title'),
+    t('service.gc.scope3.title'),
+    t('service.gc.scope4.title'),
+    t('service.6.title'),
+  ];
 
-  // === TENTANG KAMI (ABOUT) ===
-  'about.title': 'Tentang Kami',
-  'about.subtitle': 'Mengenal lebih dekat PT Waringin Mega Mandiri — perusahaan konstruksi yang membangun Indonesia dengan teknologi dan integritas.',
-  'about.fondasi': 'Fondasi Kami',
-  'about.nilaiPerusahaan': 'Nilai Perusahaan',
-  'about.perjalanan': 'Perjalanan Kami',
-  'about.historyMilestone': 'Riwayat & Pencapaian',
-  'profile.label': 'Profil Perusahaan',
-  'profile.title': 'PT Waringin',
-  'profile.highlight': 'Mega Mandiri',
-  'profile.founded': 'Didirikan',
-  'profile.p1': 'PT. Waringin Mega Mandiri adalah perusahaan Jasa Konstruksi/Kontraktor yang merupakan anak perusahaan dari PT. Waringin Megah yang berlokasi di Jakarta.',
-  'profile.p2': 'PT. Waringin Mega Mandiri didirikan pada tahun 2022 dengan tujuan untuk mengerjakan proyek-proyek yang selama ini dikelola oleh Tim Manajemen PT. Waringin Megah divisi Jakarta.',
-  'profile.p3': 'Tim Manajemen PT. Waringin Mega Mandiri selalu bertekad untuk melayani dan memuaskan semua pelanggan dengan memberikan hasil pekerjaan dengan kualitas yang terbaik.',
-  'profile.kota': 'Beroperasi di Jakarta',
-  'profile.tenaga': 'Tim Profesional Berpengalaman',
-  'profile.proyek': 'Proyek Berkualitas Tinggi',
-  'profile.standar': 'Didukung PT. Waringin Megah',
+  return (
+    <footer className="relative bg-[#050A14] border-t border-white/5 pt-14 pb-8">
+      <div className="relative max-w-7xl mx-auto px-6 lg:px-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 mb-12">
+          
+          <div className="lg:col-span-4">
+            <div className="mb-4 overflow-hidden rounded" style={{ width: logoWidth, height: logoHeight }}>
+              <img src={navbarLogoUrl || "https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png"} className="w-full h-full object-contain object-left" />
+            </div>
+            <p className="text-slate-400 text-sm font-body italic mb-2">{t('hero.slogan')} — PT Waringin Mega Mandiri</p>
+            <p className="text-slate-500 text-xs leading-relaxed max-w-xs">{t('footer.desc')}</p>
+          </div>
 
-  // === VISI MISI ===
-  'vm.label': 'Arah & Tujuan',
-  'vm.title': 'Visi &',
-  'vm.highlight': 'Misi',
-  'vm.visi': 'Visi',
-  'vm.misi': 'Misi',
-  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
-  'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
-  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
-  'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
+          <div className="lg:col-span-2">
+            <h4 className="text-white font-bold text-xs uppercase mb-4 tracking-widest">{t('footer.perusahaan')}</h4>
+            <ul className="space-y-2.5 text-sm text-slate-500">
+              <li><Link to="/" className="hover:text-sky-400 transition-colors">{t('nav.beranda')}</Link></li>
+              <li><Link to="/tentang-kami" className="hover:text-sky-400 transition-colors">{t('nav.tentangKami')}</Link></li>
+              <li><Link to="/portofolio" className="hover:text-sky-400 transition-colors">{t('nav.portofolio')}</Link></li>
+              <li><Link to="/news" className="hover:text-sky-400 transition-colors">{t('nav.news')}</Link></li>
+              <li><Link to="/karir" className="hover:text-sky-400 transition-colors">{t('nav.karir')}</Link></li>
+              <li><Link to="/kontak" className="hover:text-sky-400 transition-colors">{t('nav.kontak')}</Link></li>
+            </ul>
+          </div>
 
-  // === TEAM (TIM MANAJEMEN) ===
-  'team.label': 'Para Pemimpin Kami',
-  'team.title': 'Tim',
-  'team.highlight': 'Manajemen',
-  'team.subtitle': 'Dipimpin oleh para profesional berpengalaman dengan rekam jejak proyek konstruksi skala nasional dan internasional.',
-  'team.pendiri': 'Pendiri Perusahaan',
-  'team.direksi': 'Dewan Direksi',
-  'team.orang': 'orang',
-  'team.pos.pemegang': 'Pemegang Saham',
-  'team.pos.komisaris': 'Komisaris Utama',
-  'team.pos.direktur': 'Direktur Utama',
-  'team.desc.1': 'Pengembang berdomisili di Surabaya. Bersama Ir. Yohanes Sucipto mendirikan PT. Waringin Megah pada tahun 1987.',
-  'team.desc.2': 'Alumnus Fakultas Teknik Sipil Universitas Kristen Petra Surabaya tahun 1985. Bersama Eddy Susanto mendirikan PT. Waringin Megah.',
-  'team.desc.3': 'Lulusan Teknik Sipil ITS Surabaya tahun 1989. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Komisaris Utama PT. Waringin Mega Mandiri.',
-  'team.desc.4': 'Lulusan Teknik Sipil Universitas Kristen Maranatha Bandung tahun 1994. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Direktur Utama PT. Waringin Mega Mandiri.',
+          <div className="lg:col-span-3">
+            <h4 className="text-white font-bold text-xs uppercase mb-4 tracking-widest">{t('footer.layanan')}</h4>
+            <ul className="space-y-2.5 text-sm text-slate-500">
+              {layananLinks.map((item) => (
+                <li key={item} className="flex items-center gap-2"><div className="w-1 h-1 bg-sky-400 rounded-full" /> {item}</li>
+              ))}
+            </ul>
+          </div>
 
-  // === FOOTER (BAGIAN BAWAH) ===
-  'footer.perusahaan': 'PERUSAHAAN',
-  'footer.layanan': 'LAYANAN',
-  'footer.kontak': 'KONTAK',
-  'footer.desc': 'Perusahaan Jasa Konstruksi/General Contractor anak perusahaan PT. Waringin Megah, berkomitmen melayani pelanggan dengan hasil pekerjaan berkualitas terbaik.',
-  'footer.copyright': 'PT Waringin Mega Mandiri. Hak Cipta Dilindungi.',
-  'footer.privacy': 'Kebijakan Privasi',
-  'footer.terms': 'Syarat & Ketentuan',
+          <div className="lg:col-span-3">
+            <h4 className="text-white font-bold text-xs uppercase mb-4 tracking-widest">{t('footer.kontak')}</h4>
+            <div className="space-y-3 text-sm text-slate-400 font-body">
+              <div className="flex gap-2 items-center"><i className="ri-map-pin-line text-sky-400" /><p>{t('kontak.addressVal')}</p></div>
+              <div className="flex gap-2 items-center"><i className="ri-phone-line text-sky-400" /><p>{t('kontak.phoneVal')}</p></div>
+              <div className="flex gap-2 items-center"><i className="ri-mail-line text-sky-400" /><p>{t('kontak.emailVal')}</p></div>
+            </div>
+          </div>
+        </div>
 
-  // === KONTAK & FORM ===
-  'kontak.addressVal': 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210',
-  'kontak.phoneVal': '+62 21 5738001',
-  'kontak.emailVal': 'info@waringinmegamandiri.com',
-  'kontak.heroTitle1': 'Mari',
-  'kontak.heroTitle2': 'Berdiskusi',
-  'kontak.heroSubtitle': 'Kami siap membantu mewujudkan proyek impian Anda.',
-  'kontak.formTitle': 'Kirim Pesan',
-  'kontak.name': 'Nama Lengkap',
-  'kontak.emailLabel': 'Email',
-  'kontak.phoneLabel': 'Nomor Telepon',
-  'kontak.message': 'Pesan / Deskripsi Proyek',
-  'kontak.submit': 'Kirim Pesan',
-  'kontak.submitting': 'Mengirim...',
-  'kontak.successTitle': 'Pesan Terkirim!',
-  'kontak.successMsg': 'Terima kasih! Tim kami akan menghubungi Anda segera.',
-
-  // === PROYEK & BADGE ===
-  'portfolio.title': 'Portofolio Proyek',
-  'portfolio.statusSelesai': 'Selesai',
-  'portfolio.statusOngoing': 'Sedang Berjalan',
-  'featured.unggulan': 'Sedang Berjalan',
-  'badge.lpjk': 'Tersertifikasi LPJK',
-  'project.lihatDetail': 'Lihat Detail',
-  'project.lokasi': 'Lokasi',
-  'project.tahun': 'Tahun',
-  'project.klien': 'Klien'
-};
-
-export default translations;
+        <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row justify-between items-center text-slate-600 text-xs gap-3">
+          <p>{t('footer.copyright')}</p>
+          <div className="flex gap-6">
+            <span className="hover:text-sky-400 cursor-pointer">{t('footer.privacy')}</span>
+            <span className="hover:text-sky-400 cursor-pointer">{t('footer.terms')}</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
