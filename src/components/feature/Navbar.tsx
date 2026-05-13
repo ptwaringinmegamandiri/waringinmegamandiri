@@ -20,15 +20,13 @@ export default function Navbar() {
 
   const currentLang = LANGUAGES.find((l) => l.code === i18n.language) || LANGUAGES[0];
 
-  const brandText = theme.navbar_brand_text || 'WARINGIN';
   const ctaText = theme.navbar_cta_text || t('nav.hubungiKami');
   const navbarLogoUrl = theme.navbar_logo_url || '';
-  const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
-  const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
-  const navTextColor = theme.navbar_text_color || '#FFFFFF';
-  const brandSize = parseInt(theme.navbar_brand_size || '16', 10);
-  const brandColor = theme.navbar_brand_color || '#FFFFFF';
-  const subBrandColor = theme.navbar_sub_brand_color || '#2563EB';
+  const logoWidth = parseInt(theme.navbar_logo_width || '180', 10); // Saya naikkan sedikit biar pas
+  const logoHeight = parseInt(theme.navbar_logo_height || '60', 10);
+  const scrolledBg = scrolled
+    ? 'bg-[#070C17] lg:bg-[#070C17]/95 border-sky-400/10 lg:backdrop-blur-md border-b'
+    : 'bg-transparent';
 
   const navLinks = [
     { label: t('nav.beranda'), path: '/' },
@@ -62,24 +60,20 @@ export default function Navbar() {
     setLangOpen(false);
   };
 
-  const scrolledBg = scrolled
-    ? 'bg-[#070C17] lg:bg-[#070C17]/95 border-sky-400/10 lg:backdrop-blur-md border-b'
-    : 'bg-transparent';
-
   return (
     <>
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolledBg}`}>
         <div className="mx-auto px-4 md:px-6 lg:px-8 xl:px-10 max-w-[1400px]">
           <div className="flex items-center justify-between h-20 md:h-24 gap-4">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 md:gap-3 group shrink-0"
+            {/* Logo - Tulisan Samping Sudah Dihapus */}
+            <Link to="/" className="flex items-center group shrink-0"
               data-preview-id="navbar"
-              data-editable-fields="navbar_logo_url,navbar_brand_text,navbar_cta_text,navbar_logo_width,navbar_logo_height,navbar_text_color,navbar_brand_size,navbar_brand_color,navbar_sub_brand_color"
+              data-editable-fields="navbar_logo_url,navbar_cta_text,navbar_logo_width,navbar_logo_height"
             >
               <div className="flex items-center justify-center overflow-hidden rounded shrink-0"
                 style={{
-                  width: isMobileView ? Math.min(logoWidth, 100) : logoWidth,
-                  height: isMobileView ? Math.min(logoHeight, 36) : logoHeight,
+                  width: isMobileView ? Math.min(logoWidth, 120) : logoWidth,
+                  height: isMobileView ? Math.min(logoHeight, 40) : logoHeight,
                 }}
               >
                 <img
@@ -87,18 +81,6 @@ export default function Navbar() {
                   alt="PT Waringin Mega Mandiri"
                   className="w-full h-full object-contain"
                 />
-              </div>
-              <div>
-                <p className="font-syne font-bold tracking-wide leading-none text-white"
-                  style={{ fontSize: `${brandSize}px`, color: brandColor }}
-                >
-                  {brandText}
-                </p>
-                <p className="font-body text-sm tracking-[0.12em] leading-none mt-1.5 font-medium"
-                  style={{ color: subBrandColor }}
-                >
-                  MEGA MANDIRI
-                </p>
               </div>
             </Link>
 
@@ -125,7 +107,6 @@ export default function Navbar() {
 
             {/* Right side: Lang + CTA */}
             <div className="hidden lg:flex items-center gap-3">
-              {/* Language Switcher */}
               <div className="relative shrink-0">
                 <button
                   onClick={() => setLangOpen(!langOpen)}
@@ -165,7 +146,7 @@ export default function Navbar() {
               </a>
             </div>
 
-            {/* Mobile */}
+            {/* Mobile Menu */}
             <div className="flex lg:hidden items-center gap-2">
               <button
                 onClick={() => setLangOpen(!langOpen)}
@@ -174,9 +155,6 @@ export default function Navbar() {
                 <span className="text-sm">{currentLang.flag}</span>
                 <span className="font-body text-xs font-semibold">{currentLang.label}</span>
               </button>
-              {langOpen && (
-                <div className="fixed inset-0 z-40" onClick={() => setLangOpen(false)} />
-              )}
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
                 className="w-10 h-10 flex flex-col items-center justify-center gap-[6px] cursor-pointer"

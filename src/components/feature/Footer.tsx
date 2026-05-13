@@ -7,28 +7,14 @@ const certifications = [
   { icon: 'ri-shield-star-line', label: 'LPJK Certified' },
 ];
 
-const sbuItems = [
-  { code: '41011', label: 'Gedung Hunian' },
-  { code: '41012', label: 'Gedung Perkantoran' },
-  { code: '41013', label: 'Gedung Industri' },
-  { code: '41014', label: 'Gedung Perbelanjaan' },
-  { code: '41015', label: 'Gedung Kesehatan' },
-  { code: '41017', label: 'Gedung Penginapan' },
-  { code: '41019', label: 'Tempat Ibadah' },
-];
-
 export default function Footer() {
   const { t } = useTranslation();
   const { theme } = useSiteTheme();
 
-  const brandText = theme.navbar_brand_text || 'WARINGIN';
   const ctaText = theme.navbar_cta_text || t('nav.hubungiKami');
   const navbarLogoUrl = theme.navbar_logo_url || '';
   const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
   const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
-  const brandSize = parseInt(theme.navbar_brand_size || '16', 10);
-  const brandColor = theme.navbar_brand_color || '#FFFFFF';
-  const subBrandColor = theme.navbar_sub_brand_color || '#2563EB';
 
   const footerTagline = theme.footer_tagline || t('footer.desc');
   const footerCopyright = theme.footer_copyright || t('footer.copyright');
@@ -68,7 +54,6 @@ export default function Footer() {
     <footer
       className="relative overflow-hidden transition-colors duration-300 bg-[#050A14]"
       data-preview-id="footer"
-      data-editable-fields="footer_tagline,footer_copyright,footer_logo_width,footer_logo_height,footer_text_color,footer_text_size,address,phone,email,instagram,linkedin,facebook,youtube"
     >
       {/* Top accent line */}
       <div
@@ -83,14 +68,14 @@ export default function Footer() {
 
       {/* Main content */}
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-14 pb-8">
-        {/* Top section: Brand + Nav columns */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 mb-12">
           {/* Brand col */}
           <div className="lg:col-span-4">
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex flex-col gap-5 mb-5">
+              {/* LOGO SAJA - Tanpa Nama, Tanpa Sub-brand, Tanpa Est 2022 */}
               <div
                 className="overflow-hidden rounded shrink-0"
-                style={{ width: Math.min(logoWidth, 120), height: Math.min(logoHeight, 40) }}
+                style={{ width: logoWidth, height: logoHeight }}
               >
                 <img
                   src={
@@ -98,23 +83,8 @@ export default function Footer() {
                     'https://static.readdy.ai/image/bb09a0928cc8f0d4386aa86b1c375457/e43383809fea645d4b3c3e3429de1214.png'
                   }
                   alt="PT Waringin Mega Mandiri"
-                  className="w-full h-full object-contain"
+                  className="w-full h-full object-contain object-left"
                 />
-              </div>
-              <div>
-                <p
-                  className="font-syne font-bold text-lg tracking-wide leading-none"
-                  style={{ fontSize: `${brandSize}px`, color: brandColor }}
-                >
-                  {brandText}
-                </p>
-                <p
-                  className="font-body text-sm tracking-[0.15em] leading-none mt-1.5 font-medium uppercase"
-                  style={{ color: subBrandColor }}
-                >
-                  Mega Mandiri
-                </p>
-                <p className="font-body text-sm mt-1.5 text-white/60">Est. 2022 · Jakarta</p>
               </div>
             </div>
 
@@ -210,7 +180,7 @@ export default function Footer() {
                   <i className="ri-phone-line text-xs text-emerald-400" />
                 </div>
                 <a
-                  href="tel:+62215738001"
+                  href={`tel:${kontakPhone.replace(/\s/g, '')}`}
                   className="text-sm transition-colors cursor-pointer font-body text-slate-500 hover:text-sky-400"
                 >
                   {kontakPhone}
@@ -221,7 +191,7 @@ export default function Footer() {
                   <i className="ri-mail-line text-xs text-amber-400" />
                 </div>
                 <a
-                  href="mailto:info@waringinmegamandiri.com"
+                  href={`mailto:${kontakEmail}`}
                   className="text-sm transition-colors cursor-pointer font-body break-all text-slate-500 hover:text-sky-400"
                 >
                   {kontakEmail}
@@ -231,7 +201,7 @@ export default function Footer() {
 
             {/* Email CTA */}
             <a
-              href="mailto:info@waringinmegamandiri.com"
+              href={`mailto:${kontakEmail}`}
               className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border text-xs font-body font-medium transition-all duration-300 cursor-pointer whitespace-nowrap border-sky-400/25 bg-sky-400/5 text-sky-400 hover:bg-sky-400/12 hover:border-sky-400/40"
             >
               <i className="ri-mail-send-line text-sm" />
