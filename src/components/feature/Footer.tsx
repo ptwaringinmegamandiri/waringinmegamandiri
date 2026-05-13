@@ -4,28 +4,29 @@ import { useSiteTheme } from '@/context/SiteThemeContext';
 
 const certifications = [
   { icon: 'ri-verified-badge-line', label: 'ISO 9001:2015' },
-  { icon: 'ri-shield-star-line', label: 'Tersertifikasi LPJK' },
+  { icon: 'ri-shield-star-line', label: 'LPJK Certified' },
 ];
 
 export default function Footer() {
   const { t } = useTranslation();
   const { theme } = useSiteTheme();
 
-  const ctaText = theme.navbar_cta_text || 'Hubungi Kami';
+  // Sekarang memanggil dari Kamus
+  const ctaText = theme.navbar_cta_text || t('nav.hubungiKami');
   const navbarLogoUrl = theme.navbar_logo_url || '';
   const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
   const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
 
-  // Deskripsi & Copyright langsung Bahasa Indonesia
-  const footerTagline = theme.footer_tagline || 'Membangun masa depan dengan integritas dan kualitas konstruksi terbaik di Indonesia.';
-  const footerCopyright = theme.footer_copyright || `© ${new Date().getFullYear()} PT Waringin Mega Mandiri. Hak Cipta Dilindungi.`;
+  // Deskripsi & Copyright memanggil dari Kamus
+  const footerTagline = theme.footer_tagline || t('footer.desc');
+  const footerCopyright = theme.footer_copyright || t('footer.copyright');
 
   const footerTextColor = theme.footer_text_color || '#94A3B8';
   const footerTextSize = parseInt(theme.footer_text_size || '14', 10);
 
-  const kontakAddress = theme.address || 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210';
-  const kontakPhone = theme.phone || '+62 21 5738001';
-  const kontakEmail = theme.email || 'info@waringinmegamandiri.com';
+  const kontakAddress = theme.address || t('kontak.addressVal');
+  const kontakPhone = theme.phone || t('kontak.phoneVal');
+  const kontakEmail = theme.email || t('kontak.emailVal');
 
   const socials = [
     { icon: 'ri-instagram-line', href: theme.instagram || '#', label: 'Instagram' },
@@ -35,20 +36,20 @@ export default function Footer() {
   ].filter((s) => s.href !== '#');
 
   const perusahaanLinks = [
-    { label: 'Beranda', path: '/' },
-    { label: 'Tentang Kami', path: '/tentang-kami' },
-    { label: 'Portofolio', path: '/portofolio' },
-    { label: 'Berita', path: '/news' },
-    { label: 'Karir', path: '/karir' },
-    { label: 'Kontak', path: '/kontak' },
+    { label: t('nav.beranda'), path: '/' },
+    { label: t('nav.tentangKami'), path: '/tentang-kami' },
+    { label: t('nav.portofolio'), path: '/portofolio' },
+    { label: t('nav.news'), path: '/news' },
+    { label: t('nav.karir'), path: '/karir' },
+    { label: t('nav.kontak'), path: '/kontak' },
   ];
 
   const layananLinks = [
-    'Konstruksi Bangunan Gedung',
-    'Pekerjaan Infrastruktur',
-    'Manajemen Proyek',
-    'Desain & Bangun',
-    'Renovasi & Pemeliharaan',
+    t('service.gc.scope1.title'),
+    t('service.gc.scope2.title'),
+    t('service.gc.scope3.title'),
+    t('service.gc.scope4.title'),
+    t('service.6.title'),
   ];
 
   return (
@@ -122,7 +123,7 @@ export default function Footer() {
           {/* Kolom Perusahaan */}
           <div className="lg:col-span-2">
             <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
-              PERUSAHAAN
+              {t('footer.perusahaan')}
             </h4>
             <ul className="space-y-2.5">
               {perusahaanLinks.map((item) => (
@@ -142,7 +143,7 @@ export default function Footer() {
           {/* Kolom Layanan */}
           <div className="lg:col-span-3">
             <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
-              LAYANAN KAMI
+              {t('footer.layanan')}
             </h4>
             <ul className="space-y-2.5">
               {layananLinks.map((item) => (
@@ -159,7 +160,7 @@ export default function Footer() {
           {/* Kolom Kontak */}
           <div className="lg:col-span-3">
             <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
-              HUBUNGI KAMI
+              {t('footer.kontak')}
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
@@ -214,11 +215,11 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-4 text-xs">
             <span className="transition-colors cursor-pointer font-body text-slate-700 hover:text-slate-500">
-              Kebijakan Privasi
+              {t('footer.privacy')}
             </span>
             <span className="text-slate-800">|</span>
             <span className="transition-colors cursor-pointer font-body text-slate-700 hover:text-slate-500">
-              Syarat & Ketentuan
+              {t('footer.terms')}
             </span>
           </div>
         </div>
