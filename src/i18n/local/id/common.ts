@@ -10,7 +10,7 @@ const translations = {
   'footer.perusahaan': 'PERUSAHAAN',
   'footer.layanan': 'LAYANAN',
   'footer.kontak': 'KONTAK',
-  'footer.desc': 'Perusahaan Jasa Konstruksi/General Contractor anak perusahaan PT. Waringin Megah, berkomitmen melayani pelanggan dengan hasil pekerjaan berkualitas terbaik.',
+  'footer.desc': 'Perusahaan Jasa Konstruksi/Kontraktor Umum anak perusahaan PT. Waringin Megah, berkomitmen melayani pelanggan dengan hasil pekerjaan berkualitas terbaik.',
   'footer.copyright': 'PT Waringin Mega Mandiri. Hak Cipta Dilindungi.',
   'footer.privacy': 'Kebijakan Privasi',
   'footer.terms': 'Syarat & Ketentuan',
@@ -18,11 +18,11 @@ const translations = {
   'hero.slogan': 'BUILD TO PERFECTION',
 
   'service.gc.title': 'General Contractor',
-  'service.6.title': 'Service & Maintenance',
+  'service.6.title': 'Layanan & Pemeliharaan',
   'service.gc.scope1.title': 'Gedung Komersial & Perkantoran',
   'service.gc.scope2.title': 'Hunian & Residensial',
   'service.gc.scope3.title': 'Fasilitas Publik & Institusi',
-  'service.gc.scope4.title': 'Proyek Khusus & Mixed-Use',
+  'service.gc.scope4.title': 'Proyek Khusus & Serbaguna',
 
   'kontak.addressVal': 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210',
   'kontak.phoneVal': '+62 21 5738001',
