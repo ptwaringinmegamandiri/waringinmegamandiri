@@ -125,4 +125,28 @@ export default function Footer() {
           {/* Kontak */}
           <div className="lg:col-span-3">
             <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
-              {t(
+              {t('footer.kontak')}
+            </h4>
+            <div className="space-y-4 text-sm font-body text-slate-500">
+              <p>{kontakAddress}</p>
+              <p className="text-emerald-400 font-semibold">{kontakPhone}</p>
+              <p className="text-amber-400">{kontakEmail}</p>
+            </div>
+            <a href={`mailto:${kontakEmail}`} className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border border-sky-400/25 bg-sky-400/5 text-sky-400 text-xs font-bold hover:bg-sky-400/10">
+              <i className="ri-mail-send-line" /> {ctaText}
+            </a>
+          </div>
+        </div>
+
+        {/* Bottom bar */}
+        <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-slate-500 text-xs">
+          <p>{footerCopyright}</p>
+          <div className="flex gap-4">
+            <span className="hover:text-white cursor-pointer">{t('footer.privacy')}</span>
+            <span className="hover:text-white cursor-pointer">{t('footer.terms')}</span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+}
