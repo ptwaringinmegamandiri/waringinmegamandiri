@@ -4,20 +4,21 @@ import { useSiteTheme } from '@/context/SiteThemeContext';
 
 const certifications = [
   { icon: 'ri-verified-badge-line', label: 'ISO 9001:2015' },
-  { icon: 'ri-shield-star-line', label: 'LPJK Certified' },
+  { icon: 'ri-shield-star-line', label: 'Tersertifikasi LPJK' },
 ];
 
 export default function Footer() {
   const { t } = useTranslation();
   const { theme } = useSiteTheme();
 
-  const ctaText = theme.navbar_cta_text || t('nav.hubungiKami');
+  const ctaText = theme.navbar_cta_text || 'Hubungi Kami';
   const navbarLogoUrl = theme.navbar_logo_url || '';
   const logoWidth = parseInt(theme.navbar_logo_width || '140', 10);
   const logoHeight = parseInt(theme.navbar_logo_height || '50', 10);
 
-  const footerTagline = theme.footer_tagline || t('footer.desc');
-  const footerCopyright = theme.footer_copyright || t('footer.copyright');
+  // Deskripsi & Copyright langsung Bahasa Indonesia
+  const footerTagline = theme.footer_tagline || 'Membangun masa depan dengan integritas dan kualitas konstruksi terbaik di Indonesia.';
+  const footerCopyright = theme.footer_copyright || `© ${new Date().getFullYear()} PT Waringin Mega Mandiri. Hak Cipta Dilindungi.`;
 
   const footerTextColor = theme.footer_text_color || '#94A3B8';
   const footerTextSize = parseInt(theme.footer_text_size || '14', 10);
@@ -34,20 +35,20 @@ export default function Footer() {
   ].filter((s) => s.href !== '#');
 
   const perusahaanLinks = [
-    { label: t('nav.beranda'), path: '/' },
-    { label: t('nav.tentangKami'), path: '/tentang-kami' },
-    { label: t('nav.portofolio'), path: '/portofolio' },
-    { label: t('nav.news'), path: '/news' },
-    { label: t('nav.karir'), path: '/karir' },
-    { label: t('nav.kontak'), path: '/kontak' },
+    { label: 'Beranda', path: '/' },
+    { label: 'Tentang Kami', path: '/tentang-kami' },
+    { label: 'Portofolio', path: '/portofolio' },
+    { label: 'Berita', path: '/news' },
+    { label: 'Karir', path: '/karir' },
+    { label: 'Kontak', path: '/kontak' },
   ];
 
   const layananLinks = [
-    t('service.gc.scope1.title'),
-    t('service.gc.scope2.title'),
-    t('service.gc.scope3.title'),
-    t('service.gc.scope4.title'),
-    t('service.6.title'),
+    'Konstruksi Bangunan Gedung',
+    'Pekerjaan Infrastruktur',
+    'Manajemen Proyek',
+    'Desain & Bangun',
+    'Renovasi & Pemeliharaan',
   ];
 
   return (
@@ -55,7 +56,6 @@ export default function Footer() {
       className="relative overflow-hidden transition-colors duration-300 bg-[#050A14]"
       data-preview-id="footer"
     >
-      {/* Top accent line */}
       <div
         className="h-px w-full"
         style={{
@@ -63,16 +63,13 @@ export default function Footer() {
         }}
       />
 
-      {/* Subtle grid */}
       <div className="absolute inset-0 grid-pattern-sm pointer-events-none opacity-20" />
 
-      {/* Main content */}
       <div className="relative max-w-7xl mx-auto px-6 lg:px-10 pt-14 pb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 mb-12">
-          {/* Brand col */}
+          {/* Bagian Logo */}
           <div className="lg:col-span-4">
             <div className="flex flex-col gap-5 mb-5">
-              {/* LOGO SAJA - Tanpa Nama, Tanpa Sub-brand, Tanpa Est 2022 */}
               <div
                 className="overflow-hidden rounded shrink-0"
                 style={{ width: logoWidth, height: logoHeight }}
@@ -95,7 +92,6 @@ export default function Footer() {
               {footerTagline}
             </p>
 
-            {/* Certifications inline */}
             <div className="flex flex-wrap gap-2 mb-5">
               {certifications.map((c) => (
                 <div
@@ -108,7 +104,6 @@ export default function Footer() {
               ))}
             </div>
 
-            {/* Socials */}
             <div className="flex items-center gap-2.5">
               {socials.map((s) => (
                 <a
@@ -124,10 +119,10 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Perusahaan */}
+          {/* Kolom Perusahaan */}
           <div className="lg:col-span-2">
             <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
-              {t('footer.perusahaan')}
+              PERUSAHAAN
             </h4>
             <ul className="space-y-2.5">
               {perusahaanLinks.map((item) => (
@@ -144,10 +139,10 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Layanan */}
+          {/* Kolom Layanan */}
           <div className="lg:col-span-3">
             <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
-              {t('footer.layanan')}
+              LAYANAN KAMI
             </h4>
             <ul className="space-y-2.5">
               {layananLinks.map((item) => (
@@ -161,10 +156,10 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Kontak */}
+          {/* Kolom Kontak */}
           <div className="lg:col-span-3">
             <h4 className="font-syne font-bold text-xs tracking-widest uppercase mb-4 text-white">
-              {t('footer.kontak')}
+              HUBUNGI KAMI
             </h4>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
@@ -199,7 +194,6 @@ export default function Footer() {
               </li>
             </ul>
 
-            {/* Email CTA */}
             <a
               href={`mailto:${kontakEmail}`}
               className="mt-5 inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border text-xs font-body font-medium transition-all duration-300 cursor-pointer whitespace-nowrap border-sky-400/25 bg-sky-400/5 text-sky-400 hover:bg-sky-400/12 hover:border-sky-400/40"
@@ -210,7 +204,7 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom bar */}
+        {/* Baris Bawah */}
         <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p
             className="font-body tracking-wider"
@@ -220,11 +214,11 @@ export default function Footer() {
           </p>
           <div className="flex items-center gap-4 text-xs">
             <span className="transition-colors cursor-pointer font-body text-slate-700 hover:text-slate-500">
-              {t('footer.privacy')}
+              Kebijakan Privasi
             </span>
             <span className="text-slate-800">|</span>
             <span className="transition-colors cursor-pointer font-body text-slate-700 hover:text-slate-500">
-              {t('footer.terms')}
+              Syarat & Ketentuan
             </span>
           </div>
         </div>
