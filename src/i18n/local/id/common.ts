@@ -1,5 +1,5 @@
 const translations = {
-  // === NAVIGASI ===
+  // === NAVIGASI & MENU ===
   'nav.beranda': 'Beranda',
   'nav.beranda2': 'Beranda',
   'nav.tentangKami': 'Tentang Kami',
@@ -24,7 +24,7 @@ const translations = {
   'hero.stat.kepuasanKlien': 'Kepuasan Klien',
   'hero.stat.klienKorporat': 'Klien Korporat',
 
-  // === LAYANAN (SERVICES) ===
+  // === SEKSI LAYANAN (SERVICES) ===
   'services.label': 'Apa Yang Kami Lakukan',
   'services.titleHighlight': 'Layanan',
   'services.titleSuffix': 'Kami',
@@ -42,7 +42,16 @@ const translations = {
   'service.gc.scope3.title': 'Fasilitas Publik & Institusi',
   'service.gc.scope4.title': 'Proyek Khusus & Mixed-Use',
   'service.6.title': 'Service & Maintenance',
-  'service.gc.cta': 'Konsultasi Proyek',
+
+  // === NILAI PERUSAHAAN (VALUES) - INI YANG TADI HILANG ===
+  'value.1.title': 'Integritas',
+  'value.1.desc': 'Kami menjunjung tinggi kejujuran dan transparansi dalam setiap aspek bisnis dan pelaksanaan proyek.',
+  'value.2.title': 'Kualitas',
+  'value.2.desc': 'Standar kualitas premium ISO 9001 diterapkan di setiap proses konstruksi.',
+  'value.3.title': 'Inovasi',
+  'value.3.desc': 'Terus berinovasi dengan teknologi terkini BIM, drone survey, dan AI dalam manajemen proyek konstruksi.',
+  'value.4.title': 'Kolaborasi',
+  'value.4.desc': 'Membangun kemitraan strategis yang saling menguntungkan dengan klien, konsultan, dan subkontraktor.',
 
   // === TENTANG KAMI (ABOUT) ===
   'about.title': 'Tentang Kami',
@@ -57,7 +66,8 @@ const translations = {
   'profile.founded': 'Didirikan',
   'profile.p1': 'PT. Waringin Mega Mandiri adalah perusahaan Jasa Konstruksi/Kontraktor yang merupakan anak perusahaan dari PT. Waringin Megah yang berlokasi di Jakarta.',
   'profile.p2': 'PT. Waringin Mega Mandiri didirikan pada tahun 2022 dengan tujuan untuk mengerjakan proyek-proyek yang selama ini dikelola oleh Tim Manajemen PT. Waringin Megah divisi Jakarta.',
-  'profile.p3': 'Tim Manajemen PT. Waringin Mega Mandiri selalu bertekad untuk melayani dan memuaskan semua pelanggan dengan memberikan hasil pekerjaan dengan kualitas yang terbaik.',
+  'profile.kota': 'Beroperasi di Jakarta',
+  'profile.tenaga': 'Tim Profesional Berpengalaman',
 
   // === VISI MISI ===
   'vm.label': 'Arah & Tujuan',
@@ -65,62 +75,69 @@ const translations = {
   'vm.highlight': 'Misi',
   'vm.visi': 'Visi',
   'vm.misi': 'Misi',
-  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
+  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik.',
   'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
-  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
+  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh.',
   'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
 
-  // === PORTOFOLIO (DESKRIPSI LENGKAP) ===
+  // === PORTOFOLIO ===
   'portfolio.title': 'Portofolio Proyek',
-  'portfolio.subtitle': 'Rekam jejak kami dalam membangun berbagai proyek konstruksi bergengsi di seluruh Indonesia dengan standar kualitas terbaik.',
+  'portfolio.subtitle': 'Rekam jejak kami dalam membangun berbagai proyek konstruksi bergengsi di seluruh Indonesia.',
   'portfolio.semua': 'Semua',
   'portfolio.gedung': 'Gedung',
   'portfolio.infrastruktur': 'Infrastruktur',
   'portfolio.renovasi': 'Renovasi',
   'portfolio.industrial': 'Industrial',
   'portfolio.statusSelesai': 'Selesai',
-  'portfolio.statusOngoing': 'Sedang Berjalan',
+  'portfolio.statusOngoing': 'Berjalan',
   'portfolio.menampilkan': 'Menampilkan',
   'portfolio.proyek': 'proyek',
   'portfolio.dalamKategori': 'dalam kategori',
-  'portfolio.konsultasiCta': 'Tertarik bekerja sama dengan kami? Konsultasikan kebutuhan proyek konstruksi Anda sekarang.',
-  'portfolio.konsultasiBtn': 'Konsultasi Proyek Anda',
   'portfolio.tidakAda': 'Tidak ada proyek dalam kategori ini.',
 
-  // === KARIR (DESKRIPSI LENGKAP) ===
+  // === KARIR ===
   'karir.badge': 'Bergabung Bersama Kami',
   'karir.title1': 'Bangun Karir di',
   'karir.title2': 'PT Waringin Mega Mandiri',
-  'karir.subtitle': 'Bergabunglah dengan tim profesional kami dan jadilah bagian dari proyek-proyek konstruksi terbaik di Indonesia. Kami menghargai talenta, mendorong inovasi, dan berkomitmen pada pertumbuhan karir Anda.',
-  'karir.mengapa': 'Mengapa Bergabung dengan WMM?',
-  'karir.komunitas': 'Kami bukan sekadar tempat kerja — kami adalah komunitas profesional yang tumbuh bersama.',
+  'karir.subtitle': 'Bergabunglah dengan tim profesional kami dan jadilah bagian dari proyek-proyek konstruksi terbaik di Indonesia.',
   'karir.lowongan': 'Lowongan Tersedia',
   'karir.posisiTerbuka': 'posisi terbuka — temukan yang sesuai dengan keahlian Anda',
-  'karir.semua': 'Semua',
-  'karir.tidakAda': 'Belum ada lowongan di departemen ini saat ini.',
-  'karir.tidakCocok': 'Tidak Menemukan Posisi yang Cocok?',
-  'karir.kirimSpontan': 'Kirimkan CV Anda secara spontan. Kami selalu mencari talenta terbaik dan akan menghubungi Anda saat ada posisi yang sesuai.',
-  'karir.kirimBtn': 'Kirim Lamaran Spontan',
-  'karir.deskripsiPekerjaan': 'Deskripsi Pekerjaan',
-  'karir.keuntungan': 'Keuntungan & Benefit',
-  'karir.kualifikasi': 'Kualifikasi & Persyaratan',
-  'karir.lamarSekarang': 'Lamar Sekarang',
-  'karir.tanyaWA': 'Tanya via WhatsApp',
   'karir.deadline': 'Batas Waktu',
+  'karir.lamarSekarang': 'Lamar Sekarang',
 
-  // === BERITA (NEWS) ===
-  'news.badge': 'Berita & Insight',
-  'news.title1': 'Berita &',
-  'news.title2': 'Updates',
-  'news.subtitle': 'Informasi terkini tentang proyek, teknologi konstruksi, dan perkembangan terbaru PT Waringin Mega Mandiri.',
-  'news.newsletterTitle': 'Berlangganan Newsletter',
-  'news.newsletterSubtitle': 'Dapatkan berita dan update proyek terbaru WMM langsung di inbox Anda.',
+  // === KONTAK (DESKRIPSI & FORM) - INI JUGA TADI HILANG ===
+  'kontak.heroBadge': 'Hubungi Kami',
+  'kontak.heroTitle1': 'Mari',
+  'kontak.heroTitle2': 'Berdiskusi',
+  'kontak.heroSubtitle': 'Kami siap membantu mewujudkan proyek impian Anda. Konsultasi gratis, respon cepat, solusi terbaik.',
+  'kontak.infoTitle': 'Informasi Kontak',
+  'kontak.infoSubtitle': 'Hubungi kami melalui berbagai saluran komunikasi yang tersedia.',
+  'kontak.address': 'Alamat Kantor',
+  'kontak.addressVal': 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210',
+  'kontak.phone': 'Telepon',
+  'kontak.phoneVal': '+62 21 5738001',
+  'kontak.email': 'Email',
+  'kontak.emailVal': 'info@waringinmegamandiri.com',
+  'kontak.formTitle': 'Kirim Pesan',
+  'kontak.formSubtitle': 'Isi formulir di bawah ini dan tim kami akan segera menghubungi Anda.',
+  'kontak.name': 'Nama Lengkap',
+  'kontak.namePlaceholder': 'Masukkan nama lengkap Anda',
+  'kontak.emailLabel': 'Email',
+  'kontak.emailPlaceholder': 'email@perusahaan.com',
+  'kontak.phoneLabel': 'Nomor Telepon',
+  'kontak.phonePlaceholder': '+62 8xx-xxxx-xxxx',
+  'kontak.projectType': 'Jenis Proyek',
+  'kontak.message': 'Pesan / Deskripsi Proyek',
+  'kontak.messagePlaceholder': 'Ceritakan kebutuhan proyek Anda secara singkat...',
+  'kontak.submit': 'Kirim Pesan',
+  'kontak.submitting': 'Mengirim...',
+  'kontak.successTitle': 'Pesan Terkirim!',
+  'kontak.successMsg': 'Terima kasih! Tim kami akan menghubungi Anda dalam 1x24 jam kerja.',
 
-  // === TEAM MANAGEMENT ===
+  // === TIM MANAJEMEN ===
   'team.label': 'Para Pemimpin Kami',
   'team.title': 'Tim',
   'team.highlight': 'Manajemen',
-  'team.subtitle': 'Dipimpin oleh para profesional berpengalaman dengan rekam jejak proyek konstruksi skala nasional dan internasional.',
   'team.pendiri': 'Pendiri Perusahaan',
   'team.direksi': 'Dewan Direksi',
   'team.orang': 'orang',
@@ -141,16 +158,15 @@ const translations = {
   'footer.privacy': 'Kebijakan Privasi',
   'footer.terms': 'Syarat & Ketentuan',
 
-  // === KONTAK ===
-  'kontak.addressVal': 'Jl. Bendungan Hilir Raya G1 No.5 Jakarta Pusat 10210',
-  'kontak.phoneVal': '+62 21 5738001',
-  'kontak.emailVal': 'info@waringinmegamandiri.com',
-  'kontak.formTitle': 'Kirim Pesan',
-  'kontak.name': 'Nama Lengkap',
-  'kontak.emailLabel': 'Email',
-  'kontak.phoneLabel': 'Nomor Telepon',
-  'kontak.message': 'Pesan / Deskripsi Proyek',
-  'kontak.submit': 'Kirim Pesan',
+  // === LAIN-LAIN ===
+  'badge.lpjk': 'LPJK Certified',
+  'featured.unggulan': 'Sedang Berjalan',
+  'project.statusSelesai': 'Selesai',
+  'project.statusOngoing': 'Sedang Berjalan',
+  'project.lihatDetail': 'Lihat Detail',
+  'project.lokasi': 'Lokasi',
+  'project.tahun': 'Tahun',
+  'project.klien': 'Klien'
 };
 
 export default translations;
