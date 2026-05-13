@@ -333,7 +333,7 @@ const translations = {
   'team.desc.1': 'Pengembang berdomisili di Surabaya. Bersama Ir. Yohanes Sucipto mendirikan PT. Waringin Megah pada tahun 1987.',
   'team.desc.2': 'Alumnus Fakultas Teknik Sipil Universitas Kristen Petra Surabaya tahun 1985. Bersama Eddy Susanto mendirikan PT. Waringin Megah.',
   'team.desc.3': 'Lulusan Teknik Sipil ITS Surabaya tahun 1989. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Komisaris Utama PT. Waringin Mega Mandiri.',
-  'team.desc.4': 'Lulusan Teknik Sipil Universitas Kristen Maranatha Bandung tahun 1994. Bergabung PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Direktur Utama PT. Waringin Mega Mandiri.',
+  'team.desc.4': 'Lulusan Teknik Sipil Universitas Kristen Maranatha Bandung tahun 1994. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Direktur Utama PT. Waringin Mega Mandiri.',
 
   // Milestones
   'milestone.2008': 'PT Waringin Mega Mandiri didirikan di Jakarta dengan fokus renovasi gedung komersial.',
