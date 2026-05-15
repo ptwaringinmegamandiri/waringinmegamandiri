@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // 1. Tambahkan import translation
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import { renderRichText } from '@/lib/richText';
 
@@ -7,12 +8,14 @@ const DEFAULT_HERO_BG = 'https://readdy.ai/api/search-image?query=modern%20high-
 
 export default function HeroSection() {
   const titleRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation(); // 2. Panggil fungsi t (KUNCI)
   const { theme } = useSiteTheme();
 
   const heroImage = theme.hero_image_url || DEFAULT_HERO_BG;
-  const tagline = theme.hero_tagline || 'PT WARINGIN MEGA MANDIRI — BERDIRI SEJAK 2022';
-  const title = theme.hero_title || 'Kontraktor Gedung\nTerpercaya\nSkala Nasional';
-  const subtitle = theme.hero_subtitle || 'PT Waringin Mega Mandiri adalah anak perusahaan yang tergabung dalam Waringin Group dan telah membangun ruko, pabrik, gudang, hotel, apartemen, restoran, sekolah, kantor, bangunan bertingkat, rumah tinggal hingga kawasan industri.';
+  
+  // 3. Ambil data dari KUNCI yang sudah kita simpan tadi
+  const tagline = theme.hero_tagline || t('hero.label');
+  const subtitle = theme.hero_subtitle || t('hero.subtitle');
 
   const heroTitleColor = theme.hero_title_color || '#FFFFFF';
   const heroSubtitleColor = theme.hero_subtitle_color || '#94A3B8';
@@ -31,14 +34,9 @@ export default function HeroSection() {
     }, 200);
   }, []);
 
-  const titleLines = title.split('\n');
-
   return (
     <section className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden"
       data-preview-id="hero-section"
-      data-preview-label="Hero Section"
-      data-editable-fields="hero_tagline,hero_title,hero_subtitle,hero_cta_primary_text,hero_cta_secondary_text,hero_title_color,hero_subtitle_color,hero_title_size,hero_subtitle_size"
-      data-edit-field="hero"
     >
       <div className="absolute inset-0 w-full h-full">
         <img
@@ -62,21 +60,27 @@ export default function HeroSection() {
               </span>
             </div>
 
+            {/* SLOGAN - Dibuat miring (italic) sesuai permintaan bos */}
             <div className="mb-5">
               <span
-                className="text-xs tracking-[0.15em] uppercase font-body"
+                className="text-xs tracking-[0.15em] uppercase font-body italic font-bold"
                 style={{ color: heroSubtitleColor }}
               >
-                BUILD TO PERFECTION
+                {t('hero.slogan')}
               </span>
             </div>
 
+            {/* JUDUL UTAMA - Sekarang memanggil KUNCI title1, title2, title3 */}
             <h1 className="font-syne font-black mb-5 leading-[1.05]" style={{ color: heroTitleColor }}>
-              {titleLines.map((line, i) => (
-                <span key={i} className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
-                  {renderRichText(line, { fontSize: heroTitleSize, lineHeight: '1.1', color: heroTitleColor }, `hero-title-${i}`)}
-                </span>
-              ))}
+              <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
+                {t('hero.title1')}
+              </span>
+              <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
+                {t('hero.title2')}
+              </span>
+              <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
+                {t('hero.title3')}
+              </span>
             </h1>
 
             <p
@@ -93,14 +97,14 @@ export default function HeroSection() {
                 style={{ backgroundColor: theme.accent_color || '#0ea5e9' }}
               >
                 <i className="ri-briefcase-line" />
-                {theme.hero_cta_primary_text || 'Lihat Portofolio'}
+                {t('hero.lihatPortofolio')}
               </Link>
               <a
                 href={theme.hero_cta_secondary_url || 'mailto:info@waringinmegamandiri.com'}
                 className="border border-white/30 hover:border-white/60 text-white font-bold px-6 py-3 rounded-lg text-sm cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors bg-white/5 hover:bg-white/10"
               >
                 <i className="ri-mail-line" />
-                {theme.hero_cta_secondary_text || 'Hubungi Kami'}
+                {t('hero.hubungiKami')}
               </a>
             </div>
 
@@ -109,7 +113,7 @@ export default function HeroSection() {
                 className="text-xs tracking-widest uppercase font-body"
                 style={{ color: heroSubtitleColor }}
               >
-                SCROLL
+                {t('hero.scroll')}
               </span>
               <div className="flex flex-col items-center gap-1">
                 <div className="w-px h-6" style={{ backgroundColor: heroSubtitleColor }} />
