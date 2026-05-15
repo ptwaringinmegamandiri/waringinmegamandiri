@@ -61,40 +61,6 @@ const translations = {
   'service.gc.cta': 'Konsultasi Proyek',
   'service.6.title': 'Service & Maintenance',
 
-  // === TENTANG KAMI (ABOUT PAGE) ===
-  'about.title': 'Tentang Kami',
-  'about.subtitle': 'Mengenal lebih dekat PT Waringin Mega Mandiri — perusahaan konstruksi yang membangun Indonesia dengan teknologi dan integritas.',
-  'about.breadcrumb': 'Tentang Kami',
-  'about.beranda': 'Beranda',
-  'about.fondasi': 'Fondasi Kami',
-  'about.nilaiPerusahaan': 'Nilai Perusahaan',
-  'about.perjalanan': 'Perjalanan Kami',
-  'about.historyMilestone': 'History & Milestone',
-
-  // === VISI & MISI (INI YANG TADI HILANG) ===
-  'vm.label': 'Arah & Tujuan',
-  'vm.title': 'Visi &',
-  'vm.highlight': 'Misi',
-  'vm.visi': 'Visi',
-  'vm.misi': 'Misi',
-  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
-  'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
-  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
-  'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
-
-  // === PROFIL PERUSAHAAN ===
-  'profile.label': 'Profil Perusahaan',
-  'profile.title': 'PT Waringin',
-  'profile.highlight': 'Mega Mandiri',
-  'profile.founded': 'Didirikan',
-  'profile.p1': 'PT. Waringin Mega Mandiri adalah perusahaan Jasa Konstruksi/General Contractor yang merupakan anak perusahaan dari PT. Waringin Megah yang berlokasi di Jakarta.',
-  'profile.p2': 'PT. Waringin Mega Mandiri didirikan pada tahun 2022 dengan tujuan untuk mengerjakan proyek-proyek yang selama ini dikelola oleh Tim Manajemen PT. Waringin Megah divisi Jakarta.',
-  'profile.p3': 'Tim Manajemen PT. Waringin Mega Mandiri selalu bertekad untuk melayani dan memuaskan semua pelanggan dengan memberikan hasil pekerjaan dengan kualitas yang terbaik.',
-  'profile.kota': 'Beroperasi di Jakarta',
-  'profile.tenaga': 'Tim Profesional Berpengalaman',
-  'profile.proyek': 'Proyek Berkualitas Tinggi',
-  'profile.standar': 'Didukung PT. Waringin Megah',
-
   // === NILAI PERUSAHAAN (VALUES) ===
   'values.label': 'Fondasi Kami',
   'values.title': 'Nilai',
@@ -107,6 +73,34 @@ const translations = {
   'value.3.desc': 'Terus berinovasi dengan teknologi terkini BIM, drone survey, dan AI dalam manajemen proyek konstruksi.',
   'value.4.title': 'Kolaborasi',
   'value.4.desc': 'Membangun kemitraan strategis yang saling menguntungkan dengan klien, konsultan, dan subkontraktor.',
+
+  // === TENTANG KAMI (ABOUT PAGE) ===
+  'about.title': 'Tentang Kami',
+  'about.subtitle': 'Mengenal lebih dekat PT Waringin Mega Mandiri — perusahaan konstruksi yang membangun Indonesia dengan teknologi dan integritas.',
+  'about.breadcrumb': 'Tentang Kami',
+  'about.beranda': 'Beranda',
+  'about.fondasi': 'Fondasi Kami',
+  'about.nilaiPerusahaan': 'Nilai Perusahaan',
+  'about.perjalanan': 'Perjalanan Kami',
+  'about.historyMilestone': 'History & Milestone',
+
+  'profile.label': 'Profil Perusahaan',
+  'profile.title': 'PT Waringin',
+  'profile.highlight': 'Mega Mandiri',
+  'profile.founded': 'Didirikan',
+  'profile.p1': 'PT. Waringin Mega Mandiri adalah perusahaan Jasa Konstruksi/General Contractor yang merupakan anak perusahaan dari PT. Waringin Megah yang berlokasi di Jakarta.',
+  'profile.p2': 'PT. Waringin Mega Mandiri didirikan pada tahun 2022 dengan tujuan untuk mengerjakan proyek-proyek yang selama ini dikelola oleh Tim Manajemen PT. Waringin Megah divisi Jakarta.',
+  'profile.p3': 'Tim Manajemen PT. Waringin Mega Mandiri selalu bertekad untuk melayani dan memuaskan semua pelanggan dengan memberikan hasil pekerjaan dengan kualitas yang terbaik.',
+  'profile.kota': 'Beroperasi di Jakarta',
+  'profile.tenaga': 'Tim Profesional Berpengalaman',
+  'profile.proyek': 'Proyek Berkualitas Tinggi',
+  'profile.standar': 'Didukung PT. Waringin Megah',
+
+  // === VISI & MISI ===
+  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
+  'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
+  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
+  'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
 
   // === PORTOFOLIO ===
   'portfolio.title': 'Portofolio Proyek',
@@ -153,7 +147,7 @@ const translations = {
   'karir.dept.hse': 'Kesehatan, Keselamatan & Lingkungan',
   'karir.dept.desain': 'Desain & Drafting',
 
-  // === NEWS / BERITA ===
+  // === NEWS / BERITA (INI YANG TADI KELEWAT) ===
   'news.badge': 'Berita & Wawasan',
   'news.title1': 'Berita &',
   'news.title2': 'Update',
