@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next'; // 1. Tambahkan import translation
+import { useTranslation } from 'react-i18next'; 
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import { renderRichText } from '@/lib/richText';
 
@@ -8,14 +8,14 @@ const DEFAULT_HERO_BG = 'https://readdy.ai/api/search-image?query=modern%20high-
 
 export default function HeroSection() {
   const titleRef = useRef<HTMLDivElement>(null);
-  const { t } = useTranslation(); // 2. Panggil fungsi t (KUNCI)
+  const { t } = useTranslation();
   const { theme } = useSiteTheme();
 
   const heroImage = theme.hero_image_url || DEFAULT_HERO_BG;
   
-  // 3. Ambil data dari KUNCI yang sudah kita simpan tadi
-  const tagline = theme.hero_tagline || t('hero.label');
-  const subtitle = theme.hero_subtitle || t('hero.subtitle');
+  // Ambil teks dari Kamus
+  const tagline = t('hero.label');
+  const subtitle = t('hero.subtitle');
 
   const heroTitleColor = theme.hero_title_color || '#FFFFFF';
   const heroSubtitleColor = theme.hero_subtitle_color || '#94A3B8';
@@ -35,9 +35,7 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden"
-      data-preview-id="hero-section"
-    >
+    <section className="relative w-full min-h-screen flex flex-col justify-center overflow-hidden">
       <div className="absolute inset-0 w-full h-full">
         <img
           src={heroImage}
@@ -52,47 +50,39 @@ export default function HeroSection() {
         <div className="flex-1 max-w-7xl mx-auto px-6 lg:px-10 w-full pt-28 pb-10 flex flex-col justify-center">
           <div ref={titleRef} className="max-w-3xl">
             <div className="flex items-center gap-2 mb-4">
-              <span
-                className="text-xs tracking-[0.2em] uppercase font-body font-semibold"
-                style={{ color: heroSubtitleColor }}
-              >
+              <span className="text-xs tracking-[0.2em] uppercase font-body font-semibold" style={{ color: heroSubtitleColor }}>
                 {tagline}
               </span>
             </div>
 
-            {/* SLOGAN - Dibuat miring (italic) sesuai permintaan bos */}
+            {/* Slogan - Tetap Miring & Pakai Warna Subtitle */}
             <div className="mb-5">
-              <span
-                className="text-xs tracking-[0.15em] uppercase font-body italic font-bold"
-                style={{ color: heroSubtitleColor }}
-              >
+              <span className="text-xs tracking-[0.15em] uppercase font-body italic font-bold" style={{ color: heroSubtitleColor }}>
                 {t('hero.slogan')}
               </span>
             </div>
 
-            {/* JUDUL UTAMA - Sekarang memanggil KUNCI title1, title2, title3 */}
-            <h1 className="font-syne font-black mb-5 leading-[1.05]" style={{ color: heroTitleColor }}>
+            {/* Judul Utama - Memakai renderRichText agar WARNA kembali seperti asli */}
+            <h1 className="font-syne font-black mb-5 leading-[1.05]">
               <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
-                {t('hero.title1')}
+                {renderRichText(t('hero.title1'), { fontSize: heroTitleSize, color: heroTitleColor })}
               </span>
               <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
-                {t('hero.title2')}
+                {renderRichText(t('hero.title2'), { fontSize: heroTitleSize, color: heroTitleColor })}
               </span>
               <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
-                {t('hero.title3')}
+                {renderRichText(t('hero.title3'), { fontSize: heroTitleSize, color: heroTitleColor })}
               </span>
             </h1>
 
-            <p
-              className="font-body leading-relaxed mb-10 max-w-xl"
-              style={{ color: heroSubtitleColor, fontSize: `clamp(14px, 2.5vw, ${heroSubtitleSize}px)` }}
-            >
-              {renderRichText(subtitle, { fontSize: heroSubtitleSize, lineHeight: '1.75', color: heroSubtitleColor }, 'hero-subtitle')}
+            {/* Subtitle - Memakai renderRichText agar WARNA kembali seperti asli */}
+            <p className="font-body leading-relaxed mb-10 max-w-xl">
+              {renderRichText(subtitle, { fontSize: heroSubtitleSize, color: heroSubtitleColor })}
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4 mb-12">
               <Link
-                to={theme.hero_cta_primary_url || '/portofolio'}
+                to={'/portofolio'}
                 className="font-bold px-6 py-3 rounded-lg text-sm cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors text-white"
                 style={{ backgroundColor: theme.accent_color || '#0ea5e9' }}
               >
@@ -100,7 +90,7 @@ export default function HeroSection() {
                 {t('hero.lihatPortofolio')}
               </Link>
               <a
-                href={theme.hero_cta_secondary_url || 'mailto:info@waringinmegamandiri.com'}
+                href={'mailto:info@waringinmegamandiri.com'}
                 className="border border-white/30 hover:border-white/60 text-white font-bold px-6 py-3 rounded-lg text-sm cursor-pointer whitespace-nowrap inline-flex items-center gap-2 transition-colors bg-white/5 hover:bg-white/10"
               >
                 <i className="ri-mail-line" />
@@ -109,10 +99,7 @@ export default function HeroSection() {
             </div>
 
             <div className="flex items-center gap-2">
-              <span
-                className="text-xs tracking-widest uppercase font-body"
-                style={{ color: heroSubtitleColor }}
-              >
+              <span className="text-xs tracking-widest uppercase font-body" style={{ color: heroSubtitleColor }}>
                 {t('hero.scroll')}
               </span>
               <div className="flex flex-col items-center gap-1">
