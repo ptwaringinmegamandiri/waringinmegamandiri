@@ -61,19 +61,6 @@ const translations = {
   'service.gc.cta': 'Konsultasi Proyek',
   'service.6.title': 'Service & Maintenance',
 
-  // === NILAI PERUSAHAAN (VALUES) ===
-  'values.label': 'Fondasi Kami',
-  'values.title': 'Nilai',
-  'values.highlight': 'Perusahaan',
-  'value.1.title': 'Integritas',
-  'value.1.desc': 'Kami menjunjung tinggi kejujuran dan transparansi dalam setiap aspek bisnis dan pelaksanaan proyek.',
-  'value.2.title': 'Kualitas',
-  'value.2.desc': 'Standar kualitas premium ISO 9001 diterapkan di setiap proses konstruksi.',
-  'value.3.title': 'Inovasi',
-  'value.3.desc': 'Terus berinovasi dengan teknologi terkini BIM, drone survey, dan AI dalam manajemen proyek konstruksi.',
-  'value.4.title': 'Kolaborasi',
-  'value.4.desc': 'Membangun kemitraan strategis yang saling menguntungkan dengan klien, konsultan, dan subkontraktor.',
-
   // === TENTANG KAMI (ABOUT PAGE) ===
   'about.title': 'Tentang Kami',
   'about.subtitle': 'Mengenal lebih dekat PT Waringin Mega Mandiri — perusahaan konstruksi yang membangun Indonesia dengan teknologi dan integritas.',
@@ -84,6 +71,18 @@ const translations = {
   'about.perjalanan': 'Perjalanan Kami',
   'about.historyMilestone': 'History & Milestone',
 
+  // === VISI & MISI (FIXED) ===
+  'vm.label': 'Arah & Tujuan',
+  'vm.title': 'Visi &',
+  'vm.highlight': 'Misi',
+  'vm.visi': 'Visi',
+  'vm.misi': 'Misi',
+  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
+  'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
+  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
+  'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
+
+  // === PROFIL PERUSAHAAN ===
   'profile.label': 'Profil Perusahaan',
   'profile.title': 'PT Waringin',
   'profile.highlight': 'Mega Mandiri',
@@ -96,11 +95,18 @@ const translations = {
   'profile.proyek': 'Proyek Berkualitas Tinggi',
   'profile.standar': 'Didukung PT. Waringin Megah',
 
-  // === VISI & MISI ===
-  'vm.visiQuote': 'Menjadi perusahaan jasa konstruksi terpercaya yang menghadirkan produk berkualitas tinggi, terus berkembang secara menyeluruh, dan memberikan pelayanan terbaik demi kepuasan pelanggan.',
-  'vm.misi1': 'Mewujudkan produk jasa konstruksi yang berkualitas tinggi dengan harga yang bersaing.',
-  'vm.misi2': 'Melakukan pengembangan yang berkesinambungan secara menyeluruh di dalam semua aspek yang mendukung perusahaan.',
-  'vm.misi3': 'Memberikan pelayanan yang terbaik kepada pelanggan.',
+  // === NILAI PERUSAHAAN (VALUES) ===
+  'values.label': 'Fondasi Kami',
+  'values.title': 'Nilai',
+  'values.highlight': 'Perusahaan',
+  'value.1.title': 'Integritas',
+  'value.1.desc': 'Kami menjunjung tinggi kejujuran dan transparansi dalam setiap aspek bisnis dan pelaksanaan proyek.',
+  'value.2.title': 'Kualitas',
+  'value.2.desc': 'Standar kualitas premium ISO 9001 diterapkan di setiap proses konstruksi.',
+  'value.3.title': 'Inovasi',
+  'value.3.desc': 'Terus berinovasi dengan teknologi terkini BIM, drone survey, dan AI dalam manajemen proyek konstruksi.',
+  'value.4.title': 'Kolaborasi',
+  'value.4.desc': 'Membangun kemitraan strategis yang saling menguntungkan dengan klien, konsultan, dan subkontraktor.',
 
   // === PORTOFOLIO ===
   'portfolio.title': 'Portofolio Proyek',
@@ -147,7 +153,7 @@ const translations = {
   'karir.dept.hse': 'Kesehatan, Keselamatan & Lingkungan',
   'karir.dept.desain': 'Desain & Drafting',
 
-  // === NEWS / BERITA (INI YANG TADI KELEWAT) ===
+  // === BERITA / NEWS ===
   'news.badge': 'Berita & Wawasan',
   'news.title1': 'Berita &',
   'news.title2': 'Update',
