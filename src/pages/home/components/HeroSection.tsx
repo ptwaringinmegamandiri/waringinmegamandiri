@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next'; 
-import { useSiteTheme } from '@/context/SiteThemeContext';
+import { useSiteTheme, useLocalizedTheme } from '@/context/SiteThemeContext';
 import { renderRichText } from '@/lib/richText';
 
 const DEFAULT_HERO_BG = 'https://readdy.ai/api/search-image?query=modern%20high-rise%20building%20under%20construction%20at%20golden%20hour%20sunset%2C%20dramatic%20orange%20and%20amber%20sky%2C%20construction%20cranes%20silhouettes%2C%20steel%20framework%20structure%2C%20scaffolding%20visible%2C%20warm%20industrial%20lighting%2C%20cinematic%20wide%20angle%20architectural%20photography%2C%20Jakarta%20Indonesia%20construction%20site%2C%20professional%20real%20estate%20development%20photography&width=1920&height=1080&seq=wmm-hero-vercel-sync&orientation=landscape';
@@ -12,15 +12,23 @@ export default function HeroSection() {
   const { theme } = useSiteTheme();
 
   const heroImage = theme.hero_image_url || DEFAULT_HERO_BG;
-  
-  // Ambil teks dari Kamus
-  const tagline = t('hero.label');
-  const subtitle = t('hero.subtitle');
+
+  // Dynamic localized texts: falls back through DB-localized → DB-base → i18n static dict
+  const heroTitleRaw  = useLocalizedTheme('hero_title',  'hero.title1');
+  const heroTagline   = useLocalizedTheme('hero_tagline', 'hero.label');
+  const heroSubtitle  = useLocalizedTheme('hero_subtitle', 'hero.subtitle');
 
   const heroTitleColor = theme.hero_title_color || '#FFFFFF';
   const heroSubtitleColor = theme.hero_subtitle_color || '#94A3B8';
   const heroTitleSize = parseInt(theme.hero_title_size || '56', 10);
   const heroSubtitleSize = parseInt(theme.hero_subtitle_size || '18', 10);
+
+  // Split title on \n for multi-line rendering
+  const heroTitleLines = heroTitleRaw.split('\\n').filter(Boolean);
+  // If no DB value with \n, fall back to the three i18n keys
+  const titleLines = heroTitleLines.length > 1
+    ? heroTitleLines
+    : [t('hero.title1'), t('hero.title2'), t('hero.title3')].filter(Boolean);
 
   useEffect(() => {
     const el = titleRef.current;
@@ -51,7 +59,7 @@ export default function HeroSection() {
           <div ref={titleRef} className="max-w-3xl">
             <div className="flex items-center gap-2 mb-4">
               <span className="text-xs tracking-[0.2em] uppercase font-body font-semibold" style={{ color: heroSubtitleColor }}>
-                {tagline}
+                {heroTagline}
               </span>
             </div>
 
@@ -62,22 +70,18 @@ export default function HeroSection() {
               </span>
             </div>
 
-            {/* Judul Utama - Memakai renderRichText agar WARNA kembali seperti asli */}
+            {/* Judul Utama - Dynamic multi-line from DB dengan rich text color support */}
             <h1 className="font-syne font-black mb-5 leading-[1.05]">
-              <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
-                {renderRichText(t('hero.title1'), { fontSize: heroTitleSize, color: heroTitleColor })}
-              </span>
-              <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
-                {renderRichText(t('hero.title2'), { fontSize: heroTitleSize, color: heroTitleColor })}
-              </span>
-              <span className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
-                {renderRichText(t('hero.title3'), { fontSize: heroTitleSize, color: heroTitleColor })}
-              </span>
+              {titleLines.map((line, idx) => (
+                <span key={idx} className="block" style={{ fontSize: `clamp(32px, 6vw, ${heroTitleSize}px)`, lineHeight: '1.1' }}>
+                  {renderRichText(line, { fontSize: heroTitleSize, color: heroTitleColor })}
+                </span>
+              ))}
             </h1>
 
-            {/* Subtitle - Memakai renderRichText agar WARNA kembali seperti asli */}
+            {/* Subtitle */}
             <p className="font-body leading-relaxed mb-10 max-w-xl">
-              {renderRichText(subtitle, { fontSize: heroSubtitleSize, color: heroSubtitleColor })}
+              {renderRichText(heroSubtitle, { fontSize: heroSubtitleSize, color: heroSubtitleColor })}
             </p>
 
             <div className="flex flex-col sm:flex-row items-start gap-4 mb-12">

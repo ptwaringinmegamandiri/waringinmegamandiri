@@ -1,5 +1,9 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { supabase, SiteThemeConfig, SectionsVisibility } from '@/lib/supabase';
+
+// Extended theme map that can hold dynamic _en / _zh localization keys from DB
+type DynamicTheme = SiteThemeConfig & Record<string, string | undefined>;
 
 const DEFAULT_THEME: SiteThemeConfig = {
   accent_color: '#3B82F6',
@@ -76,7 +80,7 @@ const DEFAULT_SECTIONS: SectionsVisibility = {
 };
 
 interface SiteThemeContextType {
-  theme: SiteThemeConfig;
+  theme: DynamicTheme;
   sections: SectionsVisibility;
   loading: boolean;
   refresh: () => void;
@@ -132,8 +136,14 @@ const ALL_THEME_KEYS = [
 
 const ALL_SECTION_KEYS = ['hero','stats','services','projects','clients','cta'];
 
-function isSiteThemeKey(key: string): key is keyof SiteThemeConfig {
-  return ALL_THEME_KEYS.includes(key);
+function isSiteThemeKey(key: string): boolean {
+  if (ALL_THEME_KEYS.includes(key)) return true;
+  // Allow dynamic localization suffixes _en and _zh
+  if (key.endsWith('_en') || key.endsWith('_zh')) {
+    const baseKey = key.replace(/_en$/, '').replace(/_zh$/, '');
+    return ALL_THEME_KEYS.includes(baseKey);
+  }
+  return false;
 }
 
 function isSectionKey(key: string): key is keyof SectionsVisibility {
@@ -145,7 +155,7 @@ function parseBool(v: string): boolean {
 }
 
 export function SiteThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setThemeState] = useState<SiteThemeConfig>(DEFAULT_THEME);
+  const [theme, setThemeState] = useState<DynamicTheme>(DEFAULT_THEME);
   const [sections, setSectionsState] = useState<SectionsVisibility>(DEFAULT_SECTIONS);
   const [loading, setLoading] = useState(true);
 
@@ -232,3 +242,34 @@ export function SiteThemeProvider({ children }: { children: ReactNode }) {
 }
 
 export const useSiteTheme = () => useContext(SiteThemeContext);
+
+/**
+ * Hook untuk membaca nilai teks berdasarkan bahasa aktif dengan 3-tier fallback:
+ * 1. DB localized key: theme[`${key}_${lang}`]  (e.g. hero_title_en)
+ * 2. DB base key: theme[key]                     (Indonesian / default)
+ * 3. Static i18n dict: t(i18nKey)               (hardcoded translations)
+ *
+ * @param key       - DB base key (e.g. 'hero_title')
+ * @param i18nKey   - react-i18next key (e.g. 'hero.title1')
+ * @returns         localized string
+ */
+export function useLocalizedTheme(key: string, i18nKey?: string): string {
+  const { theme } = useContext(SiteThemeContext);
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language?.slice(0, 2) as 'id' | 'en' | 'zh';
+
+  // Tier 1: language-specific DB value
+  if (lang && lang !== 'id') {
+    const localizedVal = (theme as DynamicTheme)[`${key}_${lang}`];
+    if (localizedVal && localizedVal.trim()) return localizedVal;
+  }
+
+  // Tier 2: base Indonesian DB value
+  const baseVal = (theme as DynamicTheme)[key];
+  if (baseVal && baseVal.trim()) return baseVal;
+
+  // Tier 3: static i18n dictionary
+  if (i18nKey) return t(i18nKey);
+
+  return '';
+}

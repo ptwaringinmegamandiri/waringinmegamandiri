@@ -892,7 +892,7 @@ Saya akan langsung menjalankan perintahmu ke database. Kalau ada data yang kuran
       const prompt = intent.imagePrompt || 'modern construction site golden hour Jakarta Indonesia, professional architectural photography, wide angle, dramatic sky, warm lighting';
       const safePrompt = encodeURIComponent(prompt);
       const seq = Date.now() + Math.floor(Math.random() * 1000);
-      const imageUrl = `https://readdy.ai/api/search-image?query=$%7BsafePrompt%7D&width=1920&height=1080&seq=${seq}&orientation=landscape`;
+      const imageUrl = `https://readdy.ai/api/search-image?query=${safePrompt}&width=1920&height=1080&seq=${seq}&orientation=landscape`;
       await upsertSetting('hero_image_url', imageUrl);
       return {
         success: true,

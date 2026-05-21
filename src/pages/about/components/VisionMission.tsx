@@ -1,11 +1,20 @@
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '@/context/ThemeContext';
+import { useLocalizedTheme } from '@/context/SiteThemeContext';
+import { renderRichText } from '@/lib/richText';
 
 export default function VisionMission() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
 
-  const misiItems = ['vm.misi1', 'vm.misi2', 'vm.misi3'];
+  // DB-localized Visi & Misi with i18n fallback
+  const visiQuote  = useLocalizedTheme('about_vision',  'vm.visiQuote');
+  const misiText   = useLocalizedTheme('about_mission', 'vm.misi1');
+
+  // Split misi by newline or numbered list to support multiple bullet points
+  const misiLines = misiText
+    ? misiText.split(/\n|\\n/).filter((l) => l.trim().length > 0)
+    : [t('vm.misi1'), t('vm.misi2'), t('vm.misi3')];
 
   const sectionBg = isDark ? 'bg-[#0A0E14]' : 'bg-[#EEF4FF]';
   const titleColor = isDark ? 'text-white' : 'text-slate-900';
@@ -66,7 +75,7 @@ export default function VisionMission() {
             </div>
 
             <blockquote className={`font-body text-lg leading-relaxed italic border-l-2 pl-5 ${quoteColor} ${quoteBorder}`}>
-              &ldquo;{t('vm.visiQuote')}&rdquo;
+              &ldquo;{renderRichText(visiQuote)}&rdquo;
             </blockquote>
           </div>
 
@@ -82,12 +91,12 @@ export default function VisionMission() {
             </div>
 
             <ul className="space-y-4">
-              {misiItems.map((key, idx) => (
-                <li key={key} className={`flex items-start gap-3 font-body text-sm leading-relaxed ${misiTextColor}`}>
+              {misiLines.map((line, idx) => (
+                <li key={idx} className={`flex items-start gap-3 font-body text-sm leading-relaxed ${misiTextColor}`}>
                   <span className={`w-5 h-5 flex items-center justify-center shrink-0 rounded font-syne font-bold text-xs mt-0.5 ${misiNumBg}`}>
                     {idx + 1}
                   </span>
-                  {t(key)}
+                  {renderRichText(line.replace(/^\d+[\.\)]\s*/, ''))}
                 </li>
               ))}
             </ul>

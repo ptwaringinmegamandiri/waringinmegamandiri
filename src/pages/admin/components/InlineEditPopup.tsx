@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import RichTextEditor from '@/components/base/RichTextEditor';
+import { translateAndSaveAsync, isTranslatableKey } from '@/lib/translationHelper';
 
 export interface InlineEditField {
   key: string;
@@ -335,7 +336,7 @@ function isSizeKey(key: string): boolean {
 }
 
 export default function InlineEditPopup({ data, themeValues, onClose, onSaved }: InlineEditPopupProps) {
-  const [values, setValues] = useState<Record<string, string>>();
+  const [values, setValues] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [savedCount, setSavedCount] = useState(0);
   const [uploadingLogo, setUploadingLogo] = useState(false);
@@ -425,15 +426,22 @@ export default function InlineEditPopup({ data, themeValues, onClose, onSaved }:
     setSavedCount(ok);
     if (ok > 0) {
       onSaved();
+      // 🌐 Background auto-translation for all textual fields that changed
+      dbFields.forEach((f) => {
+        const val = values[f.key] || '';
+        if (isTranslatableKey(f.dbKey, val)) {
+          translateAndSaveAsync(f.dbKey, val);
+        }
+      });
       setTimeout(() => onClose(), 1200);
     }
   }, [saving, values, onClose, onSaved]);
+
 
   const handleChange = (key: string, val: string) => {
     setValues((prev) => ({ ...prev, [key]: val }));
   };
 
-  // Logo upload
   const uploadLogo = async (file: File): Promise<string | null> => {
     const fileName = `logo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${file.name.split('.').pop()?.toLowerCase() || 'png'}`;
     const { data: upData, error } = await supabase.storage
@@ -459,6 +467,18 @@ export default function InlineEditPopup({ data, themeValues, onClose, onSaved }:
   };
 
   if (!data) return null;
+
+  // Show loading spinner while async DB fetch is in progress
+  if (data && Object.keys(values).length === 0) {
+    return (
+      <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+          <span className="text-slate-400 text-xs">Memuat editor...</span>
+        </div>
+      </div>
+    );
+  }
 
   // Group fields for better UI
   const textFields = data.fields.filter(f => {

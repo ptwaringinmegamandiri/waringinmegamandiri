@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useSiteTheme } from '@/context/SiteThemeContext';
+import { useSiteTheme, useLocalizedTheme } from '@/context/SiteThemeContext';
 import { useThemeContext } from '@/context/ThemeContext';
 import { renderRichText } from '@/lib/richText';
 
@@ -7,18 +7,19 @@ export default function CtaSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const { theme } = useSiteTheme();
   const { isDark } = useThemeContext();
-  const ctaTitle = theme.cta_title || 'Siap Membangun\nMasa Depan Anda?';
-  const ctaDesc = theme.cta_desc || 'Tim ahli kami siap membantu mewujudkan visi konstruksi Anda — mulai dari perencanaan hingga serah terima proyek.';
-  const ctaPrimaryText = theme.cta_primary_text || 'Konsultasi Gratis';
-  const ctaSecondaryText = theme.cta_secondary_text || 'Telepon Kami';
+  const ctaTitle         = useLocalizedTheme('cta_title')         || 'Siap Membangun\nMasa Depan Anda?';
+  const ctaDesc          = useLocalizedTheme('cta_desc')          || 'Tim ahli kami siap membantu mewujudkan visi konstruksi Anda — mulai dari perencanaan hingga serah terima proyek.';
+  const ctaPrimaryText   = useLocalizedTheme('cta_primary_text')  || 'Konsultasi Gratis';
+  const ctaSecondaryText = useLocalizedTheme('cta_secondary_text') || 'Telepon Kami';
 
   // Styling dari theme
   const ctaTitleColor = theme.cta_title_color || (isDark ? '#FFFFFF' : '#0F172A');
-  const ctaDescColor = theme.cta_desc_color || (isDark ? '#94A3B8' : '#475569');
-  const ctaTitleSize = parseInt(theme.cta_title_size || '42', 10);
-  const ctaDescSize = parseInt(theme.cta_desc_size || '18', 10);
+  const ctaDescColor  = theme.cta_desc_color  || (isDark ? '#94A3B8' : '#475569');
+  const ctaTitleSize  = parseInt(theme.cta_title_size || '42', 10);
+  const ctaDescSize   = parseInt(theme.cta_desc_size  || '18', 10);
 
-  const ctaTitleLines = ctaTitle.split('\n');
+  // Support both real \n and literal \\n from DB
+  const ctaTitleLines = ctaTitle.split(/\n|\\n/);
 
   return (
     <section

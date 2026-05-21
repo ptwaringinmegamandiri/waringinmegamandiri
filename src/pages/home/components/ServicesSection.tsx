@@ -1,7 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useSiteTheme } from '@/context/SiteThemeContext';
+import { useSiteTheme, useLocalizedTheme } from '@/context/SiteThemeContext';
 import { useThemeContext } from '@/context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const scopeItemsBase = [
   { key: 'service_card_1', icon: 'ri-building-2-line', defaultTitle: 'Gedung Komersial & Perkantoran', defaultDesc: 'Pembangunan gedung komersial, perkantoran, dan pusat perbelanjaan dengan standar konstruksi internasional.' },
@@ -23,18 +24,31 @@ export default function ServicesSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { theme } = useSiteTheme();
   const { isDark } = useThemeContext();
-  const servicesTitle = theme.services_title || 'Layanan Kami';
-  const servicesDesc = theme.services_desc || 'Kami menyediakan solusi konstruksi komprehensif dengan teknologi terdepan untuk memenuhi setiap kebutuhan proyek Anda.';
+  const { i18n } = useTranslation();
+  const lang = (i18n.language?.slice(0, 2) || 'id') as 'id' | 'en' | 'zh';
+
+  // Helper: get localized theme value with base fallback
+  const lt = (key: string, fallback: string) => {
+    const dyn = theme as Record<string, string | undefined>;
+    if (lang !== 'id') {
+      const locVal = dyn[`${key}_${lang}`];
+      if (locVal && locVal.trim()) return locVal;
+    }
+    return dyn[key] || fallback;
+  };
+
+  const servicesTitle = useLocalizedTheme('services_title', 'hero.title1') || 'Layanan Kami';
+  const servicesDesc  = useLocalizedTheme('services_desc', 'hero.subtitle') || 'Kami menyediakan solusi konstruksi komprehensif dengan teknologi terdepan untuk memenuhi setiap kebutuhan proyek Anda.';
 
   const scopeItems = scopeItemsBase.map((item) => ({
     ...item,
-    title: theme[`${item.key}_title` as keyof typeof theme] || item.defaultTitle,
-    desc: theme[`${item.key}_desc` as keyof typeof theme] || item.defaultDesc,
+    title: lt(`${item.key}_title`, item.defaultTitle),
+    desc:  lt(`${item.key}_desc`,  item.defaultDesc),
   }));
 
   const whyItems = whyItemsBase.map((item) => ({
     ...item,
-    text: theme[`${item.key}_text` as keyof typeof theme] || item.text,
+    text: lt(`${item.key}_text`, item.text),
   }));
 
   useEffect(() => {

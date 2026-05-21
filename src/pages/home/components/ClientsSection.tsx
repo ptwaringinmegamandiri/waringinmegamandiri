@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
-import { useSiteTheme } from '@/context/SiteThemeContext';
+import { useSiteTheme, useLocalizedTheme } from '@/context/SiteThemeContext';
 import { useThemeContext } from '@/context/ThemeContext';
+import { useTranslation } from 'react-i18next';
 
 const clientsBase = [
   { key: 'client_card_1', name: 'APL Group', fullName: 'APL Group (PT Astakona Megatama)', desc: 'Pengembang properti komersial & residensial skala nasional', icon: 'ri-building-4-line', projects: 3, category: 'Properti' },
@@ -26,16 +27,29 @@ export default function ClientsSection() {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { theme } = useSiteTheme();
   const { isDark } = useThemeContext();
-  const clientsTitle = theme.clients_title || 'Dipercaya oleh Perusahaan Terkemuka';
-  const clientsDesc = theme.clients_desc || 'Kami telah dipercaya oleh berbagai perusahaan dan institusi terkemuka di Indonesia untuk menangani proyek konstruksi skala besar dengan standar kualitas internasional.';
+  const { i18n } = useTranslation();
+  const lang = (i18n.language?.slice(0, 2) || 'id') as 'id' | 'en' | 'zh';
+
+  // Helper: get localized theme value with fallback
+  const lt = (key: string, fallback: string) => {
+    const dyn = theme as Record<string, string | undefined>;
+    if (lang !== 'id') {
+      const locVal = dyn[`${key}_${lang}`];
+      if (locVal && locVal.trim()) return locVal;
+    }
+    return dyn[key] || fallback;
+  };
+
+  const clientsTitle = useLocalizedTheme('clients_title') || 'Dipercaya oleh Perusahaan Terkemuka';
+  const clientsDesc  = useLocalizedTheme('clients_desc')  || 'Kami telah dipercaya oleh berbagai perusahaan dan institusi terkemuka di Indonesia untuk menangani proyek konstruksi skala besar dengan standar kualitas internasional.';
 
   const clients = clientsBase.map((c) => ({
     ...c,
-    name: theme[`${c.key}_name` as keyof typeof theme] || c.name,
-    fullName: theme[`${c.key}_fullName` as keyof typeof theme] || c.fullName,
-    desc: theme[`${c.key}_desc` as keyof typeof theme] || c.desc,
-    projects: Number(theme[`${c.key}_projects` as keyof typeof theme]) || c.projects,
-    category: theme[`${c.key}_category` as keyof typeof theme] || c.category,
+    name:     lt(`${c.key}_name`,     c.name),
+    fullName: lt(`${c.key}_fullName`, c.fullName),
+    desc:     lt(`${c.key}_desc`,     c.desc),
+    projects: Number(lt(`${c.key}_projects`, String(c.projects))) || c.projects,
+    category: lt(`${c.key}_category`, c.category),
   }));
 
   useEffect(() => {

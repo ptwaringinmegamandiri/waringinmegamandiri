@@ -1,9 +1,13 @@
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '@/context/ThemeContext';
+import { useLocalizedTheme } from '@/context/SiteThemeContext';
+import { renderRichText } from '@/lib/richText';
 
 export default function CompanyProfile() {
   const { t } = useTranslation();
   const { isDark } = useThemeContext();
+
+  const profileTextRaw = useLocalizedTheme('about_profile_text');
 
   const keyPoints = [
     { icon: 'ri-map-pin-2-line', key: 'profile.kota' },
@@ -74,9 +78,17 @@ export default function CompanyProfile() {
             </h2>
             <div className="neon-line-short mb-6" />
             <div className={`space-y-4 font-body text-base leading-relaxed ${bodyColor}`}>
-              <p>{t('profile.p1')}</p>
-              <p dangerouslySetInnerHTML={{ __html: t('profile.p2') }} />
-              <p>{t('profile.p3')}</p>
+              {profileTextRaw ? (
+                profileTextRaw.split(/\n|\\n/).filter(l => l.trim().length > 0).map((p, idx) => (
+                  <p key={idx}>{renderRichText(p)}</p>
+                ))
+              ) : (
+                <>
+                  <p>{t('profile.p1')}</p>
+                  <p dangerouslySetInnerHTML={{ __html: t('profile.p2') }} />
+                  <p>{t('profile.p3')}</p>
+                </>
+              )}
             </div>
 
             {/* Key Points */}

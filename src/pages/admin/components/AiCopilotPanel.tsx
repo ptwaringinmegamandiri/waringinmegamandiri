@@ -191,15 +191,111 @@ export default function AiCopilotPanel({ onProjectAdded, onNewsAdded, onCareerAd
       return;
     }
 
-    // ── FALLBACK TO EXTERNAL AI ──────────────────────────────────
-    // If rule-based returns unknown → ask external AI for natural response
-    setLoadingText(getRandom(LOADING_AI_VARIATIONS));
+    // ── SMART LLM NLU FALLBACK ─────────────────────────────────
+    // Step 1: Try to extract CMS intent via structured Gemini prompt
+    setLoadingText('AI lagi analisis perintah...');
 
+    const nluPrompt = `Kamu adalah sistem ekstraksi intent untuk CMS website konstruksi PT Waringin Mega Mandiri (WMM).
+
+User mengetik: "${trimmed}"
+
+Extract intent dari pesan tersebut. Jawab HANYA dalam format JSON berikut (tanpa penjelasan, tanpa markdown):
+
+Jika pesan adalah perintah CRUD CMS:
+{"intent": "add_project" | "add_news" | "add_career" | "update_theme_color" | "update_hero_content", "data": {<extracted fields>}, "confidence": "high" | "medium"}
+
+Field yang perlu diekstrak:
+- add_project: {"name":"...","location":"...","building_type":"...","year":2024,"status":"Ongoing"|"Selesai","client":"...","description":"..."}
+- add_news: {"title":"...","category":"...","excerpt":"...","author":"..."}
+- add_career: {"title":"...","department":"...","location":"...","type":"Full-time"|"Part-time","level":"Junior"|"Mid"|"Senior"}
+- update_theme_color: {"field":"accent_color"|"secondary_color","value":"#hexcode"}
+- update_hero_content: {"field":"hero_title"|"hero_subtitle"|"hero_tagline","value":"..."}
+
+Jika pesan adalah pertanyaan biasa atau obrolan:
+{"intent": "conversational", "confidence": "high"}
+
+Jawab HANYA JSON:`;
+
+    let nluResult: { intent: string; data?: Record<string, unknown>; confidence?: string } | null = null;
+
+    try {
+      const nluResponse = await sendAiChat(
+        [{ role: 'user', content: nluPrompt, timestamp: Date.now() }],
+        'id'
+      );
+      const jsonMatch = nluResponse.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        nluResult = JSON.parse(jsonMatch[0]);
+      }
+    } catch {
+      // NLU extraction failed, fall through to conversational
+    }
+
+    // Step 2: If LLM extracted a valid CMS intent, build a synthetic intent and execute
+    if (nluResult && nluResult.intent !== 'conversational' && nluResult.data) {
+      const { intent: nluType, data: nluData } = nluResult;
+      let syntheticIntent: Parameters<typeof executeIntent>[0] | null = null;
+
+      if (nluType === 'add_project' && nluData) {
+        syntheticIntent = {
+          type: 'add_project',
+          confidence: 'high',
+          projectData: {
+            name:          (nluData.name          as string)  || 'Proyek Baru',
+            location:      (nluData.location      as string)  || 'Indonesia',
+            building_type: (nluData.building_type as string)  || 'Gedung',
+            year:          (nluData.year          as number)  || new Date().getFullYear(),
+            status:        ((nluData.status        as string)  || 'Ongoing') as 'Ongoing' | 'Selesai',
+            client:        (nluData.client        as string)  || '-',
+            description:   (nluData.description   as string)  || '',
+          },
+        };
+      } else if (nluType === 'add_news' && nluData) {
+        syntheticIntent = {
+          type: 'add_news',
+          confidence: 'high',
+          newsData: {
+            title:    (nluData.title    as string) || 'Artikel Baru',
+            category: (nluData.category as string) || 'Umum',
+            excerpt:  (nluData.excerpt  as string) || '',
+            author:   (nluData.author   as string) || 'WMM Admin',
+          },
+        };
+      } else if (nluType === 'update_theme_color' && nluData) {
+        syntheticIntent = {
+          type: 'update_theme_color',
+          confidence: 'high',
+          colorField: (nluData.field as string) || 'accent_color',
+          colorValue: (nluData.value as string) || '#3B82F6',
+        };
+      } else if (nluType === 'update_hero_content' && nluData) {
+        syntheticIntent = {
+          type: 'update_hero_content',
+          confidence: 'high',
+          heroField: (nluData.field as string) as 'hero_title' | 'hero_subtitle' | 'hero_tagline',
+          heroValue: (nluData.value as string) || '',
+        };
+      }
+
+      if (syntheticIntent) {
+        setLoadingText('AI ekstrak data, siap konfirmasi...');
+        const res = await executeIntent(syntheticIntent);
+        setPendingIntent(syntheticIntent);
+        addAssistantMessage(
+          `🤖 AI mendeteksi perintah: **${nluType}**\n\n${res.message}\n\n*Ketik "ya" untuk lanjut atau "batal" untuk membatalkan.*`,
+          'confirm'
+        );
+        setLoading(false);
+        return;
+      }
+    }
+
+    // Step 3: Truly conversational — ask external AI for natural response
+    setLoadingText(getRandom(LOADING_AI_VARIATIONS));
     const aiResponse = await sendAiChat(
-      [...messages, userMsg].slice(-10), // Send last 10 messages as context
+      [...messages, userMsg].slice(-10),
       language
     );
-
     addAssistantMessage(aiResponse, 'ai_response');
     setLoading(false);
   };

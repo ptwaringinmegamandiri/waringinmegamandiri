@@ -1,6 +1,7 @@
 import { useState, useRef, ChangeEvent } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useSiteTheme } from '@/context/SiteThemeContext';
+import { translateAndSaveAsync, isTranslatableKey } from '@/lib/translationHelper';
 
 interface ThemeEditorProps {
   onChange?: () => void;
@@ -127,6 +128,15 @@ export default function ThemeEditor({ onChange }: ThemeEditorProps) {
     showToast('Semua perubahan disimpan & website langsung update!');
     refresh();
     onChange?.();
+
+    // Background translation for hero textual fields
+    const textsToTranslate = ['hero_title', 'hero_subtitle', 'hero_tagline', 'hero_cta_primary_text', 'hero_cta_secondary_text'];
+    textsToTranslate.forEach(key => {
+      const val = theme[key] || '';
+      if (isTranslatableKey(key, val)) {
+        translateAndSaveAsync(key, val);
+      }
+    });
   };
 
   const handleGenerateImage = async (key: string, prompt: string, width = 1920, height = 700) => {
