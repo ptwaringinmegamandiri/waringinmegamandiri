@@ -1,4 +1,4 @@
-@import url('https://googleapis.com');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,11 +7,11 @@
 :root {
   --accent:        #3B82F6;
   --accent-soft:   #93C5FD;
-  --accent-dim:    rgba(59, 130, 246, 0.08); 
-  --accent-border: rgba(59, 130, 246, 0.15); 
-  --dark-bg:       #0B132B; 
-  --dark-card:     #111C38; 
-  --dark-surface:  #1C2A4E; 
+  --accent-dim:    rgba(59, 130, 246, 0.12);
+  --accent-border: rgba(59, 130, 246, 0.22);
+  --dark-bg:       #070C17;
+  --dark-card:     #0D1628;
+  --dark-surface:  #131E38;
 }
 
 /* ===================== LIGHT THEME CSS VARIABLES ===================== */
@@ -31,7 +31,7 @@ html { scroll-behavior: smooth; }
 
 body {
   background-color: var(--dark-bg);
-  color: #E2E8F0; 
+  color: #EEF2FF;
   font-family: 'DM Sans', 'Inter', sans-serif;
   overflow-x: hidden;
   line-height: 1.7;
@@ -46,14 +46,14 @@ body {
 /* ===================== SUBTLE BLUE TEXTURE ===================== */
 .grid-pattern {
   background-image:
-    linear-gradient(rgba(59,130,246,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59,130,246,0.015) 1px, transparent 1px);
+    linear-gradient(rgba(59,130,246,0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.028) 1px, transparent 1px);
   background-size: 80px 80px;
 }
 .grid-pattern-sm {
   background-image:
-    linear-gradient(rgba(59,130,246,0.012) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(59,130,246,0.012) 1px, transparent 1px);
+    linear-gradient(rgba(59,130,246,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,0.022) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 [data-theme="light"] .grid-pattern,
@@ -63,10 +63,10 @@ body {
 
 /* ===================== BORDER / GLOW ===================== */
 .glow-border {
-  border: 1px solid rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.2);
   transition: border-color 0.3s ease;
 }
-.glow-border:hover { border-color: rgba(59, 130, 246, 0.3); }
+.glow-border:hover { border-color: rgba(59, 130, 246, 0.45); }
 [data-theme="light"] .glow-border {
   border-color: rgba(37, 99, 235, 0.22);
 }
@@ -76,8 +76,8 @@ body {
 
 /* ===================== BUTTONS ===================== */
 .btn-neon {
-  background: rgba(59, 130, 246, 0.04);
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: rgba(59, 130, 246, 0.08);
+  border: 1px solid rgba(59, 130, 246, 0.45);
   color: #93C5FD;
   font-family: 'DM Sans', sans-serif;
   font-weight: 600;
@@ -85,7 +85,7 @@ body {
   transition: all 0.3s ease;
 }
 .btn-neon:hover {
-  background: rgba(59, 130, 246, 0.12);
+  background: rgba(59, 130, 246, 0.18);
   border-color: #3B82F6;
   color: #EEF2FF;
 }
@@ -157,7 +157,7 @@ body {
 
 /* ===================== CARD SURFACE ===================== */
 .card-surface {
-  background: var(--dark-card);
+  background: linear-gradient(135deg, #0D1628, #0B1424);
   border: 1px solid rgba(59, 130, 246, 0.10);
   transition: border-color 0.3s ease, transform 0.3s ease, background 0.3s ease;
 }
@@ -175,6 +175,7 @@ body {
   box-shadow: 0 6px 20px rgba(37, 99, 235, 0.14);
   transform: translateY(-4px);
 }
+/* ===================== GLOW BORDER ===================== */
 
 /* ===================== GRADIENT TEXT ===================== */
 .gradient-text {
@@ -198,6 +199,9 @@ body {
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.5); }
+[data-theme="light"] ::-webkit-scrollbar-track { background: #EDF3FF; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(37, 99, 235, 0.35); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(37, 99, 235, 0.60); }
 
 /* ===================== SCROLL REVEAL ===================== */
 .reveal {
@@ -227,6 +231,9 @@ body {
 
 /* ===================== INPUT STYLE ===================== */
 input, textarea, select { color-scheme: dark; }
+[data-theme="light"] input,
+[data-theme="light"] textarea,
+[data-theme="light"] select { color-scheme: light; }
 
 /* ===================== LIGHT MODE OVERRIDES ===================== */
 /* HANYA untuk elemen-elemen global yang TIDAK dihandle komponen */
