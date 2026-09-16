@@ -9,9 +9,9 @@
   --accent-soft:   #93C5FD;
   --accent-dim:    rgba(59, 130, 246, 0.12);
   --accent-border: rgba(59, 130, 246, 0.22);
-  --dark-bg:       #131e35;
-  --dark-card:     #1b294a;
-  --dark-surface:  #253760;
+  --dark-bg:       #070C17;
+  --dark-card:     #0D1628;
+  --dark-surface:  #131E38;
 }
 
 /* ===================== LIGHT THEME CSS VARIABLES ===================== */
@@ -157,7 +157,7 @@ body {
 
 /* ===================== CARD SURFACE ===================== */
 .card-surface {
-  background: var(--dark-card);
+  background: linear-gradient(135deg, #0D1628, #0B1424);
   border: 1px solid rgba(59, 130, 246, 0.10);
   transition: border-color 0.3s ease, transform 0.3s ease, background 0.3s ease;
 }
