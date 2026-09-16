@@ -20,22 +20,22 @@ export default {
           900: '#1E3459',
         },
         // Deep navy dark backgrounds
-                // Deep navy dark backgrounds (Pilihan 2: Navy lebih terang)
-        'dark-bg':      '#131e35',
-        'dark-card':    '#1b294a',
-        'dark-surface': '#253760',
-        'dark-border':  'rgba(59, 130, 246, 0.3)',
-
+        'dark-bg':      '#070C17',
+        'dark-card':    '#0D1628',
+        'dark-surface': '#131E38',
+        'dark-border':  'rgba(59, 130, 246, 0.18)',
         // Alias
         'neon':        '#3B82F6',
         'neon-cyan':   '#93C5FD',
         'neon-dim':    'rgba(59, 130, 246, 0.12)',
         
-        // --- WARNA SLATE YANG DIUBAH LEBIH TERANG ---
+        // ==============================================================
+        // INDIKASI PERUBAHAN: MENAIKKAN KECERAHAN TEKS ABU-ABU (SLATE)
+        // ==============================================================
         slate: {
-          400: '#cbd5e1', // Lebih terang (menggunakan warna asli slate-300)
-          500: '#94a3b8', // Lebih terang (menggunakan warna asli slate-400)
-          600: '#64748b', // Lebih terang (menggunakan warna asli slate-500)
+          400: '#f1f5f9', // Jauh lebih terang (setara warna asli slate-100)
+          500: '#e2e8f0', // Jauh lebih terang (setara warna asli slate-200)
+          600: '#cbd5e1', // Jauh lebih terang (setara warna asli slate-300)
         },
       },
       fontFamily: {
