@@ -157,7 +157,7 @@ body {
 
 /* ===================== CARD SURFACE ===================== */
 .card-surface {
-  background: linear-gradient(135deg, #0D1628, #0B1424);
+  background: var(--dark-card);
   border: 1px solid rgba(59, 130, 246, 0.10);
   transition: border-color 0.3s ease, transform 0.3s ease, background 0.3s ease;
 }
