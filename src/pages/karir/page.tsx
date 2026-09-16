@@ -4,7 +4,6 @@ import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import JobCard from '@/pages/karir/components/JobCard';
 import ApplyModal from '@/pages/karir/components/ApplyModal';
-import { careerStats } from '@/mocks/careers';
 import { useCareers } from '@/hooks/useCareers';
 import { useSiteTheme } from '@/context/SiteThemeContext';
 import type { Career } from '@/hooks/useCareers';
@@ -81,29 +80,9 @@ export default function KarirPage() {
               <span className="text-sky-400">{t('karir.title2')}</span>
             </h1>
 
-            <p className="text-base md:text-lg leading-relaxed font-body max-w-2xl mx-auto mb-10 text-slate-400">
+            <p className="text-base md:text-lg leading-relaxed font-body max-w-2xl mx-auto text-slate-400">
               {theme.karir_subtitle || t('karir.subtitle')}
             </p>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-              {careerStats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-xl p-4 text-center backdrop-blur-sm"
-                  style={{
-                    backgroundColor: 'rgba(13,22,40,0.75)',
-                    border: '1px solid rgba(56,189,248,0.14)',
-                  }}
-                >
-                  <p className="font-syne font-bold text-2xl leading-none text-sky-400">
-                    {stat.value}
-                  </p>
-                  <p className="text-xs font-body mt-1 text-slate-500">
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
           </div>
         </section>
       </div>
