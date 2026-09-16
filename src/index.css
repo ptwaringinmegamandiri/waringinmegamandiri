@@ -9,9 +9,9 @@
   --accent-soft:   #93C5FD;
   --accent-dim:    rgba(59, 130, 246, 0.12);
   --accent-border: rgba(59, 130, 246, 0.22);
-  --dark-bg:       #070C17;
-  --dark-card:     #0D1628;
-  --dark-surface:  #131E38;
+  --dark-bg:       #131e35;
+  --dark-card:     #1b294a;
+  --dark-surface:  #253760;
 }
 
 /* ===================== LIGHT THEME CSS VARIABLES ===================== */
