@@ -20,10 +20,12 @@ export default {
           900: '#1E3459',
         },
         // Deep navy dark backgrounds
-        'dark-bg':      '#070C17',
-        'dark-card':    '#0D1628',
-        'dark-surface': '#131E38',
-        'dark-border':  'rgba(59, 130, 246, 0.18)',
+                // Deep navy dark backgrounds (Pilihan 2: Navy lebih terang)
+        'dark-bg':      '#131e35',
+        'dark-card':    '#1b294a',
+        'dark-surface': '#253760',
+        'dark-border':  'rgba(59, 130, 246, 0.3)',
+
         // Alias
         'neon':        '#3B82F6',
         'neon-cyan':   '#93C5FD',
