@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useThemeContext } from '@/context/ThemeContext';
 import { Project } from '@/mocks/projects';
@@ -105,9 +106,10 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
   const descColor = isDark ? 'text-slate-400' : 'text-slate-600';
   const dotIndicatorInactive = isDark ? 'bg-slate-600 hover:bg-slate-400' : 'bg-blue-200 hover:bg-blue-400';
 
-  return (
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+      className="fixed inset-0 flex items-center justify-center p-4 md:p-8"
+      style={{ zIndex: 9999 }}
       onClick={onClose}
     >
       {/* Backdrop */}
@@ -277,6 +279,7 @@ export default function ProjectModal({ project, onClose }: ProjectModalProps) {
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
