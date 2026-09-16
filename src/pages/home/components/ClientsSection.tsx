@@ -138,17 +138,9 @@ export default function ClientsSection() {
                     {client.category}
                   </span>
                 </div>
-                <p className={`font-body text-xs leading-relaxed mb-4 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
+                <p className={`font-body text-xs leading-relaxed ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>
                   {client.desc}
                 </p>
-                <div className={`h-px mb-3 ${isDark ? '' : 'bg-blue-100'}`} style={isDark ? { backgroundColor: 'rgba(56,189,248,0.08)' } : undefined} />
-                <div className="flex items-center gap-1.5">
-                  <i className={`ri-building-line text-sm ${isDark ? 'text-sky-400' : 'text-blue-600'}`} />
-                  <span className={`font-syne font-bold text-sm ${isDark ? 'text-sky-400' : 'text-blue-600'}`}>
-                    {client.projects}
-                  </span>
-                  <span className={`font-body text-xs ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>proyek bersama</span>
-                </div>
               </div>
             );
           })}
@@ -156,7 +148,7 @@ export default function ClientsSection() {
 
         {/* Bottom trust bar */}
         <div
-          className={`reveal-client rounded-2xl px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-4 border ${isDark ? 'border-sky-400/10 bg-gradient-to-br from-sky-400/5 to-[#0D1628]/80' : 'border-blue-200 bg-gradient-to-br from-blue-50 to-white'}`}
+          className={`reveal-client rounded-2xl px-8 py-6 flex items-center justify-center gap-4 border ${isDark ? 'border-sky-400/10 bg-gradient-to-br from-sky-400/5 to-[#0D1628]/80' : 'border-blue-200 bg-gradient-to-br from-blue-50 to-white'}`}
           style={{
             opacity: 0,
             transform: 'translateY(20px)',
@@ -175,17 +167,6 @@ export default function ClientsSection() {
                 Layan berbagai sektor industri di seluruh Indonesia
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-6">
-            {[
-              { val: '200+', label: 'Proyek Selesai' },
-              { val: '98%', label: 'Tingkat Kepuasan' },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <div className={`font-syne font-black text-lg ${isDark ? 'text-sky-400' : 'text-blue-600'}`}>{s.val}</div>
-                <div className={`font-body text-xs ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>{s.label}</div>
-              </div>
-            ))}
           </div>
         </div>
       </div>

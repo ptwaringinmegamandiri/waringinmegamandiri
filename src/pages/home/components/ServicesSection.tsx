@@ -133,21 +133,6 @@ export default function ServicesSection() {
                 PT. Waringin Mega Mandiri hadir sebagai General Contractor profesional yang berpengalaman dalam pelaksanaan proyek konstruksi skala menengah hingga besar. Didukung oleh tim berpengalaman dari PT. Waringin Megah, kami menghadirkan hasil pekerjaan berkualitas terbaik untuk setiap klien.
               </p>
 
-              <div className={`hidden lg:flex gap-8 mb-8 pb-8 border-b ${isDark ? 'border-slate-700/50' : 'border-blue-100'}`}>
-                <div>
-                  <div className={`font-syne font-bold text-2xl ${isDark ? 'text-amber-400' : 'text-blue-600'}`}>30+</div>
-                  <div className={`font-body text-xs mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Proyek Selesai</div>
-                </div>
-                <div>
-                  <div className={`font-syne font-bold text-2xl ${isDark ? 'text-amber-400' : 'text-blue-600'}`}>100%</div>
-                  <div className={`font-body text-xs mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Kepuasan Klien</div>
-                </div>
-                <div>
-                  <div className={`font-syne font-bold text-2xl ${isDark ? 'text-amber-400' : 'text-blue-600'}`}>2022</div>
-                  <div className={`font-body text-xs mt-0.5 ${isDark ? 'text-slate-500' : 'text-slate-500'}`}>Tahun Berdiri</div>
-                </div>
-              </div>
-
               <Link
                 to="/kontak"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-body font-semibold text-sm text-white whitespace-nowrap cursor-pointer w-fit bg-sky-500 hover:bg-sky-400 transition-colors"
