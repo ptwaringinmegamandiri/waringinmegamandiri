@@ -27,7 +27,7 @@ export const teamMembers: TeamMember[] = [
     name: 'Huniwanto Hayasan',
     position: 'Komisaris Utama',
     description: 'Lulusan Teknik Sipil ITS Surabaya tahun 1989. Bergabung dengan PT. Waringin Megah sebagai Manajer Proyek, kini menjabat Komisaris Utama PT. Waringin Mega Mandiri.',
-    image: 'https://static.readdy.ai/image/19e5c28a928905456492b1bd20d85494/715537f64f953c4b90c78f2e2ff2c759.png',
+    image: '/team/huniwanto.png',
   },
   {
     id: 4,
