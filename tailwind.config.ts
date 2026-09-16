@@ -28,6 +28,13 @@ export default {
         'neon':        '#3B82F6',
         'neon-cyan':   '#93C5FD',
         'neon-dim':    'rgba(59, 130, 246, 0.12)',
+        
+        // --- WARNA SLATE YANG DIUBAH LEBIH TERANG ---
+        slate: {
+          400: '#cbd5e1', // Lebih terang (menggunakan warna asli slate-300)
+          500: '#94a3b8', // Lebih terang (menggunakan warna asli slate-400)
+          600: '#64748b', // Lebih terang (menggunakan warna asli slate-500)
+        },
       },
       fontFamily: {
         orbitron:   ['Playfair Display', 'serif'],
