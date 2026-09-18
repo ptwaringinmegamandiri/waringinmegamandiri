@@ -39,7 +39,7 @@ export default function FeaturedProjects() {
   }, [featuredProjects.length]);
 
   useEffect(() => {
-    intervalRef.current = setInterval(goNext, 6000);
+    intervalRef.current = setInterval(goNext, 15000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
