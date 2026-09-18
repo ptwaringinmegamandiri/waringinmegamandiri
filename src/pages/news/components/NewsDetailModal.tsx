@@ -78,7 +78,7 @@ export default function NewsDetailModal({ article, onClose }: NewsDetailModalPro
 
   return (
     <div
-      className={`fixed inset-0 z-50 flex items-start justify-center p-4 pt-16 ${overlayBg}`}
+      className={`fixed inset-0 z-[110] flex items-start justify-center p-4 pt-8 md:pt-12 ${overlayBg}`}
       onClick={onClose}
     >
       <div
