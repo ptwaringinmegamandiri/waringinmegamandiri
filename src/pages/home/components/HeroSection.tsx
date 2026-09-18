@@ -18,8 +18,8 @@ export default function HeroSection() {
   const heroTagline   = useLocalizedTheme('hero_tagline', 'hero.label');
   const heroSubtitle  = useLocalizedTheme('hero_subtitle', 'hero.subtitle');
 
-  const heroTitleColor = theme.hero_title_color || '#FFFFFF';
-  const heroSubtitleColor = theme.hero_subtitle_color || '#94A3B8';
+  const heroTitleColor = theme.hero_title_color || '#93C5FD';
+  const heroSubtitleColor = theme.hero_subtitle_color || '#F1F5F9';
   const heroTitleSize = parseInt(theme.hero_title_size || '56', 10);
   const heroSubtitleSize = parseInt(theme.hero_subtitle_size || '18', 10);
 
